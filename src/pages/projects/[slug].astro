@@ -13,6 +13,7 @@ export const getStaticPaths: GetStaticPaths = () => {
 const { project } = Astro.props;
 
 const currentIndex = projects.findIndex((p) => p.slug === project.slug);
+if (currentIndex === -1) return Astro.redirect('/');
 const nextProject = projects[(currentIndex + 1) % projects.length];
 const prevProject = projects[(currentIndex - 1 + projects.length) % projects.length];
 ---
