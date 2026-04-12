@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { projects } from '../../content/projects';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+};
+
+const { project } = Astro.props;
+
+const currentIndex = projects.findIndex((p) => p.slug === project.slug);
+const nextProject = projects[(currentIndex + 1) % projects.length];
+const prevProject = projects[(currentIndex - 1 + projects.length) % projects.length];
+---
+
+<BaseLayout title={`${project.title} — Taranity`} description={project.description}>
+  <main class="py-(--spacing-section) px-6 max-w-4xl mx-auto">
+    <!-- Project Hero -->
+    <header class="mb-16">
+      <h1 class="font-display text-5xl font-bold mb-4" transition:name={`project-title-${project.slug}`}>
+        {project.title}
+      </h1>
+      <p class="text-text-secondary text-xl mb-6">{project.description}</p>
+      <div class="flex flex-wrap gap-2">
+        {project.tags.map((tag) => (
+          <span class="glass rounded-full px-4 py-1 text-sm text-text-secondary">
+            {tag}
+          </span>
+        ))}
+      </div>
+    </header>
+
+    <!-- Case Study -->
+    <section class="space-y-16">
+      <div>
+        <h2 class="font-display text-2xl font-bold mb-4">Problem</h2>
+        <p class="text-text-secondary text-lg leading-relaxed">
+          Placeholder — case study content coming after visual direction.
+        </p>
+      </div>
+      <div>
+        <h2 class="font-display text-2xl font-bold mb-4">Solution</h2>
+        <p class="text-text-secondary text-lg leading-relaxed">
+          Placeholder — case study content coming after visual direction.
+        </p>
+      </div>
+      <div>
+        <h2 class="font-display text-2xl font-bold mb-4">Result</h2>
+        <p class="text-text-secondary text-lg leading-relaxed">
+          Placeholder — case study content coming after visual direction.
+        </p>
+      </div>
+    </section>
+
+    <!-- Navigation -->
+    <nav class="mt-24 flex justify-between items-center border-t border-glass-border pt-8">
+      <a href={`/projects/${prevProject.slug}`} class="group">
+        <span class="text-text-secondary text-sm">Previous</span>
+        <p class="font-display text-xl font-bold group-hover:text-accent-cyan transition-colors">
+          {prevProject.title}
+        </p>
+      </a>
+      <a href={`/projects/${nextProject.slug}`} class="group text-right">
+        <span class="text-text-secondary text-sm">Next</span>
+        <p class="font-display text-xl font-bold group-hover:text-accent-cyan transition-colors">
+          {nextProject.title}
+        </p>
+      </a>
+    </nav>
+  </main>
+</BaseLayout>

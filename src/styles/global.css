@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* ===== Dark Theme Tokens ===== */
+@theme {
+  /* Background */
+  --color-bg-primary: #0A0A0A;
+  --color-bg-secondary: #0F172A;
+  --color-bg-glass: rgba(255, 255, 255, 0.05);
+
+  /* Accent */
+  --color-accent-cyan: #22D3EE;
+  --color-accent-cyan-bright: #00F0FF;
+  --color-accent-violet: #8B5CF6;
+
+  /* Text */
+  --color-text-primary: #F2F2F2;
+  --color-text-secondary: #94A3B8;
+
+  /* Glass */
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+
+  /* Glow */
+  --shadow-glow-cyan: 0 0 20px rgba(34, 211, 238, 0.4);
+  --shadow-glow-violet: 0 0 20px rgba(139, 92, 246, 0.4);
+
+  /* Typography - fluid scale */
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk Variable', 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* Spacing */
+  --spacing-section: clamp(4rem, 10vh, 8rem);
+}
+
+/* ===== Base Styles ===== */
+html {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(139, 92, 246, 0.3);
+  color: var(--color-text-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Glass panel utility */
+.glass {
+  background: var(--color-bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-glass-border);
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-accent-violet), var(--color-accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

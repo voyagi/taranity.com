@@ -1,17 +1,43 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Taranity — Developer Portfolio">
+  <main>
+    <!-- Hero -->
+    <section id="hero" class="min-h-screen flex items-center justify-center px-6">
+      <div class="text-center">
+        <h1 class="font-display text-[clamp(2.5rem,8vw+1rem,10rem)] font-bold leading-none tracking-tight">
+          Taranity
+        </h1>
+        <p class="mt-6 text-text-secondary text-lg max-w-xl mx-auto">
+          Building digital experiences that push boundaries.
+        </p>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="py-(--spacing-section) px-6 max-w-4xl mx-auto">
+      <h2 class="font-display text-4xl font-bold mb-8">About</h2>
+      <p class="text-text-secondary text-lg leading-relaxed">
+        Placeholder — waiting for visual direction before building this section.
+      </p>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="py-(--spacing-section) px-6">
+      <h2 class="font-display text-4xl font-bold mb-12 max-w-4xl mx-auto">Projects</h2>
+      <p class="text-text-secondary text-lg max-w-4xl mx-auto">
+        Placeholder — horizontal scroll gallery coming after visual direction.
+      </p>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="py-(--spacing-section) px-6 max-w-4xl mx-auto">
+      <h2 class="font-display text-4xl font-bold mb-8">Let's work together</h2>
+      <p class="text-text-secondary text-lg">
+        Placeholder — contact section coming after visual direction.
+      </p>
+    </section>
+  </main>
+</BaseLayout>
