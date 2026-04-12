@@ -19,6 +19,13 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+Thumbs.db
 
 # jetbrains setting folder
 .idea/
+
+# crash buffers
+.crash-buffers/
+
+# temp
+tmp-astro/
