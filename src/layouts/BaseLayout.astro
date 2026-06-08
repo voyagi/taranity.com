@@ -1,8 +1,4 @@
 ---
-import '@fontsource-variable/inter';
-import '@fontsource-variable/space-grotesk';
-import '@fontsource/jetbrains-mono/400.css';
-import '@fontsource/jetbrains-mono/700.css';
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import Chrome from '../components/Chrome.astro';
@@ -18,8 +14,8 @@ interface Props {
   /** "website" | "article". */
   type?: string;
   noindex?: boolean;
-  /** Extra JSON-LD object injected for this page. */
-  jsonLd?: Record<string, unknown>;
+  /** Extra JSON-LD injected for this page (object or array of objects). */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
@@ -66,6 +62,10 @@ const personLd = {
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#0a0a0c" />
 
+    <!-- Preload the two LCP-critical fonts (display + body) -->
+    <link rel="preload" href="/fonts/space-grotesk-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+
     <!-- Primary SEO -->
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -90,14 +90,21 @@ const personLd = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <!-- Icons -->
+    <!-- Icons + PWA manifest -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <!-- Structured data -->
     <script is:inline type="application/ld+json" set:html={JSON.stringify(personLd).replace(/</g, '\\u003c')} />
-    {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
+    {
+      jsonLd &&
+        (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((ld) => (
+          <script is:inline type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
+        ))
+    }
 
     <!-- Set .js early to avoid reveal flash -->
     <script is:inline>document.documentElement.classList.add('js');</script>

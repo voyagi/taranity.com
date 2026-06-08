@@ -7,16 +7,16 @@
  * so they're easy to find and replace (see HUMAN-TODO.md).
  */
 
-export type Accent = 'cyan' | 'violet';
+type Accent = 'cyan' | 'violet';
 
-export interface Metric {
+interface Metric {
   /** The number/value, e.g. "300+", "95%", "4×". */
   value: string;
   /** What it measures, e.g. "conversations tracked". */
   label: string;
 }
 
-export interface ProjectLink {
+interface ProjectLink {
   label: string;
   href: string;
   external?: boolean;

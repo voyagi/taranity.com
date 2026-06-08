@@ -49,10 +49,11 @@ does not block on any of them.
 
 ## 5. Legal
 
-- [ ] There is now an honest **`/privacy`** page disclosing every data flow (Web3Forms, cookieless
-      Plausible, the GitHub "Currently" request exposing visitor IP, Cloudflare hosting). It's
-      accurate and a strong starting point — have it reviewed for your jurisdiction before launch
-      and confirm the controller details. No cookies are set.
+- [ ] There is now an honest **`/privacy`** page disclosing every data flow (Web3Forms for the
+      contact form, cookieless Plausible, Cloudflare hosting). The GitHub "Currently" data is now
+      fetched at build time, so no visitor request hits GitHub. It's accurate and a strong starting
+      point — have it reviewed for your jurisdiction before launch and confirm controller details.
+      No cookies are set.
 - [ ] **Processor agreements / data residency (GDPR).** Confirm DPAs and EU data handling with the
       third parties the site uses: Web3Forms (form delivery), Plausible (prefer the EU-hosted/
       self-host option), and Cloudflare (hosting/edge logs). These are account/legal-level, not code.

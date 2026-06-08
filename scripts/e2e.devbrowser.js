@@ -39,9 +39,9 @@ page.on('response', (r) => {
 page.on('requestfailed', (req) => failedRequests.push(req.url()));
 
 // Endpoints called best-effort and handled gracefully; a failure here is not a
-// site defect. api.github.com = Currently widget (60/hr unauth rate limit);
-// plausible.io = analytics, only loaded when configured; cdn.jsdelivr = axe (test-only).
-const isBenign = (u) => /api\.github\.com|plausible\.io/.test(u);
+// site defect. plausible.io = analytics, only loaded when configured. (The GitHub
+// "last push" now resolves at build time, so there is no client GitHub request.)
+const isBenign = (u) => /plausible\.io/.test(u);
 
 const pages200 = [
   ['/', 'home'],

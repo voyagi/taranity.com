@@ -32,9 +32,9 @@ import { contactEmail, site } from '../config/site';
           tracking. Nothing identifies you.
         </li>
         <li>
-          <strong>The "Currently" widget.</strong> The home page asks GitHub's public API for my
-          latest activity. That request is made by <em>your</em> browser, so GitHub receives your
-          IP address — the same as any link to a third-party site. No data about you is stored here.
+          <strong>The "Currently" widget.</strong> My latest commit is fetched once when the site
+          is <em>built</em>, not from your browser — so no request to GitHub is made on your behalf
+          and your IP is never shared. The local-time readout is computed entirely in your browser.
         </li>
         <li>
           <strong>Hosting.</strong> The site is served by Cloudflare Pages. Like any web host, it

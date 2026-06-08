@@ -1,10 +1,18 @@
 ---
-import { site } from '../config/site';
+import { site, services } from '../config/site';
 import { featuredProjects } from '../content/projects';
+import { fetchLatestPush } from '../lib/gh';
 
 /** Edit freely — the "now building" line. */
 const building = 'Cortex — live AI dev telemetry';
 const recent = featuredProjects[0];
+
+// Fetched at BUILD time — no visitor request hits GitHub (privacy + perf + no
+// runtime console error). null when private-only/offline/rate-limited → fallback.
+const push = await fetchLatestPush(services.githubUser).catch(() => null);
+const pushDate = push?.dateISO
+  ? new Date(push.dateISO).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  : '';
 ---
 
 <aside class="currently glass-strong holo-edge" data-reveal aria-label="Current status">
@@ -21,9 +29,20 @@ const recent = featuredProjects[0];
     </div>
     <div class="crow">
       <dt class="mono-label">last push</dt>
-      <dd data-currently-push>
-        <span class="cmuted">telemetry offline — recently shipped</span>
-        <a href={`/projects/${recent.slug}`}>{recent.title}</a>
+      <dd>
+        {
+          push ? (
+            <>
+              <a href={push.url} target="_blank" rel="noopener noreferrer">{push.repo}: {push.message}</a>
+              <span class="cmuted">{pushDate}</span>
+            </>
+          ) : (
+            <>
+              <span class="cmuted">recently shipped</span>
+              <a href={`/projects/${recent.slug}`}>{recent.title}</a>
+            </>
+          )
+        }
       </dd>
     </div>
     <div class="crow">
@@ -76,35 +95,3 @@ const recent = featuredProjects[0];
     .crow { grid-template-columns: 1fr; gap: 0.2rem; }
   }
 </style>
-
-<script>
-  import { fetchLatestPush } from '../lib/gh';
-
-  const USER = (import.meta.env.PUBLIC_GITHUB_USERNAME as string) || 'voyagi';
-
-  async function hydrate() {
-    const el = document.querySelector<HTMLElement>('[data-currently-push]');
-    if (!el) return;
-    const push = await fetchLatestPush(USER);
-    if (!push) return; // keep the curated fallback
-    // Build DOM safely (commit messages are untrusted text).
-    el.textContent = '';
-    const link = document.createElement('a');
-    link.href = push.url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.textContent = `${push.repo}: ${push.message}`;
-    const when = document.createElement('span');
-    when.className = 'cmuted';
-    when.style.marginTop = '0.2rem';
-    when.textContent = push.when;
-    el.append(link, when);
-  }
-
-  // Register once even if the bundled module is re-evaluated.
-  const w = window as unknown as { __currentlyBound?: boolean };
-  if (!w.__currentlyBound) {
-    w.__currentlyBound = true;
-    document.addEventListener('astro:page-load', hydrate);
-  }
-</script>

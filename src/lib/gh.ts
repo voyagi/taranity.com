@@ -1,16 +1,20 @@
 /**
  * "Currently" widget data — latest public GitHub push.
  *
- * Unauthenticated public-events endpoint (60 req/hr per IP). Returns null on any
- * failure (offline, rate-limit, private-only activity) so the widget can fall
- * back to a curated "recently shipped" line. No secrets required.
+ * Fetched at BUILD time (Astro frontmatter) so no visitor request hits GitHub:
+ * no visitor-IP exposure, no runtime rate-limit/console error, one less request.
+ * Unauthenticated public-events endpoint; returns null on any failure (offline,
+ * rate-limit, private-only activity) so the widget falls back to a curated line.
  */
 
 export interface PushInfo {
   repo: string;
   message: string;
   url: string;
+  /** Relative phrasing (build-relative — prefer dateISO for display). */
   when: string;
+  /** ISO timestamp of the commit, for an absolute, view-time-stable date. */
+  dateISO: string;
 }
 
 export function relativeTime(date: Date): string {
@@ -53,6 +57,7 @@ export async function fetchLatestPush(username: string): Promise<PushInfo | null
       message: String(commit.message || '').split('\n')[0].slice(0, 72),
       url: `https://github.com/${fullRepo}/commit/${commit.sha}`,
       when: relativeTime(new Date(push.created_at)),
+      dateISO: String(push.created_at || ''),
     };
   } catch {
     return null;

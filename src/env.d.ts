@@ -1,10 +1,6 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
-// Side-effect CSS imports from variable-font packages (no bundled .d.ts).
-declare module '@fontsource-variable/inter';
-declare module '@fontsource-variable/space-grotesk';
-
 interface ImportMetaEnv {
   readonly PUBLIC_WEB3FORMS_KEY?: string;
   readonly PUBLIC_PLAUSIBLE_DOMAIN?: string;
