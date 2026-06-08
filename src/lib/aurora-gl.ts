@@ -283,6 +283,7 @@ export function initAuroraGL() {
   document.addEventListener('theme:change', sync);
   mq('(prefers-reduced-motion: reduce)').addEventListener('change', sync);
   mq('(min-width: 1024px)').addEventListener('change', sync);
+  mq('(hover: hover) and (pointer: fine)').addEventListener('change', sync);
   // Pause the GL loop when the tab is hidden (battery / GPU). The `running` flag
   // ensures only one RAF chain exists across hide/show flips.
   document.addEventListener('visibilitychange', () => {

@@ -1,6 +1,7 @@
 # Taranity.com Rework — Hardened Plan
 
-Status: **planning approved-direction, build deferred** (user: "we can work on this later").
+Status: **COMPLETE** — Phases A–F all built, reviewed, and merged to main (PRs #2–#7), 2026-06-09.
+See the REWORK section in [VERIFICATION.md](VERIFICATION.md) for the final re-verification table.
 Compiled 2026-06-08 after adversarial review (steelman + peer-review). Every finding below
 is folded into the plan. This doc is the source of truth — re-read it before building.
 
