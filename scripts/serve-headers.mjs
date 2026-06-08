@@ -65,11 +65,10 @@ const send = (res, status, path, body, type) => {
 };
 
 createServer((req, res) => {
-  let reqPath = '/';
   try {
     // decodeURIComponent throws on malformed %-encoding — keep one bad request
     // from crashing the whole dev server.
-    reqPath = decodeURIComponent((req.url || '/').split('?')[0]);
+    const reqPath = decodeURIComponent((req.url || '/').split('?')[0]);
     // Resolve to a file inside DIST (block traversal).
     const rel = normalize(reqPath).replace(/^(\.\.[/\\])+/, '');
     let file = join(DIST, rel);

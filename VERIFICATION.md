@@ -261,3 +261,46 @@ Lighthouse (astro preview, representative) Perf 93–96 / **A11y 100** / BP 96�
 - **Human/legal:** confirm Web3Forms/Plausible/Cloudflare DPAs + EU data residency, and have the
   `/privacy` page reviewed for the target jurisdiction. Cloudflare also lets you toggle HSTS preload
   at the edge. (HUMAN-TODO.md.)
+
+---
+
+# REFINE PASS (4 of 5) — beautiful, fast, lean, better
+
+Design held the bar (re-screenshotted all pages at 320/390/820/1440 — strong, on-brand, no
+redesign needed), so refine effort went into perf, lean, and 10 evolutions. Nothing regressed.
+
+## Before → after (Lighthouse, astro preview, mobile)
+
+| | Perf | A11y | Best-Practices | SEO |
+|---|---|---|---|---|
+| Start of pass | 93–96 | 100 | 96–100 (home 96) | 100 |
+| **End of pass** | **94–98** | **100** | **100 (all)** | **100** |
+
+Final per page: home 97 · work 96 · about 94 · contact 94 · cortex 98 · privacy 98 — all four
+categories. dist shrank **1382 KB → ~900 KB** (fonts 445→111 KB, og 186→48 KB).
+
+Re-verified green after every change: `astro check` 0/0/0 · `eslint` 0 · `knip` 0 · `vitest` 23/23 ·
+dev-browser+axe e2e **59/59** under the enforced header CSP.
+
+## The 10 evolutions (each implemented, tested, kept)
+
+1. **Self-hosted latin-subset fonts** — dropped cyrillic/greek/vietnamese/latin-ext; 28 files/445 KB
+   → 4 files/111 KB. `src/styles/fonts.css`.
+2. **Preload** the two LCP-critical fonts (Space Grotesk + Inter) → faster first paint.
+3. **Build-time GitHub data** — the "Currently" last-push now resolves in Astro frontmatter, not the
+   browser. Kills the only third-party client request: no visitor-IP exposure (privacy), no runtime
+   403 console line (home BP 96 → 100), one less request. Clock stays live client-side.
+4. **Brand favicon** — replaced the leftover Astro default logo with the holographic node mark.
+5. **Full icon set** — `favicon-32`, `apple-touch-icon` (180), maskable 192/512, generated from the
+   brand SVG (`scripts/gen-icons.mjs`).
+6. **PWA web manifest** — installable, themed (`site.webmanifest`).
+7. **OG image optimized** — 186 KB → 48 KB (re-encoded; visually identical).
+8. **security.txt** (RFC 9116) at `/.well-known/` — fitting for a security-minded dev portfolio.
+9. **BreadcrumbList structured data** on case studies (Home › Work › project) for richer SERP.
+10. **Lean** — removed `three` (unused) + 3 fontsource deps; added an accurate `knip.json`; `knip`
+    now reports **0**; un-exported 3 internal-only types.
+
+Rejected (logged, not built): forcing a light theme (would wreck the neon dark-glassmorphism brand —
+kept deliberately dark, `color-scheme: dark`); GSAP code-splitting (perf already 94–98; refactor
+risk outweighed the marginal TBT gain); per-project OG images (one strong OG suffices); `npm audit
+fix --force` (would downgrade `@astrojs/check` for a non-shipped dev advisory).

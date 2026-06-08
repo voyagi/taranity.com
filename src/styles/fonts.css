@@ -1,0 +1,36 @@
+/* Self-hosted latin-subset fonts (copied from @fontsource into public/fonts).
+   Only the latin subset ships — drops cyrillic/greek/vietnamese/latin-ext that
+   the site never uses, and gives stable paths we can <link rel=preload>.
+   Non-latin glyphs (→ ⌘ ●) fall back to the system stack, by design. */
+
+@font-face {
+  font-family: 'Space Grotesk Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url('/fonts/space-grotesk-latin-var.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('/fonts/inter-latin-var.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/jetbrains-mono-latin-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('/fonts/jetbrains-mono-latin-700.woff2') format('woff2');
+}

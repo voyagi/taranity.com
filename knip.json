@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/pages/**/*.astro",
+    "src/layouts/**/*.astro",
+    "src/components/**/*.astro",
+    "src/lib/*.ts",
+    "scripts/*.{js,mjs}",
+    "tests/**/*.test.ts"
+  ],
+  "project": ["src/**", "scripts/**", "tests/**"],
+  "ignoreDependencies": ["axe-core", "lighthouse", "astro-eslint-parser", "sharp"],
+  "ignoreBinaries": ["dev-browser", "wrangler"]
+}
