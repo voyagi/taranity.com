@@ -118,7 +118,7 @@ const bookingExternal = /^https?:\/\//.test(cta.primaryHref);
     display: grid;
     place-items: start center;
     padding-top: 14vh;
-    background: rgba(5, 5, 7, 0.55);
+    background: var(--palette-bg);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     opacity: 0;
@@ -185,7 +185,7 @@ const bookingExternal = /^https?:\/\//.test(cta.primaryHref);
   }
   .cmd [data-cmd-label] { color: var(--color-ink); }
   .cmd .cmd-meta { font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-ink-faint); }
-  .cmd.is-active { background: rgba(34, 211, 238, 0.1); }
+  .cmd.is-active { background: rgba(var(--accent-rgb), 0.1); }
   .cmd.is-active .cmd-meta { color: var(--color-cyan); }
 
   .palette-foot {
