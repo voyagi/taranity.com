@@ -23,9 +23,14 @@ import {
 } from '../config/themes';
 
 let mem: { design: string; mode: ThemeMode } = { design: DEFAULT_DESIGN, mode: DEFAULT_MODE };
+// Flips false once a write throws (quota-exceeded, private mode). After that,
+// storage may still READ as empty, so the in-memory value is authoritative —
+// otherwise the next after-swap restore would reset the just-toggled theme.
+let storageWritable = true;
 let bound = false;
 
 function readStored(): { design: string; mode: ThemeMode } {
+  if (!storageWritable) return { design: mem.design, mode: mem.mode };
   try {
     return {
       design: resolveDesign(localStorage.getItem(STORAGE_KEY_DESIGN)),
@@ -42,7 +47,7 @@ function persist(design: string, mode: ThemeMode) {
     localStorage.setItem(STORAGE_KEY_DESIGN, design);
     localStorage.setItem(STORAGE_KEY_MODE, mode);
   } catch {
-    /* private mode / blocked storage — in-memory only */
+    storageWritable = false; // reads now fall back to mem (the value just set)
   }
 }
 
