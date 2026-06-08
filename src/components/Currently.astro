@@ -1,0 +1,97 @@
+---
+import { site, services } from '../config/site';
+import { featuredProjects } from '../content/projects';
+import { fetchLatestPush } from '../lib/gh';
+
+/** Edit freely — the "now building" line. */
+const building = 'Cortex — live AI dev telemetry';
+const recent = featuredProjects[0];
+
+// Fetched at BUILD time — no visitor request hits GitHub (privacy + perf + no
+// runtime console error). null when private-only/offline/rate-limited → fallback.
+const push = await fetchLatestPush(services.githubUser).catch(() => null);
+const pushDate = push?.dateISO
+  ? new Date(push.dateISO).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  : '';
+---
+
+<aside class="currently glass-strong holo-edge" data-reveal aria-label="Current status">
+  <header class="currently-head">
+    <span class="cdot" aria-hidden="true"></span>
+    <span class="mono-label ctitle">currently</span>
+    <span class="mono-label ctime"><span data-clock>--:--</span> CET</span>
+  </header>
+
+  <dl class="currently-grid">
+    <div class="crow">
+      <dt class="mono-label">now building</dt>
+      <dd>{building}</dd>
+    </div>
+    <div class="crow">
+      <dt class="mono-label">last push</dt>
+      <dd>
+        {
+          push ? (
+            <>
+              <a href={push.url} target="_blank" rel="noopener noreferrer">{push.repo}: {push.message}</a>
+              <span class="cmuted">{pushDate}</span>
+            </>
+          ) : (
+            <>
+              <span class="cmuted">recently shipped</span>
+              <a href={`/projects/${recent.slug}`}>{recent.title}</a>
+            </>
+          )
+        }
+      </dd>
+    </div>
+    <div class="crow">
+      <dt class="mono-label">based in</dt>
+      <dd>{site.location} · <span data-clock>--:--</span></dd>
+    </div>
+  </dl>
+</aside>
+
+<style>
+  .currently {
+    padding: 1.4rem 1.5rem;
+    width: 100%;
+  }
+  .currently-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-bottom: 0.9rem;
+    margin-bottom: 0.9rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .cdot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-success);
+    box-shadow: 0 0 10px 1px rgba(52, 211, 153, 0.85);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.8)} }
+  .ctitle { color: var(--color-ink); letter-spacing: 0.2em; }
+  .ctime { margin-left: auto; color: var(--color-cyan); }
+
+  .currently-grid { display: grid; gap: 0.9rem; margin: 0; }
+  .crow { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; align-items: baseline; }
+  .crow dt { padding-top: 0.15rem; }
+  .crow dd {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    font-family: var(--font-mono);
+  }
+  .crow dd a { color: var(--color-cyan); text-decoration: underline; text-underline-offset: 3px; }
+  .crow dd a:hover { color: var(--color-cyan-bright); }
+  .cmuted { color: var(--color-ink-faint); display: block; font-size: 0.78rem; margin-bottom: 0.15rem; }
+
+  @media (max-width: 460px) {
+    .crow { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+</style>

@@ -1,0 +1,43 @@
+/**
+ * "Currently" widget data — latest public GitHub push.
+ *
+ * Fetched at BUILD time (Astro frontmatter) so no visitor request hits GitHub:
+ * no visitor-IP exposure, no runtime rate-limit/console error, one less request.
+ * Unauthenticated public-events endpoint; returns null on any failure (offline,
+ * rate-limit, private-only activity) so the widget falls back to a curated line.
+ */
+
+export interface PushInfo {
+  repo: string;
+  message: string;
+  url: string;
+  /** ISO timestamp of the commit, for an absolute, view-time-stable date. */
+  dateISO: string;
+}
+
+export async function fetchLatestPush(username: string): Promise<PushInfo | null> {
+  try {
+    const res = await fetch(
+      `https://api.github.com/users/${encodeURIComponent(username)}/events/public?per_page=30`,
+      { headers: { Accept: 'application/vnd.github+json' } },
+    );
+    if (!res.ok) return null;
+    const events: unknown = await res.json();
+    if (!Array.isArray(events)) return null;
+    const push = events.find(
+      (e: any) => e?.type === 'PushEvent' && Array.isArray(e?.payload?.commits) && e.payload.commits.length,
+    ) as any;
+    if (!push) return null;
+    const commits = push.payload.commits;
+    const commit = commits[commits.length - 1];
+    const fullRepo: string = push.repo?.name ?? '';
+    return {
+      repo: fullRepo.split('/')[1] || fullRepo || 'repo',
+      message: String(commit.message || '').split('\n')[0].slice(0, 72),
+      url: `https://github.com/${fullRepo}/commit/${commit.sha}`,
+      dateISO: String(push.created_at || ''),
+    };
+  } catch {
+    return null;
+  }
+}

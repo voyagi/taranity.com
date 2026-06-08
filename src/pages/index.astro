@@ -1,43 +1,291 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Currently from '../components/Currently.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import MetricTile from '../components/MetricTile.astro';
+import Icon from '../components/Icon.astro';
+import { featuredProjects } from '../content/projects';
+import { cta } from '../config/site';
 ---
 
-<BaseLayout title="Taranity — Developer Portfolio">
-  <main>
-    <!-- Hero -->
-    <section id="hero" class="min-h-screen flex items-center justify-center px-6">
-      <div class="text-center">
-        <h1 class="font-display text-[clamp(2.5rem,8vw+1rem,10rem)] font-bold leading-none tracking-tight">
-          Taranity
-        </h1>
-        <p class="mt-6 text-text-secondary text-lg max-w-xl mx-auto">
-          Building digital experiences that push boundaries.
+<BaseLayout title="Taranity — I automate what slows you down">
+  <!-- ░░ HERO ░░ -->
+  <section class="hero">
+    <div class="hero-bg dot-grid" aria-hidden="true"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-grid">
+      <div class="hero-main">
+        <p class="hero-eyebrow mono-label">
+          <span class="hero-eyebrow-dot"></span>
+          automation architect · full-stack · available
         </p>
+        <h1 class="hero-title" data-anim="hero-title">I automate what slows you down.</h1>
+        <p class="hero-sub">
+          Full-stack developer and automation architect. I build the AI tooling and workflows
+          that delete your busywork — then prove it with numbers.
+        </p>
+        <div class="hero-actions">
+          <a href={cta.primaryHref} class="btn btn-primary" data-cursor="hover">
+            {cta.primaryLabel}
+            <Icon name="arrow-right" size={16} class="arrow" />
+          </a>
+          <a href="/work" class="btn btn-ghost" data-cursor="hover">
+            See the work
+            <Icon name="arrow-right" size={16} class="arrow" />
+          </a>
+        </div>
+        <p class="hero-stack mono-label">TypeScript · AI agents · MCP · n8n · Rust · Cloudflare</p>
       </div>
-    </section>
 
-    <!-- About -->
-    <section id="about" class="py-(--spacing-section) px-6 max-w-4xl mx-auto">
-      <h2 class="font-display text-4xl font-bold mb-8">About</h2>
-      <p class="text-text-secondary text-lg leading-relaxed">
-        Placeholder — waiting for visual direction before building this section.
-      </p>
-    </section>
+      <div class="hero-side" data-reveal data-reveal-delay="150">
+        <Currently />
+      </div>
+    </div>
 
-    <!-- Projects -->
-    <section id="projects" class="py-(--spacing-section) px-6">
-      <h2 class="font-display text-4xl font-bold mb-12 max-w-4xl mx-auto">Projects</h2>
-      <p class="text-text-secondary text-lg max-w-4xl mx-auto">
-        Placeholder — horizontal scroll gallery coming after visual direction.
-      </p>
-    </section>
+    <a href="#proof" class="hero-scroll mono-label" aria-label="Scroll to work">
+      scroll <span class="hero-scroll-line"></span>
+    </a>
+  </section>
 
-    <!-- Contact -->
-    <section id="contact" class="py-(--spacing-section) px-6 max-w-4xl mx-auto">
-      <h2 class="font-display text-4xl font-bold mb-8">Let's work together</h2>
-      <p class="text-text-secondary text-lg">
-        Placeholder — contact section coming after visual direction.
-      </p>
-    </section>
-  </main>
+  <!-- ░░ STATS ░░ -->
+  <section class="band stats" aria-label="By the numbers">
+    <p class="band-label mono-label" data-reveal>/ by the numbers</p>
+    <div class="stats-grid">
+      <MetricTile value="8" count={8} label="products shipped" />
+      <MetricTile value="50+" count={50} suffix="+" label="automation hooks" />
+      <MetricTile value="30+" count={30} suffix="+" label="reusable skills" />
+      <MetricTile value="300+" count={300} suffix="+" label="sessions carried" />
+    </div>
+  </section>
+
+  <!-- ░░ FEATURED WORK ░░ -->
+  <section id="proof" class="band featured">
+    <header class="section-head">
+      <div>
+        <p class="band-label mono-label" data-reveal>/ selected work</p>
+        <h2 class="section-title" data-reveal>Proof, not promises.</h2>
+      </div>
+      <a href="/work" class="section-link" data-reveal data-cursor="hover">
+        all work <Icon name="arrow-right" size={16} class="arrow" />
+      </a>
+    </header>
+    <div class="featured-grid">
+      {
+        featuredProjects.map((p, i) => (
+          <div data-reveal data-reveal-delay={i * 90}>
+            <ProjectCard project={p} index={String(i + 1).padStart(2, '0')} />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ░░ APPROACH ░░ -->
+  <section class="band approach">
+    <p class="band-label mono-label" data-reveal>/ what I actually do</p>
+    <h2 class="approach-statement" data-reveal>
+      I turn manual, repetitive, error-prone work into systems that
+      <span class="gradient-text">run themselves</span> — and report back when they're done.
+    </h2>
+
+    <div class="pillars">
+      <article class="pillar glass holo-edge" data-reveal>
+        <span class="pillar-no mono-label">01</span>
+        <h3>Automation architecture</h3>
+        <p>
+          Workflow automation, agents, and the deterministic guardrails around them. The 11pm
+          admin shift, gone — with observability so you trust it.
+        </p>
+      </article>
+      <article class="pillar glass holo-edge" data-reveal data-reveal-delay="90">
+        <span class="pillar-no mono-label">02</span>
+        <h3>AI tooling & agents</h3>
+        <p>
+          MCP servers, RAG pipelines, and LLM tooling that's grounded, schema-safe, and honest
+          about what it doesn't know — built to ship, not to demo.
+        </p>
+      </article>
+      <article class="pillar glass holo-edge" data-reveal data-reveal-delay="180">
+        <span class="pillar-no mono-label">03</span>
+        <h3>Full-stack products</h3>
+        <p>
+          End-to-end builds — telephony, data, and UI — from a SaaS like CallCatch to local-first
+          dashboards. I own the whole stack.
+        </p>
+      </article>
+    </div>
+
+    <div class="approach-cta" data-reveal>
+      <a href={cta.secondaryHref} class="btn btn-primary" data-cursor="hover">
+        {cta.secondaryLabel}
+        <Icon name="arrow-right" size={16} class="arrow" />
+      </a>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    min-height: clamp(640px, 92svh, 1000px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 7rem var(--spacing-gutter) 3rem;
+    max-width: 1240px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.6;
+  }
+  .hero-glow {
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    max-width: 760px;
+    max-height: 760px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.22), transparent 62%);
+    filter: blur(20px);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hero-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-ink-dim);
+    margin-bottom: 1.6rem;
+  }
+  .hero-eyebrow-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--color-cyan);
+    box-shadow: 0 0 9px 1px rgba(34, 211, 238, 0.8);
+  }
+  .hero-title {
+    font-size: var(--text-display);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.6rem;
+    max-width: 16ch;
+  }
+  .hero-sub {
+    color: var(--color-ink-dim);
+    font-size: var(--text-lead);
+    line-height: 1.6;
+    max-width: 46ch;
+    margin-bottom: 2.2rem;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .hero-stack { color: var(--color-ink-faint); }
+  .hero-side { width: 100%; }
+
+  .hero-scroll {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 3rem;
+    color: var(--color-ink-faint);
+    align-self: flex-start;
+  }
+  .hero-scroll-line {
+    width: 46px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-cyan), transparent);
+  }
+
+  /* ── Bands ── */
+  .band {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: var(--spacing-section) var(--spacing-gutter);
+    position: relative;
+    z-index: 1;
+  }
+  .band-label { color: var(--color-cyan); margin-bottom: 1rem; }
+  .section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  .section-title { font-size: var(--text-h2); }
+  .section-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-cyan);
+    white-space: nowrap;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+  }
+
+  /* ── Approach ── */
+  .approach-statement {
+    font-size: var(--text-h2);
+    line-height: 1.2;
+    max-width: 22ch;
+    margin-bottom: 3rem;
+  }
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    margin-bottom: 3rem;
+  }
+  .pillar { padding: 1.8rem; }
+  .pillar-no { color: var(--color-cyan); }
+  .pillar h3 { font-size: var(--text-h3); margin: 0.8rem 0 0.7rem; }
+  .pillar p { color: var(--color-ink-dim); font-size: 0.96rem; line-height: 1.6; }
+  .approach-cta { text-align: center; }
+
+  /* ── Responsive ── */
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-side { max-width: 460px; }
+    .featured-grid, .pillars { grid-template-columns: 1fr 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 680px) {
+    .featured-grid, .pillars { grid-template-columns: 1fr; }
+    .section-head { flex-direction: column; align-items: flex-start; }
+    .hero { padding-top: 6rem; }
+  }
+</style>
