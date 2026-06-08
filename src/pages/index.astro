@@ -156,9 +156,11 @@ import { cta } from '../config/site';
     z-index: 0;
     pointer-events: none;
   }
-  /* Aurora swaps the console hero substrate for its global animated mesh. */
+  /* Aurora and World swap the console hero substrate for their global backdrops. */
   :global(html[data-design="aurora"]) .hero-bg,
-  :global(html[data-design="aurora"]) .hero-glow { display: none; }
+  :global(html[data-design="world"]) .hero-bg,
+  :global(html[data-design="aurora"]) .hero-glow,
+  :global(html[data-design="world"]) .hero-glow { display: none; }
   .hero-grid {
     position: relative;
     z-index: 1;

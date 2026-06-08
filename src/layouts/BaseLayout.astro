@@ -116,7 +116,7 @@ const orgLd = {
         const el = document.documentElement;
         el.classList.add('js');
         // Keep DESIGNS + defaults in sync with src/config/themes.ts.
-        const DESIGNS = ['aurora', 'console'];
+        const DESIGNS = ['aurora', 'console', 'world'];
         let design = 'aurora';
         let mode = 'light';
         try {
@@ -134,6 +134,8 @@ const orgLd = {
           'aurora:dark': '#0a0613',
           'console:dark': '#070709',
           'console:light': '#eef1f7',
+          'world:dark': '#05050f',
+          'world:light': '#eef1ff',
         };
         const meta = document.querySelector('meta[name="theme-color"]');
         if (meta) meta.setAttribute('content', colors[design + ':' + mode] || '#f6f4ff');
@@ -169,8 +171,10 @@ const orgLd = {
       import { initCommandPalette } from '../lib/commandPalette';
       import { initTheme } from '../lib/theme';
       import { initAuroraGL } from '../lib/aurora-gl';
+      import { initWorldGL } from '../lib/world-gl';
       initTheme();
       initAuroraGL();
+      initWorldGL();
       initCursor();
       initHudClock();
       initCommandPalette();
