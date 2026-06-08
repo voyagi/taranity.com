@@ -63,7 +63,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
   </div>
 
   <div class="footer-base">
-    <span class="mono-label">© {year} {site.person} · taranity.com</span>
+    <span class="mono-label">© {year} {site.person} · taranity.com · <a href="/privacy" class="footer-legal">Privacy</a></span>
     <span class="mono-label credit">built with astro · gsap · lenis</span>
   </div>
 </footer>
@@ -126,6 +126,8 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
     display: flex; justify-content: space-between; align-items: center;
     padding-top: 1.5rem; flex-wrap: wrap; gap: 0.5rem;
   }
+  .footer-legal { color: var(--color-ink-dim); text-decoration: underline; text-underline-offset: 2px; transition: color 0.2s; }
+  .footer-legal:hover { color: var(--color-cyan); }
   @media (max-width: 760px) {
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
     .footer-brand { grid-column: 1 / -1; }

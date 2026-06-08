@@ -48,10 +48,10 @@ const projectLd = {
       <p class="cs-meta-top mono-label">
         {String(idx + 1).padStart(2, '0')} / {project.category} · {project.year}
       </p>
-      <h1 class="cs-title" style={`view-transition-name: project-title-${project.slug}`}>
+      <h1 class="cs-title" transition:name={`project-title-${project.slug}`}>
         {project.title}
       </h1>
-      <span class="cs-rule" style={`view-transition-name: project-rule-${project.slug}`}></span>
+      <span class="cs-rule" transition:name={`project-rule-${project.slug}`}></span>
       <p class="cs-tagline">{project.tagline}</p>
 
       <dl class="cs-facts">

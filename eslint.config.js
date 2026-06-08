@@ -34,8 +34,8 @@ export default tseslint.config(
     rules: { '@typescript-eslint/triple-slash-reference': 'off' },
   },
   {
-    // Node config files.
-    files: ['*.config.{js,mjs,ts}', 'eslint.config.js'],
+    // Node config files + Node helper scripts.
+    files: ['*.config.{js,mjs,ts}', 'eslint.config.js', 'scripts/**/*.mjs'],
     languageOptions: { globals: { ...globals.node } },
   },
 );
