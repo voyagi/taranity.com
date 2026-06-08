@@ -297,6 +297,129 @@
     --aurora-alpha: 0.42;
   }
 
+  /* World / dark — the cosmic, crystalline design (default mode for World). A
+     Three.js crystal field renders behind the content on capable desktops; a CSS
+     cosmic gradient + starfield is the fallback. --world-* feed the 3D scene. */
+  [data-design="world"][data-mode="dark"] {
+    color-scheme: dark;
+
+    --bg: #05050f;
+    --surface: #0d0d1f;
+    --surface-2: #15152e;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-2: rgba(255, 255, 255, 0.08);
+    --glass-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+    --glass-solid: #111124;
+    --tint-soft: rgba(255, 255, 255, 0.06);
+    --tint-faint: rgba(255, 255, 255, 0.035);
+
+    --line: rgba(255, 255, 255, 0.12);
+    --line-strong: rgba(255, 255, 255, 0.2);
+
+    --text: #eef0ff;
+    --text-dim: #b3b6d6;
+    --text-faint: #8b8eb0;
+
+    --accent: #8b93ff;
+    --accent-bright: #b0b5ff;
+    --accent-2: #e879f9;
+    --accent-2-bright: #f0abfc;
+    --accent-on: #0a0a1a;
+    --accent-rgb: 139, 147, 255;
+    --accent-2-rgb: 232, 121, 249;
+
+    --success: #34d399;
+    --success-rgb: 52, 211, 153;
+    --danger: #fb7185;
+
+    --gradient: linear-gradient(120deg, #e879f9 0%, #8b93ff 50%, #22d3ee 100%);
+    --glow-accent: 0 0 0 1px rgba(var(--accent-rgb), 0.4), 0 0 40px -4px rgba(var(--accent-rgb), 0.55);
+    --glow-accent-2: 0 0 0 1px rgba(var(--accent-2-rgb), 0.4), 0 0 40px -4px rgba(var(--accent-2-rgb), 0.55);
+    --shadow-panel: 0 30px 70px -28px rgba(0, 0, 0, 0.9);
+
+    --selection-bg: rgba(var(--accent-rgb), 0.32);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: rgba(255, 255, 255, 0.16);
+    --scrollbar-thumb-hover: rgba(var(--accent-rgb), 0.5);
+    --dot-color: rgba(255, 255, 255, 0.07);
+
+    --nav-bg: rgba(13, 13, 31, 0.55);
+    --nav-bg-solid: #111124;
+    --sheet-bg: rgba(5, 5, 15, 0.92);
+    --palette-bg: rgba(4, 4, 12, 0.62);
+
+    --body-glow-1: rgba(var(--accent-2-rgb), 0.14);
+    --body-glow-2: rgba(var(--accent-rgb), 0.12);
+    --fx-opacity: 0.4;
+
+    /* 3D scene colours (read by src/lib/world-gl.ts). */
+    --world-bg: #05050f;
+    --world-crystal: #8b93ff;
+    --world-emissive: #3b1d6e;
+    --world-l1: #22d3ee;
+    --world-l2: #e879f9;
+  }
+
+  /* World / light — a pale "celestial dawn" variant. */
+  [data-design="world"][data-mode="light"] {
+    color-scheme: light;
+
+    --bg: #eef1ff;
+    --surface: #ffffff;
+    --surface-2: #e2e6ff;
+    --glass: rgba(40, 40, 110, 0.05);
+    --glass-2: rgba(40, 40, 110, 0.09);
+    --glass-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.42));
+    --glass-solid: #ffffff;
+    --tint-soft: rgba(40, 40, 110, 0.06);
+    --tint-faint: rgba(40, 40, 110, 0.035);
+
+    --line: rgba(40, 40, 110, 0.14);
+    --line-strong: rgba(40, 40, 110, 0.26);
+
+    --text: #16162e;
+    --text-dim: #45487a;
+    --text-faint: #5b5e8e;
+
+    --accent: #4f46e5;
+    --accent-bright: #4338ca;
+    --accent-2: #c026d3;
+    --accent-2-bright: #a21caf;
+    --accent-on: #ffffff;
+    --accent-rgb: 79, 70, 229;
+    --accent-2-rgb: 192, 38, 211;
+
+    --success: #047857;
+    --success-rgb: 4, 120, 87;
+    --danger: #b91c1c;
+
+    --gradient: linear-gradient(120deg, #c026d3 0%, #4f46e5 50%, #0891b2 100%);
+    --glow-accent: 0 0 0 1px rgba(var(--accent-rgb), 0.3), 0 18px 50px -16px rgba(var(--accent-rgb), 0.4);
+    --glow-accent-2: 0 0 0 1px rgba(var(--accent-2-rgb), 0.3), 0 18px 50px -16px rgba(var(--accent-2-rgb), 0.4);
+    --shadow-panel: 0 30px 70px -30px rgba(40, 40, 120, 0.28);
+
+    --selection-bg: rgba(var(--accent-rgb), 0.18);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: rgba(40, 40, 110, 0.3);
+    --scrollbar-thumb-hover: rgba(var(--accent-rgb), 0.55);
+    --dot-color: rgba(40, 40, 110, 0.06);
+
+    --nav-bg: rgba(255, 255, 255, 0.6);
+    --nav-bg-solid: #eef1ff;
+    --sheet-bg: rgba(238, 241, 255, 0.93);
+    --palette-bg: rgba(20, 20, 60, 0.22);
+
+    --body-glow-1: rgba(var(--accent-2-rgb), 0.07);
+    --body-glow-2: rgba(var(--accent-rgb), 0.06);
+    --fx-opacity: 0.12;
+
+    --world-bg: #eef1ff;
+    --world-crystal: #6366f1;
+    --world-emissive: #c7d2fe;
+    --world-l1: #06b6d4;
+    --world-l2: #d946ef;
+  }
+
   /* ---- Legacy aliases: existing components reference these names ----
      They map onto the semantic tokens, so a single theme switch recolours
      the whole site. New components (Phase C+) should use the semantic names. */
@@ -637,6 +760,54 @@ html.aurora-gl-on .aurora-bg b { opacity: 0; }
 @media (max-width: 640px) {
   [data-design="aurora"] .aurora-bg b { filter: blur(48px); width: 62vmax; height: 62vmax; }
 }
+
+/* ============================================================
+   World design — Three.js crystal field (src/lib/world-gl.ts) with a CSS cosmic
+   fallback. Unlayered so it beats @layer components. The canvas mounts into
+   .world-bg on capable desktops; the gradient + starfield show otherwise.
+   ============================================================ */
+.world-bg { display: none; }
+[data-design="world"] .world-bg {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  contain: layout paint;
+  background:
+    radial-gradient(120% 90% at 50% 18%, rgba(var(--accent-rgb), 0.18), transparent 60%),
+    radial-gradient(90% 80% at 85% 100%, rgba(var(--accent-2-rgb), 0.16), transparent 55%),
+    var(--bg);
+}
+/* CSS starfield fallback (fades out once the 3D canvas mounts). */
+[data-design="world"] .world-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, var(--text-faint), transparent),
+    radial-gradient(1.5px 1.5px at 70% 60%, var(--text-faint), transparent),
+    radial-gradient(1px 1px at 40% 80%, var(--text-faint), transparent),
+    radial-gradient(1px 1px at 85% 25%, var(--text-faint), transparent),
+    radial-gradient(1.5px 1.5px at 55% 12%, var(--text-faint), transparent),
+    radial-gradient(1px 1px at 10% 70%, var(--text-faint), transparent),
+    radial-gradient(1px 1px at 92% 78%, var(--text-faint), transparent);
+  opacity: 0.5;
+  transition: opacity 0.9s ease;
+}
+.world-bg .world-gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+html.world-gl-on .world-bg .world-gl { opacity: 1; }
+html.world-gl-on [data-design="world"] .world-bg::before { opacity: 0; }
 
 /* ============================================================
    Full-screen FX overlay (grain + scanlines) — static, cheap

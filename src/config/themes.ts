@@ -37,7 +37,13 @@ export const designs: ThemeDesign[] = [
     defaultMode: 'dark',
     ready: true,
   },
-  // Phase E — World (full WebGL): opt-in, heaviest.
+  {
+    id: 'world',
+    label: 'World',
+    blurb: 'A 3D crystal field you move through.',
+    defaultMode: 'dark',
+    ready: true,
+  },
 ];
 
 export const readyDesigns = designs.filter((d) => d.ready);
@@ -58,6 +64,8 @@ const THEME_COLORS: Record<string, string> = {
   'aurora:dark': '#0a0613',
   'console:dark': '#070709',
   'console:light': '#eef1f7',
+  'world:dark': '#05050f',
+  'world:light': '#eef1ff',
 };
 
 export function themeColorFor(design: string, mode: ThemeMode): string {
