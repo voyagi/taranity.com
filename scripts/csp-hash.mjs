@@ -23,6 +23,7 @@ const hashes = new Map(); // hash -> sample
 for (const file of walk('dist')) {
   const html = readFileSync(file, 'utf8');
   let m;
+  re.lastIndex = 0; // reset the stateful /g regex per file
   while ((m = re.exec(html))) {
     if (/type\s*=\s*["']application\/ld\+json["']/i.test(m[1])) continue;
     const content = m[2];
