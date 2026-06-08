@@ -380,7 +380,3 @@ export const featuredProjects = projects
   .sort((a, b) => a.order - b.order);
 
 export const orderedProjects = [...projects].sort((a, b) => a.order - b.order);
-
-export function getProject(slug: string): Project | undefined {
-  return projects.find((p) => p.slug === slug);
-}

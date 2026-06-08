@@ -12,7 +12,7 @@ Legend: ✅ done this pass · 🔜 later pass · 👤 human-only
 - Verify stack facts; ADR 0001.
 - DESIGN-SYSTEM.md: brand, color system, type scale, spacing rhythm, motion language, component
   specs, copy voice.
-- Install GSAP / ScrollTrigger / SplitText, Lenis, Three.js.
+- Install GSAP / ScrollTrigger / SplitText, Lenis.
 - Full token system in CSS (background depth, glass, holographic edges, glow, grain, scanline,
   fluid type scale, spacing rhythm, focus ring).
 - Motion runtime: Lenis ↔ GSAP ticker sync, central `motion.ts` with reduced-motion + touch

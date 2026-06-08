@@ -38,8 +38,8 @@ confident, never "Hello, I'm…". Full spec in [DESIGN-SYSTEM.md](./DESIGN-SYSTE
 
 ## Stack (why in [docs/adr/0001-stack.md](./docs/adr/0001-stack.md))
 
-Astro 6 (static) · Tailwind v4 · GSAP + ScrollTrigger + SplitText · Lenis · Three.js (lazy,
-desktop-only) · Cloudflare Pages · Plausible · Web3Forms · Cal.com/Calendly link.
+Astro 6 (static) · Tailwind v4 · GSAP + ScrollTrigger + SplitText · Lenis · Cloudflare Pages ·
+Plausible · Web3Forms · Cal.com/Calendly link.
 
 ## Success criteria (acceptance)
 

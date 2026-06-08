@@ -6,7 +6,7 @@ motion, a command palette, a live "Currently" widget, and cinematic page transit
 staying static, fast, and accessible.
 
 > **Stack:** Astro 6 (static) · Tailwind v4 · GSAP + ScrollTrigger + SplitText · Lenis ·
-> Three.js (lazy) · Cloudflare Pages · Plausible · Web3Forms.
+> Cloudflare Pages · Plausible · Web3Forms.
 > Rationale: [docs/adr/0001-stack.md](docs/adr/0001-stack.md).
 
 ## Quick start

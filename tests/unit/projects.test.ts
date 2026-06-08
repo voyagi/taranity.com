@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  projects,
-  featuredProjects,
-  orderedProjects,
-  getProject,
-} from '../../src/content/projects';
+import { projects, featuredProjects, orderedProjects } from '../../src/content/projects';
 
 describe('projects content model', () => {
   it('has at least 6 projects', () => {
@@ -42,8 +37,8 @@ describe('projects content model', () => {
     }
   });
 
-  it('getProject resolves known slugs and rejects unknown ones', () => {
-    expect(getProject('cortex')?.title).toBe('Cortex');
-    expect(getProject('does-not-exist')).toBeUndefined();
+  it('slugs resolve to projects (the [slug] route mechanism) and reject unknowns', () => {
+    expect(projects.find((p) => p.slug === 'cortex')?.title).toBe('Cortex');
+    expect(projects.find((p) => p.slug === 'does-not-exist')).toBeUndefined();
   });
 });
