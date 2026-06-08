@@ -226,3 +226,19 @@ document.addEventListener('astro:before-swap', clearPage);
 window.addEventListener('load', () => {
   if (!booted) onLoad();
 });
+
+// Respond to a mid-session prefers-reduced-motion change.
+mq('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
+  if (e.matches) {
+    lenis?.destroy();
+    lenis = null;
+    if (rafCb) {
+      gsap.ticker.remove(rafCb);
+      rafCb = null;
+    }
+    clearPage();
+    setupPage();
+  } else {
+    onLoad();
+  }
+});

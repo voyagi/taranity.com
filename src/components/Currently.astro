@@ -101,5 +101,10 @@ const recent = featuredProjects[0];
     el.append(link, when);
   }
 
-  document.addEventListener('astro:page-load', hydrate);
+  // Register once even if the bundled module is re-evaluated.
+  const w = window as unknown as { __currentlyBound?: boolean };
+  if (!w.__currentlyBound) {
+    w.__currentlyBound = true;
+    document.addEventListener('astro:page-load', hydrate);
+  }
 </script>
