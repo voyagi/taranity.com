@@ -49,8 +49,22 @@ does not block on any of them.
 
 ## 5. Legal
 
-- [ ] If you collect contact-form data, the privacy note at `/contact` is a sensible default —
-      review it for your jurisdiction (EU/GDPR). No cookies are set; Plausible is cookieless.
+- [ ] There is now an honest **`/privacy`** page disclosing every data flow (Web3Forms, cookieless
+      Plausible, the GitHub "Currently" request exposing visitor IP, Cloudflare hosting). It's
+      accurate and a strong starting point — have it reviewed for your jurisdiction before launch
+      and confirm the controller details. No cookies are set.
+- [ ] **Processor agreements / data residency (GDPR).** Confirm DPAs and EU data handling with the
+      third parties the site uses: Web3Forms (form delivery), Plausible (prefer the EU-hosted/
+      self-host option), and Cloudflare (hosting/edge logs). These are account/legal-level, not code.
+
+## 5b. Security (post-attack-pass — optional edge tweaks)
+
+- [ ] Security headers + a strict CSP ship via `public/_headers` (Cloudflare Pages applies them
+      automatically). Nothing required, but in the Cloudflare dashboard you can additionally enable
+      **HSTS preload** and submit the domain at hstspreload.org once you're confident on HTTPS-only.
+- [ ] If you change any inline/component script, regenerate the CSP script hashes with
+      `node scripts/csp-hash.mjs` and paste them into `public/_headers` (the e2e suite fails loudly
+      if they drift, so you won't ship a broken CSP by accident).
 
 ## 6. Known contradiction (resolved, FYI)
 

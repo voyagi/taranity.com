@@ -10,7 +10,9 @@
 // custom 404, and no horizontal overflow at mobile/tablet/desktop.
 
 const BASE = 'http://localhost:4321';
-const AXE = 'https://cdn.jsdelivr.net/npm/axe-core@4.10.3/axe.min.js';
+// axe-core served from the site's own origin (copied into dist by prep-e2e.mjs)
+// so the production CSP can stay strict (no CDN in script-src).
+const AXE = BASE + '/axe-test.js';
 
 const results = [];
 function rec(name, ok, detail) {
@@ -103,6 +105,18 @@ for (const [route, label] of pages200) {
   );
   rec(`${label}: all <img> load`, badImgs.length === 0, badImgs.join(', '));
 
+  // CSP delivered as a response header; strict (no unsafe-inline in script-src).
+  const csp = (resp && resp.headers()['content-security-policy']) || '';
+  const scriptSrc = (csp.match(/script-src[^;]*/) || [''])[0];
+  rec(
+    `${label}: strict CSP header (script-src, no unsafe-inline)`,
+    csp.includes('script-src') &&
+      !/unsafe-inline/.test(scriptSrc) &&
+      csp.includes("object-src 'none'") &&
+      csp.includes("frame-ancestors 'none'"),
+    scriptSrc.slice(0, 70),
+  );
+
   await runAxe(label);
 }
 
@@ -126,6 +140,19 @@ const linkResults = await page.evaluate(async (hrefs) => {
 }, internal);
 const brokenLinks = linkResults.filter((r) => r.s >= 400 || r.s === 0);
 rec('internal links resolve (<400)', brokenLinks.length === 0, JSON.stringify(brokenLinks) + ' of ' + internal.length);
+
+// Security response headers
+const secResp = await page.goto(BASE + '/', { waitUntil: 'load' });
+const H = (secResp && secResp.headers()) || {};
+rec(
+  'security headers (XFO/nosniff/Referrer/Permissions/COOP)',
+  H['x-frame-options'] === 'DENY' &&
+    H['x-content-type-options'] === 'nosniff' &&
+    /strict-origin/.test(H['referrer-policy'] || '') &&
+    !!H['permissions-policy'] &&
+    /same-origin/.test(H['cross-origin-opener-policy'] || ''),
+  JSON.stringify({ xfo: H['x-frame-options'], nosniff: H['x-content-type-options'], hsts: !!H['strict-transport-security'] }),
+);
 
 // ---- custom 404 ----
 consoleErrors = [];
@@ -172,6 +199,7 @@ const contactPath = await saveScreenshot(await page.screenshot(), 'e2e-contact-s
 
 // ---- responsive: no horizontal overflow ----
 const viewports = [
+  [320, 700, 'small'],
   [390, 844, 'mobile'],
   [820, 1180, 'tablet'],
   [1440, 900, 'desktop'],

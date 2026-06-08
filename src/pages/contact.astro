@@ -82,13 +82,13 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
 
           <div class="field">
             <label for="name">Name</label>
-            <input id="name" name="name" type="text" required autocomplete="name" aria-describedby="err-name" />
+            <input id="name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="err-name" />
             <span class="field-err" id="err-name" data-err="name" role="alert"></span>
           </div>
 
           <div class="field">
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" required autocomplete="email" aria-describedby="err-email" />
+            <input id="email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="err-email" />
             <span class="field-err" id="err-email" data-err="email" role="alert"></span>
           </div>
 
@@ -105,7 +105,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
 
           <div class="field">
             <label for="message">Message</label>
-            <textarea id="message" name="message" rows="5" required aria-describedby="err-message"></textarea>
+            <textarea id="message" name="message" rows="5" required maxlength="3000" aria-describedby="err-message"></textarea>
             <span class="field-err" id="err-message" data-err="message" role="alert"></span>
           </div>
 
@@ -116,7 +116,8 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
 
           <p class="form-status" data-form-status role="status" aria-live="polite"></p>
           <p class="form-privacy mono-label">
-            Your details are used only to reply. No newsletter, no third parties, no cookies.
+            Your message is delivered to my inbox via Web3Forms and used only to reply. No cookies,
+            no newsletter, nothing sold. <a href="/privacy">How your data is handled →</a>
           </p>
         </form>
 

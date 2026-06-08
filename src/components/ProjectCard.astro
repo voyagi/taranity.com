@@ -24,7 +24,7 @@ const href = `/projects/${project.slug}`;
   </div>
 
   <div class="pcard-body">
-    <h3 class="pcard-title" style={`view-transition-name: project-title-${project.slug}`}>
+    <h3 class="pcard-title" transition:name={`project-title-${project.slug}`}>
       {project.title}
     </h3>
     <p class="pcard-summary">{project.summary}</p>
@@ -41,7 +41,7 @@ const href = `/projects/${project.slug}`;
     </span>
   </div>
 
-  <span class="pcard-rule" style={`view-transition-name: project-rule-${project.slug}`}></span>
+  <span class="pcard-rule" transition:name={`project-rule-${project.slug}`}></span>
 </a>
 
 <style>
