@@ -63,6 +63,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
         <form
           class="contact-form"
           data-contact-form
+          data-fallback-email={contactEmail}
           action="https://api.web3forms.com/submit"
           method="POST"
           novalidate
@@ -313,7 +314,8 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
       }
 
       try {
-        const res = await fetch(form.action, {
+        // Hardcoded endpoint — never trust a DOM attribute for the POST target.
+        const res = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
           body: new FormData(form),
           headers: { Accept: 'application/json' },
@@ -325,7 +327,8 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
           throw new Error(json.message || 'Send failed');
         }
       } catch (err) {
-        status.textContent = `Couldn't send — email ${'hello@taranity.com'} directly?`;
+        const fallbackEmail = form.dataset.fallbackEmail || 'hello@taranity.com';
+        status.textContent = `Couldn't send. Email ${fallbackEmail} directly?`;
         status.classList.add('is-error');
         submitBtn.disabled = false;
         submitLabel.textContent = 'Try again';

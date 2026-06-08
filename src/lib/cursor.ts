@@ -37,13 +37,16 @@ export function initCursor() {
     { passive: true },
   );
 
+  // Keep a cancel handle so the loop can never double-spawn or zombie.
+  const win = window as unknown as { __cursorRaf?: number };
   const loop = () => {
     rx += (mx - rx) * 0.18;
     ry += (my - ry) * 0.18;
     ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
-    requestAnimationFrame(loop);
+    win.__cursorRaf = requestAnimationFrame(loop);
   };
-  requestAnimationFrame(loop);
+  if (win.__cursorRaf) cancelAnimationFrame(win.__cursorRaf);
+  win.__cursorRaf = requestAnimationFrame(loop);
 
   const SEL = 'a, button, [role="button"], input, textarea, select, summary, label, [data-cursor]';
   document.addEventListener('mouseover', (e) => {
