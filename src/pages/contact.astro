@@ -173,7 +173,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
     display: inline-block;
     width: 7px; height: 7px; border-radius: 999px;
     background: var(--color-success);
-    box-shadow: 0 0 8px 1px rgba(52, 211, 153, 0.8);
+    box-shadow: 0 0 8px 1px rgba(var(--success-rgb), 0.8);
     margin-right: 0.3rem;
   }
   .contact-socials { display: flex; gap: 0.4rem; list-style: none; margin: 0; padding: 0; }
@@ -189,7 +189,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
   .hp { position: absolute; left: -9999px; opacity: 0; }
   .demo-note {
     color: var(--color-cyan);
-    background: rgba(34, 211, 238, 0.08);
+    background: rgba(var(--accent-rgb), 0.08);
     border: 1px solid var(--color-line);
     border-radius: 0.6rem;
     padding: 0.6rem 0.8rem;
@@ -200,7 +200,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
   .field .opt { text-transform: none; letter-spacing: 0; color: var(--color-ink-faint); }
   .field input, .field textarea, .field select {
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--tint-faint);
     border: 1px solid var(--color-line);
     border-radius: 0.7rem;
     padding: 0.85rem 1rem;
@@ -214,7 +214,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
   .field input:focus, .field textarea:focus, .field select:focus {
     outline: none;
     border-color: var(--color-cyan);
-    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
   }
   .field.invalid input, .field.invalid textarea { border-color: var(--color-danger); }
   .field-err { display: block; min-height: 1rem; margin-top: 0.4rem; font-size: 0.78rem; color: var(--color-danger); font-family: var(--font-mono); }
@@ -230,8 +230,8 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
     display: inline-grid; place-items: center;
     width: 54px; height: 54px; border-radius: 999px;
     color: var(--color-success);
-    border: 1px solid rgba(52, 211, 153, 0.4);
-    box-shadow: 0 0 24px -6px rgba(52, 211, 153, 0.5);
+    border: 1px solid rgba(var(--success-rgb), 0.4);
+    box-shadow: 0 0 24px -6px rgba(var(--success-rgb), 0.5);
     margin-bottom: 1.2rem;
   }
   .success-code { color: var(--color-success); margin-bottom: 0.6rem; }

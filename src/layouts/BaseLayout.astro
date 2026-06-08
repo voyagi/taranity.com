@@ -62,8 +62,8 @@ const orgLd = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#0a0a0c" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#070709" />
 
     <!-- Preload the two LCP-critical fonts (display + body) -->
     <link rel="preload" href="/fonts/space-grotesk-latin-var.woff2" as="font" type="font/woff2" crossorigin />
@@ -109,8 +109,31 @@ const orgLd = {
         ))
     }
 
-    <!-- Set .js early to avoid reveal flash -->
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <!-- Pre-paint: set .js (avoids reveal flash) + apply stored theme (avoids theme
+         flash). Storage is guarded; defaults mirror src/config/themes.ts. -->
+    <script is:inline>
+      (() => {
+        const el = document.documentElement;
+        el.classList.add('js');
+        // Keep DESIGNS in sync with the ready designs in src/config/themes.ts.
+        const DESIGNS = ['console'];
+        let design = 'console';
+        let mode = 'dark';
+        try {
+          const sd = localStorage.getItem('taranity-design');
+          const sm = localStorage.getItem('taranity-mode');
+          if (DESIGNS.indexOf(sd) !== -1) design = sd;
+          if (sm === 'light' || sm === 'dark') mode = sm;
+        } catch {
+          /* localStorage blocked (private mode / lockdown) — fall back to defaults */
+        }
+        el.setAttribute('data-design', design);
+        el.setAttribute('data-mode', mode);
+        const colors = { 'console:dark': '#070709', 'console:light': '#eef1f7' };
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', colors[design + ':' + mode] || '#070709');
+      })();
+    </script>
 
     <!-- Cookieless analytics (only when configured) -->
     {
@@ -139,6 +162,8 @@ const orgLd = {
       import '../lib/motion';
       import { initCursor, initHudClock } from '../lib/cursor';
       import { initCommandPalette } from '../lib/commandPalette';
+      import { initTheme } from '../lib/theme';
+      initTheme();
       initCursor();
       initHudClock();
       initCommandPalette();

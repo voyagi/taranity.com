@@ -1,6 +1,7 @@
 ---
 import { nav, cta, site } from '../config/site';
 import Icon from './Icon.astro';
+import ThemeSwitcher from './ThemeSwitcher.astro';
 
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
@@ -33,6 +34,7 @@ const isActive = (href: string) =>
     </div>
 
     <div class="nav-actions">
+      <ThemeSwitcher />
       <button
         type="button"
         class="kbd-chip"
@@ -97,7 +99,7 @@ const isActive = (href: string) =>
     padding: 0.7rem var(--spacing-gutter);
     margin-top: 0.6rem;
     border-radius: 999px;
-    background: rgba(10, 10, 12, 0.55);
+    background: var(--nav-bg);
     backdrop-filter: blur(16px) saturate(140%);
     -webkit-backdrop-filter: blur(16px) saturate(140%);
     border: 1px solid var(--color-line);
@@ -106,7 +108,7 @@ const isActive = (href: string) =>
     margin-right: auto;
   }
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .nav-inner { background: #0c0e14; }
+    .nav-inner { background: var(--nav-bg-solid); }
   }
 
   .wordmark {
@@ -131,7 +133,7 @@ const isActive = (href: string) =>
     height: 7px;
     border-radius: 999px;
     background: var(--color-cyan);
-    box-shadow: 0 0 10px 1px rgba(34, 211, 238, 0.8);
+    box-shadow: 0 0 10px 1px rgba(var(--accent-rgb), 0.8);
     margin-left: 1px;
     margin-bottom: -2px;
     animation: pulse 2.4s ease-in-out infinite;
@@ -165,7 +167,7 @@ const isActive = (href: string) =>
     color: var(--color-ink-faint);
     letter-spacing: 0.05em;
   }
-  .nav-link:hover { color: var(--color-ink); background: rgba(255, 255, 255, 0.04); }
+  .nav-link:hover { color: var(--color-ink); background: var(--tint-soft); }
   .nav-link.active { color: var(--color-ink); }
   .nav-link.active .idx { color: var(--color-cyan); }
 
@@ -177,7 +179,7 @@ const isActive = (href: string) =>
     padding: 0.5rem 0.7rem;
     border-radius: 999px;
     border: 1px solid var(--color-line);
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--tint-faint);
     color: var(--color-ink-dim);
     cursor: pointer;
     transition: border-color 0.2s, color 0.2s;
@@ -204,7 +206,7 @@ const isActive = (href: string) =>
     position: fixed;
     inset: 0;
     z-index: 49;
-    background: rgba(7, 7, 9, 0.92);
+    background: var(--sheet-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     display: flex;

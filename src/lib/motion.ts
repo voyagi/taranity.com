@@ -242,3 +242,10 @@ mq('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
     onLoad();
   }
 });
+
+// Recompute scroll triggers on a user-driven theme change. Designs share one DOM
+// (A1), so a CSS-only swap rarely shifts layout, but refresh keeps any pins correct.
+// Skip 'restore' events (after-swap re-applies) — motion already re-inits per nav.
+document.addEventListener('theme:change', (e) => {
+  if (booted && (e as CustomEvent).detail?.source !== 'restore') ScrollTrigger.refresh();
+});
