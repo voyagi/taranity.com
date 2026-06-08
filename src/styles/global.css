@@ -173,6 +173,130 @@
     --fx-opacity: 0.22;
   }
 
+  /* Aurora / light — the bright maximalist default: pearl-lavender base, a living
+     pink→violet→cyan mesh (the .aurora-bg layer), vivid accents. Text/surface
+     pairings verified ≥4.5:1 (AA); gradient-text is large-only (≥3:1). */
+  [data-design="aurora"][data-mode="light"] {
+    color-scheme: light;
+
+    --bg: #f6f4ff;
+    --surface: #ffffff;
+    --surface-2: #efeaff;
+    --glass: rgba(124, 58, 237, 0.05);
+    --glass-2: rgba(124, 58, 237, 0.09);
+    --glass-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.4));
+    --glass-solid: #ffffff;
+    --tint-soft: rgba(124, 58, 237, 0.06);
+    --tint-faint: rgba(124, 58, 237, 0.035);
+
+    --line: rgba(70, 40, 130, 0.14);
+    --line-strong: rgba(70, 40, 130, 0.26);
+
+    --text: #1a1033;
+    --text-dim: #4a4170;
+    --text-faint: #635a86;
+
+    --accent: #7c3aed;
+    --accent-bright: #6d28d9;
+    --accent-2: #c2185b;
+    --accent-2-bright: #9d174d;
+    --accent-on: #ffffff;
+    --accent-rgb: 124, 58, 237;
+    --accent-2-rgb: 194, 24, 91;
+
+    --success: #047857;
+    --success-rgb: 4, 120, 87;
+    --danger: #b91c1c;
+
+    --gradient: linear-gradient(120deg, #db2777 0%, #7c3aed 48%, #0891b2 100%);
+    --glow-accent: 0 0 0 1px rgba(var(--accent-rgb), 0.3), 0 18px 50px -16px rgba(var(--accent-rgb), 0.45);
+    --glow-accent-2: 0 0 0 1px rgba(var(--accent-2-rgb), 0.3), 0 18px 50px -16px rgba(var(--accent-2-rgb), 0.45);
+    --shadow-panel: 0 30px 70px -30px rgba(80, 40, 160, 0.3);
+
+    --selection-bg: rgba(var(--accent-rgb), 0.18);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: rgba(124, 58, 237, 0.3);
+    --scrollbar-thumb-hover: rgba(124, 58, 237, 0.55);
+    --dot-color: rgba(124, 58, 237, 0.05);
+
+    --nav-bg: rgba(255, 255, 255, 0.55);
+    --nav-bg-solid: #f6f4ff;
+    --sheet-bg: rgba(246, 244, 255, 0.92);
+    --palette-bg: rgba(40, 20, 80, 0.2);
+
+    /* The .aurora-bg layer supplies the colour, so the body radial glows are off. */
+    --body-glow-1: transparent;
+    --body-glow-2: transparent;
+    --fx-opacity: 0.1;
+
+    /* Aurora mesh blob colours + intensity (consumed by .aurora-bg). */
+    --aurora-1: #f0abfc;
+    --aurora-2: #a78bfa;
+    --aurora-3: #67e8f9;
+    --aurora-4: #fda4af;
+    --aurora-alpha: 0.55;
+  }
+
+  /* Aurora / dark — neon-on-obsidian variant of the same design. */
+  [data-design="aurora"][data-mode="dark"] {
+    color-scheme: dark;
+
+    --bg: #0a0613;
+    --surface: #130b22;
+    --surface-2: #1d1136;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-2: rgba(255, 255, 255, 0.08);
+    --glass-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+    --glass-solid: #160d28;
+    --tint-soft: rgba(255, 255, 255, 0.06);
+    --tint-faint: rgba(255, 255, 255, 0.035);
+
+    --line: rgba(255, 255, 255, 0.12);
+    --line-strong: rgba(255, 255, 255, 0.2);
+
+    --text: #f7f2ff;
+    --text-dim: #c3b6e0;
+    --text-faint: #978aba;
+
+    --accent: #c084fc;
+    --accent-bright: #d8b4fe;
+    --accent-2: #f472b6;
+    --accent-2-bright: #f9a8d4;
+    --accent-on: #1a0b2e;
+    --accent-rgb: 192, 132, 252;
+    --accent-2-rgb: 244, 114, 182;
+
+    --success: #34d399;
+    --success-rgb: 52, 211, 153;
+    --danger: #fb7185;
+
+    --gradient: linear-gradient(120deg, #f472b6 0%, #c084fc 48%, #22d3ee 100%);
+    --glow-accent: 0 0 0 1px rgba(var(--accent-rgb), 0.4), 0 0 40px -4px rgba(var(--accent-rgb), 0.55);
+    --glow-accent-2: 0 0 0 1px rgba(var(--accent-2-rgb), 0.4), 0 0 40px -4px rgba(var(--accent-2-rgb), 0.55);
+    --shadow-panel: 0 30px 70px -28px rgba(0, 0, 0, 0.85);
+
+    --selection-bg: rgba(var(--accent-rgb), 0.3);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: rgba(255, 255, 255, 0.16);
+    --scrollbar-thumb-hover: rgba(var(--accent-rgb), 0.5);
+    --dot-color: rgba(255, 255, 255, 0.05);
+
+    --nav-bg: rgba(19, 11, 34, 0.55);
+    --nav-bg-solid: #160d28;
+    --sheet-bg: rgba(10, 6, 19, 0.92);
+    --palette-bg: rgba(8, 4, 16, 0.6);
+
+    --body-glow-1: transparent;
+    --body-glow-2: transparent;
+    --fx-opacity: 0.35;
+
+    --aurora-1: #f0abfc;
+    --aurora-2: #818cf8;
+    --aurora-3: #22d3ee;
+    --aurora-4: #fb7185;
+    --aurora-alpha: 0.42;
+  }
+
   /* ---- Legacy aliases: existing components reference these names ----
      They map onto the semantic tokens, so a single theme switch recolours
      the whole site. New components (Phase C+) should use the semantic names. */
@@ -426,6 +550,75 @@
     color: var(--text-dim);
     background: var(--tint-faint);
   }
+}
+
+/* ============================================================
+   Aurora design — additive animated mesh + flourishes.
+   One DOM (A1): the .aurora-bg layer and these rules switch on only for
+   [data-design="aurora"]; console is untouched. Unlayered so they win over the
+   @layer components utilities. GPU-only (transform/opacity); frozen under
+   reduced-motion so the fallback is a calm, still gradient.
+   ============================================================ */
+/* These .aurora-bg rules MUST stay unlayered so they beat @layer components. */
+.aurora-bg { display: none; }
+[data-design="aurora"] .aurora-bg {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* Cut layout/paint propagation from the animated blurred blobs (no size
+     containment, so the fixed inset:0 box can't collapse). */
+  contain: layout paint;
+}
+[data-design="aurora"] .aurora-bg b {
+  position: absolute;
+  width: 46vmax;
+  height: 46vmax;
+  border-radius: 50%;
+  filter: blur(52px);
+  opacity: var(--aurora-alpha);
+  will-change: transform;
+}
+[data-design="aurora"] .aurora-bg b:nth-child(1) {
+  top: -14%; left: -8%;
+  background: radial-gradient(circle at 50% 50%, var(--aurora-1), transparent 68%);
+  animation: aurora-drift-1 26s ease-in-out infinite alternate;
+}
+[data-design="aurora"] .aurora-bg b:nth-child(2) {
+  top: -6%; right: -12%;
+  background: radial-gradient(circle at 50% 50%, var(--aurora-2), transparent 68%);
+  animation: aurora-drift-2 32s ease-in-out infinite alternate;
+}
+[data-design="aurora"] .aurora-bg b:nth-child(3) {
+  bottom: -18%; left: 12%;
+  background: radial-gradient(circle at 50% 50%, var(--aurora-3), transparent 68%);
+  animation: aurora-drift-3 30s ease-in-out infinite alternate;
+}
+[data-design="aurora"] .aurora-bg b:nth-child(4) {
+  bottom: -12%; right: 4%;
+  background: radial-gradient(circle at 50% 50%, var(--aurora-4), transparent 68%);
+  animation: aurora-drift-4 36s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift-1 { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(12vw, 8vh, 0) scale(1.18); } }
+@keyframes aurora-drift-2 { from { transform: translate3d(0, 0, 0) scale(1.1); } to { transform: translate3d(-14vw, 10vh, 0) scale(0.92); } }
+@keyframes aurora-drift-3 { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(16vw, -10vh, 0) scale(1.22); } }
+@keyframes aurora-drift-4 { from { transform: translate3d(0, 0, 0) scale(1.05); } to { transform: translate3d(-10vw, -8vh, 0) scale(0.9); } }
+
+/* Animated holographic text in aurora (large text only → AA ≥3:1). */
+[data-design="aurora"] .gradient-text {
+  background-size: 220% auto;
+  animation: aurora-text 9s ease-in-out infinite alternate;
+}
+@keyframes aurora-text { from { background-position: 0% center; } to { background-position: 100% center; } }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-design="aurora"] .aurora-bg b,
+  [data-design="aurora"] .gradient-text { animation: none !important; }
+}
+@media (max-width: 640px) {
+  [data-design="aurora"] .aurora-bg b { filter: blur(48px); width: 62vmax; height: 62vmax; }
 }
 
 /* ============================================================

@@ -62,8 +62,8 @@ const orgLd = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="color-scheme" content="dark light" />
-    <meta name="theme-color" content="#070709" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f6f4ff" />
 
     <!-- Preload the two LCP-critical fonts (display + body) -->
     <link rel="preload" href="/fonts/space-grotesk-latin-var.woff2" as="font" type="font/woff2" crossorigin />
@@ -115,10 +115,10 @@ const orgLd = {
       (() => {
         const el = document.documentElement;
         el.classList.add('js');
-        // Keep DESIGNS in sync with the ready designs in src/config/themes.ts.
-        const DESIGNS = ['console'];
-        let design = 'console';
-        let mode = 'dark';
+        // Keep DESIGNS + defaults in sync with src/config/themes.ts.
+        const DESIGNS = ['aurora', 'console'];
+        let design = 'aurora';
+        let mode = 'light';
         try {
           const sd = localStorage.getItem('taranity-design');
           const sm = localStorage.getItem('taranity-mode');
@@ -129,9 +129,14 @@ const orgLd = {
         }
         el.setAttribute('data-design', design);
         el.setAttribute('data-mode', mode);
-        const colors = { 'console:dark': '#070709', 'console:light': '#eef1f7' };
+        const colors = {
+          'aurora:light': '#f6f4ff',
+          'aurora:dark': '#0a0613',
+          'console:dark': '#070709',
+          'console:light': '#eef1f7',
+        };
         const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', colors[design + ':' + mode] || '#070709');
+        if (meta) meta.setAttribute('content', colors[design + ':' + mode] || '#f6f4ff');
       })();
     </script>
 
