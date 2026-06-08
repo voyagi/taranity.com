@@ -24,18 +24,21 @@ const page = await browser.getPage('e2e');
 
 let consoleErrors = [];
 let pageErrors = [];
-let failedResponses = [];
+let failedResponses = []; // HTTP responses with status >= 400
+let failedRequests = []; // network-level failures (no response: DNS, refused, blocked)
 page.on('console', (m) => {
   if (m.type() === 'error') consoleErrors.push(m.text());
 });
 page.on('pageerror', (e) => pageErrors.push(String(e)));
 page.on('response', (r) => {
-  // Only real failures — 304 (Not Modified) and 3xx are normal.
+  // Only real failures — 304 (Not Modified) and other 3xx are normal.
   if (r.status() >= 400) failedResponses.push({ url: r.url(), status: r.status() });
 });
+page.on('requestfailed', (req) => failedRequests.push(req.url()));
 
-// Third-party endpoints we call best-effort and handle gracefully; a 4xx from
-// these (e.g. GitHub's 60/hr unauth rate limit) is not a site defect.
+// Endpoints called best-effort and handled gracefully; a failure here is not a
+// site defect. api.github.com = Currently widget (60/hr unauth rate limit);
+// plausible.io = analytics, only loaded when configured; cdn.jsdelivr = axe (test-only).
 const isBenign = (u) => /api\.github\.com|plausible\.io|cdn\.jsdelivr\.net/.test(u);
 
 const pages200 = [
@@ -66,6 +69,7 @@ for (const [route, label] of pages200) {
   consoleErrors = [];
   pageErrors = [];
   failedResponses = [];
+  failedRequests = [];
   const resp = await page.goto(BASE + route, { waitUntil: 'load' });
   await settle(700); // let the Currently widget's GitHub fetch settle
   rec(`${label}: HTTP 200`, resp && resp.status() === 200, 'status=' + (resp ? resp.status() : 'none'));
@@ -76,7 +80,10 @@ for (const [route, label] of pages200) {
   const title = await page.title();
   rec(`${label}: has <title>`, title.length > 0 && /taranity/i.test(title), title);
 
-  const firstPartyFailures = failedResponses.filter((f) => !isBenign(f.url));
+  const firstPartyFailures = [
+    ...failedResponses.filter((f) => !isBenign(f.url)),
+    ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
+  ];
   // Ignore the browser's generic "Failed to load resource" line when the only
   // failed responses are benign third-party calls we handle.
   const realConsole = consoleErrors.filter(
