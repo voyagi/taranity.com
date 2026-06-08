@@ -304,3 +304,38 @@ Rejected (logged, not built): forcing a light theme (would wreck the neon dark-g
 kept deliberately dark, `color-scheme: dark`); GSAP code-splitting (perf already 94–98; refactor
 risk outweighed the marginal TBT gain); per-project OG images (one strong OG suffices); `npm audit
 fix --force` (would downgrade `@astrojs/check` for a non-shipped dev advisory).
+
+---
+
+# SIGN-OFF PASS (5 of 5) — cold audit
+
+A skeptical independent reviewer (fresh context, no investment) audited the site against every
+BUILD-SPEC item, then I re-ran the full battery. **Verdict: SIGN-OFF READY.**
+
+## Per-item audit
+
+| # | Requirement | Score | Evidence |
+|---|---|---|---|
+| 1 | Purpose for audience (recruiter "what" in <10s; ≤1-click contact/booking) | ✅ PASS | Hero value-prop + nav "Book a call" on every page |
+| 2 | All pages work mobile/tablet/desktop | ✅ PASS | e2e no-overflow at 320/390/820/1440; screenshots in design/ |
+| 3 | build / typecheck / lint / test / knip green | ✅ PASS | build ok · astro check 0/0/0 · eslint 0 · vitest 18/18 · knip 0 |
+| 4 | e2e + axe green | ✅ PASS | dev-browser+axe **59/59** under enforced header CSP, 0 WCAG2A/AA serious/critical |
+| 5 | Lighthouse 90+ all four | ✅ PASS | Perf 94–98 · A11y 100 · BP 100 · SEO 100 (every page) |
+| 6 | Design bar (non-generic, mockups + rationale, real copy) | ✅ PASS | design/ shots + DESIGN-SYSTEM.md; no lorem; every project P→S→R + metric |
+| 7 | No high/critical security; privacy/GDPR clean | ✅ PASS | semgrep 0 · trivy 0 HIGH/CRIT + no secrets · npm audit shipped 0 · strict CSP+headers · honest /privacy; build-time GitHub = no visitor-IP |
+| 8 | Stack right; clean code; no dead code/unused deps; docs accurate | ✅ PASS | 6 runtime deps; knip 0; stale Three.js docs + unbuilt "boot reveal" claim fixed this pass; dead code removed |
+
+## Conscious deviations (documented, not defects)
+- **Hero CTA**: primary "Book a call" + secondary "See the work" (left-aligned) instead of a single
+  centered CTA — the global brief *bans* centered-text heros, so the hero is intentionally
+  asymmetric; centered single CTAs appear in the approach + footer sections, and booking is ≤1 click
+  everywhere via the nav.
+- **Dark-only** (no light theme, vs PART A "full light/dark") — a light theme would undermine the
+  neon dark-glassmorphism identity; `color-scheme: dark` is declared.
+- **Three.js** (named "optional 3D") deliberately not shipped — the holographic look is pure CSS,
+  keeping the JS budget lean and CWV green.
+
+## Fixed during sign-off
+Stale Three.js references (README/PROJECT/ADR), an unbuilt "boot reveal" in DESIGN-SYSTEM, dead code
+(Icon variants, `getProject`, over-exported motion helpers), a mobile-nav focus trap (+ Escape guard
+so it can't hijack focus). Re-verified all green.
