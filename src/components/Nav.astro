@@ -1,0 +1,272 @@
+---
+import { nav, cta, site } from '../config/site';
+import Icon from './Icon.astro';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+---
+
+<header class="site-nav">
+  <nav class="nav-inner" aria-label="Primary">
+    <a href="/" class="wordmark" aria-label={`${site.name} — home`} data-cursor-text="home">
+      <span class="prompt">~/</span><span class="word">taranity</span><span class="dot" aria-hidden="true"></span>
+    </a>
+
+    <div class="nav-links" data-nav-menu>
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={['nav-link', { active: isActive(item.href) }]}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                <span class="idx">{item.index}</span>
+                <span>{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="nav-actions">
+      <button
+        type="button"
+        class="kbd-chip"
+        data-open-palette
+        aria-label="Open command palette"
+        data-cursor-text="⌘K"
+      >
+        <Icon name="search" size={15} />
+        <kbd>⌘K</kbd>
+      </button>
+      <a href={cta.primaryHref} class="btn btn-primary nav-cta" data-cursor="hover">
+        {cta.primaryLabel}
+        <Icon name="arrow-right" size={15} class="arrow" />
+      </a>
+      <button
+        type="button"
+        class="nav-burger"
+        data-nav-toggle
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Open menu"
+      >
+        <Icon name="menu" size={22} />
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile sheet -->
+  <div class="mobile-sheet" id="mobile-menu" data-mobile-sheet hidden>
+    <ul>
+      {
+        nav.map((item) => (
+          <li>
+            <a href={item.href} class:list={['m-link', { active: isActive(item.href) }]}>
+              <span class="idx">{item.index}</span>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a href={cta.primaryHref} class="btn btn-primary m-cta">
+      {cta.primaryLabel}
+      <Icon name="arrow-right" size={16} class="arrow" />
+    </a>
+  </div>
+</header>
+
+<style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0.7rem var(--spacing-gutter);
+    margin-top: 0.6rem;
+    border-radius: 999px;
+    background: rgba(10, 10, 12, 0.55);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid var(--color-line);
+    width: calc(100% - 2 * var(--spacing-gutter));
+    margin-left: auto;
+    margin-right: auto;
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nav-inner { background: #0c0e14; }
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+  }
+  .wordmark .prompt {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.95rem;
+    color: var(--color-ink-faint);
+    margin-right: 0.15rem;
+  }
+  .wordmark .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--color-cyan);
+    box-shadow: 0 0 10px 1px rgba(34, 211, 238, 0.8);
+    margin-left: 1px;
+    margin-bottom: -2px;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.8); }
+  }
+
+  .nav-links ul {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    color: var(--color-ink-dim);
+    transition: color 0.2s, background-color 0.2s;
+  }
+  .nav-link .idx {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--color-ink-faint);
+    letter-spacing: 0.05em;
+  }
+  .nav-link:hover { color: var(--color-ink); background: rgba(255, 255, 255, 0.04); }
+  .nav-link.active { color: var(--color-ink); }
+  .nav-link.active .idx { color: var(--color-cyan); }
+
+  .nav-actions { display: flex; align-items: center; gap: 0.6rem; }
+  .kbd-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--color-ink-dim);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .kbd-chip:hover { color: var(--color-ink); border-color: var(--color-line-strong); }
+  .kbd-chip kbd {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+  }
+  .nav-cta { padding: 0.6rem 1.05rem; }
+
+  .nav-burger {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--color-ink);
+    cursor: pointer;
+    padding: 0.3rem;
+  }
+
+  /* Mobile sheet */
+  .mobile-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    background: rgba(7, 7, 9, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem var(--spacing-gutter) 4rem;
+  }
+  .mobile-sheet[hidden] { display: none; }
+  .mobile-sheet ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+  .m-link {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 12vw, 3rem);
+    color: var(--color-ink-dim);
+  }
+  .m-link.active { color: var(--color-ink); }
+  .m-link .idx { font-family: var(--font-mono); font-size: 0.9rem; color: var(--color-cyan); font-weight: 400; }
+  .m-cta { justify-content: center; width: 100%; }
+
+  @media (max-width: 860px) {
+    .nav-links, .nav-cta { display: none; }
+    .nav-burger { display: inline-flex; }
+  }
+  @media (min-width: 861px) {
+    .mobile-sheet { display: none !important; }
+  }
+</style>
+
+<script>
+  // Delegated + page-load-safe (nav re-renders each navigation).
+  const w = window as unknown as { __navBound?: boolean };
+  if (!w.__navBound) {
+    w.__navBound = true;
+    const sheet = () => document.querySelector<HTMLElement>('[data-mobile-sheet]');
+    const burger = () => document.querySelector<HTMLElement>('[data-nav-toggle]');
+
+    const setOpen = (open: boolean) => {
+      const s = sheet();
+      const b = burger();
+      if (!s || !b) return;
+      s.hidden = !open;
+      b.setAttribute('aria-expanded', String(open));
+      b.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+    };
+
+    document.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      if (t.closest('[data-nav-toggle]')) {
+        const s = sheet();
+        setOpen(!!s?.hidden);
+      } else if (t.closest('[data-mobile-sheet] a')) {
+        setOpen(false);
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+    document.addEventListener('astro:before-swap', () => setOpen(false));
+  }
+</script>
