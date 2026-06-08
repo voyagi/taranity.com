@@ -807,7 +807,7 @@ html.aurora-gl-on .aurora-bg b { opacity: 0; }
   transition: opacity 1s ease;
 }
 html.world-gl-on .world-bg .world-gl { opacity: 1; }
-html.world-gl-on [data-design="world"] .world-bg::before { opacity: 0; }
+html.world-gl-on[data-design="world"] .world-bg::before { opacity: 0; }
 
 /* ============================================================
    Full-screen FX overlay (grain + scanlines) — static, cheap
