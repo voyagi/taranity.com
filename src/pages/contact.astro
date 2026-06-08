@@ -13,18 +13,18 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
 ---
 
 <BaseLayout
-  title="Contact — let's automate what's slowing you down"
-  description="Start a project or book a call with Taran — full-stack developer and automation architect."
+  title="Contact — start a project with Taranity"
+  description="Start a project or book a call with Taranity — a digital studio building AI systems, apps, and websites."
 >
   <section class="contact">
     <div class="contact-grid">
       <!-- Left: invitation + channels -->
       <div class="contact-aside">
         <p class="band-label mono-label" data-reveal>/ contact</p>
-        <h1 class="contact-title" data-reveal>Let's automate what's<br /><span class="gradient-text">slowing you down.</span></h1>
+        <h1 class="contact-title" data-reveal>Tell us what you<br /><span class="gradient-text">need built.</span></h1>
         <p class="contact-lead" data-reveal>
-          Tell me what's eating your time. I reply to everything — usually within a day. If it's a
-          fit, the next step is a short call.
+          Whatever you're trying to build, start here. We reply to everything, usually within a day.
+          If it's a fit, the next step is a short call.
         </p>
 
         <div class="contact-channels" data-reveal>
@@ -38,7 +38,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
           </a>
           <a href={`mailto:${contactEmail}`} class="channel glass" data-cursor="hover">
             <Icon name="mail" size={20} />
-            <span><strong>{contactEmail}</strong><span class="channel-sub">email me directly</span></span>
+            <span><strong>{contactEmail}</strong><span class="channel-sub">email us directly</span></span>
           </a>
         </div>
 
@@ -116,7 +116,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
 
           <p class="form-status" data-form-status role="status" aria-live="polite"></p>
           <p class="form-privacy mono-label">
-            Your message is delivered to my inbox via Web3Forms and used only to reply. No cookies,
+            Your message is delivered to us via Web3Forms and used only to reply. No cookies,
             no newsletter, nothing sold. <a href="/privacy">How your data is handled →</a>
           </p>
         </form>
@@ -126,7 +126,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
           <span class="success-mark"><Icon name="terminal" size={22} /></span>
           <p class="success-code mono-label">200 · message transmitted</p>
           <h2>Got it — thank you.</h2>
-          <p>I read everything personally and reply within a day, usually sooner. If it's a fit, I'll suggest a time to talk.</p>
+          <p>We read everything and reply within a day, usually sooner. If it's a fit, we'll suggest a time to talk.</p>
           <a href="/work" class="btn btn-ghost" data-cursor="hover">Meanwhile, see the work <Icon name="arrow-right" size={15} class="arrow" /></a>
         </div>
       </div>
@@ -272,11 +272,11 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
       const email = String(data.get('email') || '').trim();
       const message = String(data.get('message') || '').trim();
 
-      setErr('name', name ? '' : 'Tell me your name.');
+      setErr('name', name ? '' : 'Tell us your name.');
       if (!name) ok = false;
 
       const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      setErr('email', email ? (emailOk ? '' : 'That email looks off.') : 'I need an email to reply.');
+      setErr('email', email ? (emailOk ? '' : 'That email looks off.') : 'We need an email to reply.');
       if (!emailOk) ok = false;
 
       setErr('message', message.length >= 10 ? '' : 'A sentence or two, please (10+ chars).');

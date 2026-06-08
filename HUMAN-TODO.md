@@ -17,13 +17,16 @@ does not block on any of them.
 
 ## 2. Identity / content to confirm (I inferred these — sanity-check)
 
-- [ ] **Display name** — I used **"Taran"** (from your email `atfyigtaran@…` + the `taranity.com`
-      domain) with **"Taranity"** as the brand. Replace in `src/config/site.ts` if wrong.
-- [ ] **Bio / origin story** — `src/config/about.ts` contains a real, specific story I wrote from
-      context (NL-based, Fontys, automation path). Confirm the facts or send me your real version.
+- [ ] **Identity (confirmed)** — the site is now an honest **studio** ("we" voice), brand and
+      legal entity = **Taranity**, founder = **Taran** (used only in the Organization `founder`
+      structured data, not as a public byline). Adjust in `src/config/site.ts` if any of this is off.
+- [ ] **Bio / origin story** — `src/config/about.ts` tells the studio's origin in the "we" voice
+      (NL-based, Fontys, automation → full digital stack). Confirm the facts or send your version.
 - [ ] **Project metrics** — every case study has a measurable number. The genuinely-known ones
-      (e.g. Claude Code Ecosystem: 50+ hooks / 30+ skills) are real; others are **grounded
-      estimates** marked `// VERIFY` in `src/content/projects.ts`. Replace with your real figures.
+      (e.g. Claude Code Ecosystem: 50+ hooks / 30+ skills) are real; the **unverified estimates**
+      are marked `// VERIFY` in `src/content/projects.ts` and the percentage tiles now show a `~`
+      (e.g. `~95%`, `~70%`) so they don't read as hard fact. **Replace with your real figures and
+      drop the `~`** once you have them.
 - [ ] **Social URLs** — GitHub is set to `voyagi`; confirm and add real LinkedIn / X / email in
       `src/config/site.ts` (placeholders are clearly marked).
 - [ ] **Resume/CV PDF** (optional) — drop a `public/taran-cv.pdf` to light up the "Download CV"
@@ -31,8 +34,10 @@ does not block on any of them.
 
 ## 3. Open Graph image
 
-- [ ] A generated OG image is committed at `public/og.png` (1200×630, on-brand). If you want a
-      photo or a different layout, replace that file (keep the dimensions).
+- [ ] **`public/og.png` is now stale** — its source (`src/pages/og-preview.astro`) was updated to
+      the new studio copy ("If you can describe it, we build it."), but the committed PNG still shows
+      the old portfolio copy. Regenerate it: `npm run dev`, open `/og-preview`, screenshot at
+      1200×630 → overwrite `public/og.png` (keep the dimensions). Or swap in a custom image.
 
 ## 4. Deploy (Cloudflare Pages — I cannot do this on your account)
 

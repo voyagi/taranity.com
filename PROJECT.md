@@ -1,7 +1,8 @@
 # PROJECT — taranity.com
 
-A personal developer portfolio that is itself proof of skill. Positions **Taran** as a
-full-stack developer and automation architect who builds AI tooling and workflow automation.
+A studio site that is itself proof of skill. Positions **Taranity** as a digital studio that
+builds anything digital — AI systems, apps, websites, and the automation underneath them.
+Voice is the studio's "we" (Taranity is a small, honest studio — no fabricated team).
 
 ## North-star
 
@@ -12,7 +13,7 @@ booking**, and be good enough that other developers pass it around.
 
 | Priority | Audience | What they need in the first 10 seconds |
 |---|---|---|
-| 1 | Hiring managers / technical recruiters | "What does he do, and is the craft real?" → instant clarity + one-click contact |
+| 1 | Hiring managers / technical recruiters | "What do they build, and is the craft real?" → instant clarity + one-click contact |
 | 2 | Freelance / consulting clients | Proof of measurable outcomes + a frictionless way to book a call |
 | 3 | Fellow developers | Peer-credible craft, awards-circuit polish |
 

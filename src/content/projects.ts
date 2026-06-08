@@ -71,10 +71,10 @@ export const projects: Project[] = [
     headlineMetric: { value: '50+', label: 'hooks shipped' },
     problem: [
       'Out of the box, an AI coding assistant forgets everything between sessions, repeats the same mistakes, and needs a human watching it every minute. Useful for a quick edit — useless for shipping real work unattended.',
-      'I wanted the opposite: an assistant I could point at a roadmap, walk away from, and trust to build, review itself, and pick up exactly where it left off the next morning.',
+      'We wanted the opposite: an assistant we could point at a roadmap, walk away from, and trust to build, review itself, and pick up exactly where it left off the next morning.',
     ],
     solution: [
-      'I built a layered automation system around the assistant — deterministic where it matters, intelligent where it helps. Hooks enforce the rules a model would otherwise forget; a file-based memory survives every restart; review gates block bad commits before they land.',
+      'We built a layered automation system around the assistant — deterministic where it matters, intelligent where it helps. Hooks enforce the rules a model would otherwise forget; a file-based memory survives every restart; review gates block bad commits before they land.',
       'The result behaves less like a chatbot and more like a teammate with guardrails: it plans, executes in atomic commits, runs adversarial self-review, and writes its own context back to disk so nothing is lost.',
     ],
     highlights: [
@@ -84,7 +84,7 @@ export const projects: Project[] = [
       'Overnight autonomous build loops with revert-to-green safety',
     ],
     result: [
-      'The system now spans 50+ hooks and 30+ skills and has carried me through 300+ working conversations across more than twenty projects without losing the thread.',
+      'The system now spans 50+ hooks and 30+ skills and has carried us through 300+ working conversations across more than twenty projects without losing the thread.',
       'Overnight runs land reviewed, pushed, green commits — the babysitting is gone, and the failure mode is "stops and asks", never "ships something broken".',
     ],
     metrics: [
@@ -148,7 +148,7 @@ export const projects: Project[] = [
     order: 3,
     stack: ['TypeScript', 'Node.js', 'Twilio', 'Postgres'],
     tags: ['SaaS', 'AI', 'Telephony'],
-    headlineMetric: { value: '95%', label: 'spam caught' }, // VERIFY
+    headlineMetric: { value: '~95%', label: 'spam caught' }, // VERIFY
     problem: [
       'Small businesses drown in spam and robocalls, so real customers hit voicemail and walk. Manually screening every call is impossible once the volume climbs.',
       'The cost is invisible but brutal: every missed legitimate call is a lost job, and there was no affordable way to tell the good calls from the noise in real time.',
@@ -168,7 +168,7 @@ export const projects: Project[] = [
       'For a small team, that is the difference between answering every real lead and quietly losing a third of them to noise.', // VERIFY
     ],
     metrics: [
-      { value: '95%', label: 'spam precision' }, // VERIFY
+      { value: '~95%', label: 'spam precision' }, // VERIFY
       { value: '< 1s', label: 'verify latency' }, // VERIFY
       { value: '0', label: 'changes to your number' },
     ],
@@ -191,7 +191,7 @@ export const projects: Project[] = [
     headlineMetric: { value: '1', label: 'binary, zero npm tree' },
     problem: [
       'Letting an AI agent drive a full Node + Playwright stack is heavy, flaky, and a security liability — you are giving generated code the keys to a real browser and the host.',
-      'I needed automation that was fast to start, dependency-light, and sandboxed enough that an agent could script it without becoming a foot-gun.',
+      'We needed automation that was fast to start, dependency-light, and sandboxed enough that an agent could script it without becoming a foot-gun.',
     ],
     solution: [
       'Dev Browser is a single Rust binary that talks to Chrome over the DevTools Protocol and exposes a small, sandboxed JavaScript API through QuickJS. Agents write short scripts; the binary runs them in a contained runtime.',
@@ -204,7 +204,7 @@ export const projects: Project[] = [
       'CDP under the hood for full-fidelity navigation, forms, and screenshots',
     ],
     result: [
-      'Dev Browser became my default for agent-driven browser work, replacing a fragile Playwright setup with one binary that starts instantly and can be handed to automation without flinching.',
+      'Dev Browser became our default for agent-driven browser work, replacing a fragile Playwright setup with one binary that starts instantly and can be handed to automation without flinching.',
       'The sandbox boundary means a bad script fails safely instead of touching the host.',
     ],
     metrics: [
@@ -231,10 +231,10 @@ export const projects: Project[] = [
     headlineMetric: { value: 'typed', label: 'tool surface' },
     problem: [
       'An AI assistant is only as useful as what it can safely touch. Wiring a model directly into internal systems is either too limited (copy-paste) or too dangerous (full shell access).',
-      'I wanted a controlled boundary: expose exactly the tools I choose, with validated inputs, to any MCP-speaking client.',
+      'We wanted a controlled boundary: expose exactly the tools we choose, with validated inputs, to any MCP-speaking client.',
     ],
     solution: [
-      'I built a Model Context Protocol server that registers a curated set of tools with strict Zod-validated schemas. The model sees a clean, typed menu; everything else stays invisible.',
+      'We built a Model Context Protocol server that registers a curated set of tools with strict Zod-validated schemas. The model sees a clean, typed menu; everything else stays invisible.',
       'Because it speaks the open MCP standard, the same server works across any compatible client without bespoke integrations.',
     ],
     highlights: [
@@ -268,13 +268,13 @@ export const projects: Project[] = [
     order: 6,
     stack: ['n8n', 'Twilio', 'Webhooks', 'REST APIs'],
     tags: ['Automation', 'Workflows', 'Integrations'],
-    headlineMetric: { value: '6+ hrs', label: 'saved per week' }, // VERIFY
+    headlineMetric: { value: '~6 hrs', label: 'saved per week' }, // VERIFY
     problem: [
       'Every small business runs on a pile of manual handoffs — copy this lead here, text that customer, chase this follow-up. Each step is trivial; together they eat hours and quietly drop balls.',
       'These tasks are too small to hire for and too frequent to ignore, so they default to a stressed human doing them at 11pm.',
     ],
     solution: [
-      'I mapped the recurring handoffs and rebuilt them as n8n workflows: triggers from forms and webhooks, enrichment from internal APIs, and actions out through Twilio SMS and email.',
+      'We mapped the recurring handoffs and rebuilt them as n8n workflows: triggers from forms and webhooks, enrichment from internal APIs, and actions out through Twilio SMS and email.',
       'Each workflow is observable and idempotent, so a retry never double-sends and a failure is visible instead of silent.',
     ],
     highlights: [
@@ -288,8 +288,8 @@ export const projects: Project[] = [
       'The 11pm admin shift simply stopped existing.',
     ],
     metrics: [
-      { value: '6+ hrs', label: 'reclaimed weekly' }, // VERIFY
-      { value: '0', label: 'dropped follow-ups' }, // VERIFY
+      { value: '~6 hrs', label: 'reclaimed weekly' }, // VERIFY
+      { value: '0', label: 'double-sends (idempotent)' },
       { value: '24/7', label: 'runs unattended' },
     ],
   },
@@ -308,13 +308,13 @@ export const projects: Project[] = [
     order: 7,
     stack: ['TypeScript', 'RAG', 'Vector search', 'Node.js'],
     tags: ['AI', 'NLP', 'Support'],
-    headlineMetric: { value: '70%', label: 'FAQs deflected' }, // VERIFY
+    headlineMetric: { value: '~70%', label: 'FAQs deflected' }, // VERIFY
     problem: [
       'Support inboxes fill with the same handful of questions. Answering them by hand is slow for the customer and soul-crushing for the team, and a naive chatbot just makes things up.',
       'The bar was a bot that is genuinely helpful — grounded in the real documentation, honest when it does not know, and able to hand off cleanly.',
     ],
     solution: [
-      'I built a retrieval-augmented chatbot: questions are matched against an embedded knowledge base, and answers are generated only from retrieved, cited source passages.',
+      'We built a retrieval-augmented chatbot: questions are matched against an embedded knowledge base, and answers are generated only from retrieved, cited source passages.',
       'When confidence is low, it escalates to a human instead of bluffing — so trust stays intact.',
     ],
     highlights: [
@@ -328,7 +328,7 @@ export const projects: Project[] = [
       'Because answers were cited and grounded, the usual "the bot lied to me" complaints never showed up.',
     ],
     metrics: [
-      { value: '70%', label: 'questions auto-answered' }, // VERIFY
+      { value: '~70%', label: 'questions auto-answered' }, // VERIFY
       { value: '100%', label: 'answers cited' },
       { value: '24/7', label: 'first response' },
     ],
@@ -354,7 +354,7 @@ export const projects: Project[] = [
       'Schedule changes were easy to miss entirely, which meant showing up to the wrong room or missing a moved class.',
     ],
     solution: [
-      'I built a fast, mobile-first app that ingests the official Fontys schedule feed into Supabase, presents it as a clean daily and weekly view, and notifies students when something changes.',
+      'We built a fast, mobile-first app that ingests the official Fontys schedule feed into Supabase, presents it as a clean daily and weekly view, and notifies students when something changes.',
       'It installs as a PWA, so it lives on the home screen and opens straight to today.',
     ],
     highlights: [
@@ -365,7 +365,7 @@ export const projects: Project[] = [
     ],
     result: [
       'Checking your timetable went from a multi-tap portal slog to a single glance, and "I didn\'t know it moved" stopped being an excuse.',
-      'It became the way I — and the students I shared it with — actually check the schedule.', // VERIFY adoption
+      'It became the way we — and the students we shared it with — actually check the schedule.', // VERIFY adoption
     ],
     metrics: [
       { value: '1 tap', label: 'to today\'s classes' },

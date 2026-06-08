@@ -11,17 +11,17 @@ import { contactEmail, site } from '../config/site';
     <p class="band-label mono-label">/ privacy</p>
     <h1>Privacy</h1>
     <p class="legal-lead">
-      Plain language, no dark patterns. This site is a personal portfolio run by {site.person}
+      Plain language, no dark patterns. This site belongs to {site.name}, a digital studio
       ({site.url}). It sets <strong>no cookies</strong> and shows no consent banner because it
       doesn't need one. Here's exactly what happens with your data.
     </p>
 
     <section>
-      <h2>What I collect, and when</h2>
+      <h2>What we collect, and when</h2>
       <ul>
         <li>
           <strong>The contact form.</strong> Only if you submit it: your name, email, and message.
-          It's delivered to my inbox through <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer">Web3Forms</a>
+          It's delivered to us through <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer">Web3Forms</a>
           (a form-to-email service acting as a processor) and used <em>solely</em> to reply. It is
           never sold, shared for marketing, or added to any list.
         </li>
@@ -32,7 +32,7 @@ import { contactEmail, site } from '../config/site';
           tracking. Nothing identifies you.
         </li>
         <li>
-          <strong>The "Currently" widget.</strong> My latest commit is fetched once when the site
+          <strong>The "Currently" widget.</strong> Our latest commit is fetched once when the site
           is <em>built</em>, not from your browser — so no request to GitHub is made on your behalf
           and your IP is never shared. The local-time readout is computed entirely in your browser.
         </li>
@@ -56,10 +56,10 @@ import { contactEmail, site } from '../config/site';
     <section>
       <h2>Your rights</h2>
       <p>
-        Under the GDPR you can ask to access, correct, or delete the personal data I hold about you,
-        or object to its processing. In practice the only data I ever hold is the message you chose
-        to send me — so a deletion request simply means I delete that email. Email
-        <a href={`mailto:${contactEmail}`}>{contactEmail}</a> and I'll handle it promptly.
+        Under the GDPR you can ask to access, correct, or delete the personal data we hold about you,
+        or object to its processing. In practice the only data we ever hold is the message you chose
+        to send us — so a deletion request simply means we delete that email. Email
+        <a href={`mailto:${contactEmail}`}>{contactEmail}</a> and we'll handle it promptly.
       </p>
     </section>
 

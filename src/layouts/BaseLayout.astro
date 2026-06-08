@@ -31,23 +31,26 @@ const canonical = new URL(Astro.url.pathname, site.url);
 const ogImage = new URL(image, site.url);
 const fullTitle = title.includes(site.name) ? title : `${title} · ${site.name}`;
 
-const personLd = {
+const orgLd = {
   '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: site.person,
-  alternateName: site.name,
-  jobTitle: site.role,
-  description: site.description,
+  '@type': 'Organization',
+  name: site.name,
   url: site.url,
-  email: `mailto:${contactEmail}`,
+  email: contactEmail,
+  description: site.description,
+  slogan: site.shortTagline,
+  logo: new URL('/apple-touch-icon.png', site.url).href,
+  founder: { '@type': 'Person', name: site.founder },
   address: { '@type': 'PostalAddress', addressLocality: 'Eindhoven', addressCountry: 'NL' },
   knowsAbout: [
-    'AI tooling',
+    'AI systems',
+    'LLM agents',
+    'Model Context Protocol',
+    'Web development',
+    'App development',
     'Workflow automation',
     'Full-stack development',
     'TypeScript',
-    'Model Context Protocol',
-    'LLM agents',
   ],
   sameAs: socials.map((s) => s.href),
 };
@@ -98,7 +101,7 @@ const personLd = {
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <!-- Structured data -->
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(personLd).replace(/</g, '\\u003c')} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(orgLd).replace(/</g, '\\u003c')} />
     {
       jsonLd &&
         (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((ld) => (

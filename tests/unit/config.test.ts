@@ -5,7 +5,10 @@ import { story, principles, skillGroups, timeline, languages } from '../../src/c
 describe('site config', () => {
   it('has core identity fields', () => {
     expect(site.name).toBe('Taranity');
-    expect(site.person).toBeTruthy();
+    // Studio voice: founder feeds the Organization `founder` in JSON-LD, not a public byline.
+    expect(site.founder).toBeTruthy();
+    expect(site.role).toBeTruthy();
+    expect(site.shortTagline).toBeTruthy();
     expect(site.url).toMatch(/^https?:\/\//);
   });
 
