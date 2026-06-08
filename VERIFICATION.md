@@ -339,3 +339,56 @@ BUILD-SPEC item, then I re-ran the full battery. **Verdict: SIGN-OFF READY.**
 Stale Three.js references (README/PROJECT/ADR), an unbuilt "boot reveal" in DESIGN-SYSTEM, dead code
 (Icon variants, `getProject`, over-exported motion helpers), a mobile-nav focus trap (+ Escape guard
 so it can't hijack focus). Re-verified all green.
+
+---
+
+# REWORK (2026-06-09) — multi-design theme system
+
+A milestone after the original 5-pass build: the site was repositioned and rebuilt around a **live
+design switcher**. Shipped as six reviewed PRs (#2–#7), each green and adversarially reviewed before
+merge. Full plan + the 12 pre-resolved review findings: [REWORK-PLAN.md](REWORK-PLAN.md).
+
+## What changed (Phases A–F)
+- **A — Studio rebrand + repositioning.** Individual ("I"/Taran) → honest studio ("we" = Taranity);
+  positioning broadened to *"If you can describe it, we build it."* (AI systems, apps, websites,
+  automation). `Person` JSON-LD → `Organization`.
+- **B — Theme-switcher foundation.** Colours moved from the static Tailwind `@theme` into a runtime
+  semantic-token layer keyed by `[data-design][data-mode]`; storage-safe persistence; pre-paint init
+  + `astro:after-swap` re-apply (no flash across View Transitions); Operator Console gained light mode.
+- **C — Aurora design (new default).** Bright maximalist design with a living CSS gradient mesh;
+  light + neon-dark, AA-verified.
+- **D — Aurora WebGL hero.** A raw-WebGL2 shader (no dependency, CSP-clean) reacting to cursor +
+  scroll; lazy/gated, CSS-mesh fallback.
+- **E — World design.** An opt-in Three.js 3D crystal field (lazy ~130 KB-gzip chunk, no eval);
+  cosmic light + dark; CSS starfield fallback on mobile/reduced-motion.
+- **F — Polish + sign-off** (this section).
+
+Result: **three designs** (Aurora · Operator Console · World), each in **light + dark**, switchable
+live from the nav. One semantic DOM — a design is a token set + additive backdrop layers.
+
+## Supersedes earlier conscious deviations
+- ~~"Dark-only (no light theme)"~~ → **every design now ships light + dark**; the default is Aurora/light.
+- ~~"Three.js deliberately not shipped"~~ → **Three.js powers the opt-in World design**, loaded only
+  via a dynamic import (its own lazy chunk), so the default's bundle/CWV is untouched.
+
+## Re-verification (rework)
+| Check | Result |
+|---|---|
+| `astro check` | ✅ 0 errors / 0 warnings / 0 hints (38 files) |
+| `eslint .` | ✅ 0 problems |
+| `vitest run` | ✅ 18/18 |
+| `astro build` | ✅ 15 pages; `three` isolated in its own lazy chunk; no `eval`/`new Function` in any chunk |
+| `trivy fs` (HIGH/CRITICAL) | ✅ 0 (incl. new `three@0.184.0`) |
+| Theme-switcher e2e | ✅ 8/8 — default aurora/light, mode toggle, persistence across reload + View-Transition nav, all 3 designs selectable (now in `scripts/e2e.devbrowser.js`) |
+| dev-browser per-design | ✅ each WebGL/3D design lazy-mounts, recolours light↔dark, and **tears its GL context down** on switch with zero page/console errors; text readable over every design × mode |
+| Lighthouse (mobile, vs local prod build) | **A11y 100 · Best-Practices 100 · SEO 100 · Performance 86** |
+| CSP | ✅ unchanged strictness; inline theme-init hash regenerated; no new external origins |
+
+### Note on Performance 86
+A11y / Best-Practices / SEO are perfect (100). The Performance 86 (LCP 3.5 s / FCP 2.8 s; **CLS 0,
+TBT 20 ms**) is from mobile-throttled Lighthouse against the **local `serve-headers.mjs` static
+server, which serves uncompressed** — production on Cloudflare Pages (brotli/gzip + edge CDN +
+HTTP/2) is materially faster, and the WebGL/3D enhancements are gated off under mobile emulation (the
+CSS fallback is what's measured). Re-run Lighthouse / field CWV against the live HTTPS deployment
+post-launch (already in HUMAN-TODO.md). The site is already optimised — preloaded LCP fonts,
+`font-display: swap`, CLS 0, ~20 ms TBT, and the heavy designs are opt-in.
