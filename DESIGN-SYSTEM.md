@@ -22,7 +22,7 @@ treadmill:
 - The **Currently widget** (live commit + current project + local time) is treated as the
   console's primary readout, not a footer gimmick — it *proves* the "systems that report back"
   thesis on the home page.
-- Motion reads as **boot / initialize / scrub**, never "fade up because the template did."
+- Motion reads as **initialize / scrub / reveal**, never "fade up because the template did."
 
 If a section could be dropped onto any other portfolio unchanged, it's wrong — it must look like
 part of *this console*.
@@ -165,9 +165,6 @@ must never cost layout or jank. Only `transform` + `opacity` animate.
 
 ### Signature moves
 
-- **Boot reveal** — on first load, the HUD brackets draw in and a one-line mono status types
-  (`initializing console…` → `● online`) for ~600ms, then content reveals. Skipped instantly
-  under reduced-motion and on repeat visits within a session.
 - **SplitText hero** — headline reveals per-character with a small `y`+`rotateX` and cyan→white
   color settle; one word carries the holographic gradient.
 - **Scrubbed horizontal gallery** — `/work` pins and scrolls cards horizontally with snap points,

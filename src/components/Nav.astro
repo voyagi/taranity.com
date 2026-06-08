@@ -253,6 +253,9 @@ const isActive = (href: string) =>
       b.setAttribute('aria-expanded', String(open));
       b.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       document.documentElement.style.overflow = open ? 'hidden' : '';
+      // Move focus into the sheet on open, back to the toggle on close.
+      if (open) s.querySelector<HTMLElement>('a[href], button')?.focus();
+      else b.focus();
     };
 
     document.addEventListener('click', (e) => {
@@ -265,7 +268,24 @@ const isActive = (href: string) =>
       }
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') setOpen(false);
+      const s = sheet();
+      const open = s && !s.hidden;
+      if (e.key === 'Escape') {
+        setOpen(false);
+      } else if (e.key === 'Tab' && open && s) {
+        // Trap focus inside the open mobile sheet.
+        const f = Array.from(s.querySelectorAll<HTMLElement>('a[href], button'));
+        if (!f.length) return;
+        const first = f[0];
+        const last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     });
     document.addEventListener('astro:before-swap', () => setOpen(false));
   }

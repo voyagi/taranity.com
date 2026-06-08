@@ -8,8 +8,7 @@
 ## Decision
 
 Build a **static Astro 6** site styled with **Tailwind v4**, animated with **GSAP +
-ScrollTrigger + SplitText** synced to **Lenis** smooth scroll, with **Three.js** lazy-loaded on
-desktop only for an optional 3D accent. Deploy to **Cloudflare Pages** (serve `dist/`, no
+ScrollTrigger + SplitText** synced to **Lenis** smooth scroll. Deploy to **Cloudflare Pages** (serve `dist/`, no
 adapter). Cookieless **Plausible** analytics, **Web3Forms** for the contact form, a
 **Cal.com/Calendly** booking link.
 
@@ -24,7 +23,7 @@ accepting it.
 | Styling | **Tailwind v4** | `@theme` design tokens, fast iteration, tiny shipped CSS. v4's CSS-first config keeps the token system in one file. |
 | Animation | **GSAP + ScrollTrigger + SplitText** | 100% free incl. premium plugins since Webflow's 2025 acquisition (verified June 2026). Only GSAP can do pinned, scrubbed, snapped horizontal galleries reliably across browsers. SplitText (now smaller + a11y-aware) drives the kinetic hero. |
 | Smooth scroll | **Lenis** | 2–3 KB, the de-facto standard (Darkroom Engineering), works with CSS `position: sticky` and GSAP pinning. Synced to GSAP's ticker so ScrollTrigger stays frame-accurate. |
-| 3D (optional) | **Three.js, lazy** | Only loaded behind `client:visible` + desktop + motion-allowed gates so it never touches the mobile/CWV budget. A lightweight 2D canvas backdrop covers the default holographic look without Three.js. |
+| 3D (optional, **deferred — not shipped**) | none | The brief listed Three.js as *optional* 3D. The holographic look is achieved purely in CSS (radial glows + grain/scanline + engineered glass), which keeps the JS budget lean and CWV green — so no WebGL runtime ships. A Three.js accent remains a documented phase-2 option (see ROADMAP). |
 | Hosting | **Cloudflare Pages** | Free unlimited bandwidth, global sub-50ms edge, first-class static Astro support. Static needs **no adapter** — Astro 6 prerenders straight to `dist/` (the v6 Cloudflare-adapter+static deploy bug is avoided by staying adapter-free). |
 | Analytics | **Plausible** | <1 KB, cookieless, no consent banner needed (GDPR-friendly for an EU audience). |
 | Contact | **Web3Forms** | No backend, no account; a single **public** access key as a hidden field, `fetch` POST to `api.web3forms.com/submit`. 250 free submissions/month. Keeps the site fully static. |

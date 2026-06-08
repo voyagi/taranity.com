@@ -22,16 +22,16 @@ import { SplitText } from 'gsap/SplitText';
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const mq = (q: string) => window.matchMedia(q);
-export const reduceMotion = () => mq('(prefers-reduced-motion: reduce)').matches;
-export const isCoarse = () => mq('(hover: none), (pointer: coarse)').matches;
-export const isDesktop = () => mq('(min-width: 1024px)').matches && !isCoarse();
+const reduceMotion = () => mq('(prefers-reduced-motion: reduce)').matches;
+const isCoarse = () => mq('(hover: none), (pointer: coarse)').matches;
+const isDesktop = () => mq('(min-width: 1024px)').matches && !isCoarse();
 
 let lenis: Lenis | null = null;
 let rafCb: ((time: number) => void) | null = null;
 let teardowns: Array<() => void> = [];
 let booted = false;
 
-export function getLenis() {
+function getLenis() {
   return lenis;
 }
 
