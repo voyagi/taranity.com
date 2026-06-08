@@ -326,7 +326,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
         } else {
           throw new Error(json.message || 'Send failed');
         }
-      } catch (err) {
+      } catch {
         const fallbackEmail = form.dataset.fallbackEmail || 'hello@taranity.com';
         status.textContent = `Couldn't send. Email ${fallbackEmail} directly?`;
         status.classList.add('is-error');
