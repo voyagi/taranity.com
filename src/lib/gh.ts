@@ -11,29 +11,8 @@ export interface PushInfo {
   repo: string;
   message: string;
   url: string;
-  /** Relative phrasing (build-relative — prefer dateISO for display). */
-  when: string;
   /** ISO timestamp of the commit, for an absolute, view-time-stable date. */
   dateISO: string;
-}
-
-export function relativeTime(date: Date): string {
-  const seconds = Math.round((Date.now() - date.getTime()) / 1000);
-  const units: [Intl.RelativeTimeFormatUnit, number][] = [
-    ['year', 31536000],
-    ['month', 2592000],
-    ['week', 604800],
-    ['day', 86400],
-    ['hour', 3600],
-    ['minute', 60],
-  ];
-  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
-  for (const [unit, secs] of units) {
-    if (Math.abs(seconds) >= secs) {
-      return rtf.format(-Math.round(seconds / secs), unit);
-    }
-  }
-  return 'just now';
 }
 
 export async function fetchLatestPush(username: string): Promise<PushInfo | null> {
@@ -56,7 +35,6 @@ export async function fetchLatestPush(username: string): Promise<PushInfo | null
       repo: fullRepo.split('/')[1] || fullRepo || 'repo',
       message: String(commit.message || '').split('\n')[0].slice(0, 72),
       url: `https://github.com/${fullRepo}/commit/${commit.sha}`,
-      when: relativeTime(new Date(push.created_at)),
       dateISO: String(push.created_at || ''),
     };
   } catch {
