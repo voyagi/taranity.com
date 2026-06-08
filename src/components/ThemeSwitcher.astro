@@ -1,0 +1,105 @@
+---
+/**
+ * Style switcher. A light/dark mode toggle is always shown; the design picker
+ * appears only once a second design is `ready` (REWORK-PLAN A6), so it stays
+ * hidden through Phase B and lights up automatically in Phase C.
+ *
+ * Markup is data-attribute driven; all behaviour lives in src/lib/theme.ts
+ * (delegated + View-Transition-safe). Default reflects console/dark; theme.ts
+ * re-syncs the real state on load.
+ */
+import Icon from './Icon.astro';
+import { readyDesigns } from '../config/themes';
+
+const multiDesign = readyDesigns.length > 1;
+---
+
+<div class="theme-switcher" data-theme-switcher>
+  <button
+    type="button"
+    class="theme-toggle"
+    data-theme-mode-toggle
+    aria-label="Switch to light mode"
+    aria-pressed="false"
+    data-cursor-text="theme"
+  >
+    <Icon name="sun" size={16} class="ts-icon i-sun" />
+    <Icon name="moon" size={16} class="ts-icon i-moon" />
+  </button>
+
+  {
+    multiDesign && (
+      <div class="theme-designs" aria-label="Design">
+        {readyDesigns.map((d) => (
+          <button
+            type="button"
+            class="theme-design"
+            data-theme-design={d.id}
+            aria-pressed="false"
+            title={d.blurb}
+          >
+            <Icon name="palette" size={14} />
+            <span>{d.label}</span>
+          </button>
+        ))}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .theme-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--tint-faint);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+  }
+  .theme-toggle:hover {
+    color: var(--accent);
+    border-color: var(--line-strong);
+  }
+  .ts-icon { display: block; }
+  /* Show the icon for the mode you'd switch TO. */
+  :global(html[data-mode='dark']) .theme-toggle .i-moon { display: none; }
+  :global(html[data-mode='light']) .theme-toggle .i-sun { display: none; }
+  /* Pre-JS default (no data-mode yet) = dark → show the sun. */
+  :global(html:not([data-mode='light'])) .theme-toggle .i-moon { display: none; }
+
+  .theme-designs {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .theme-design {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--tint-faint);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+  }
+  .theme-design:hover { color: var(--text); border-color: var(--line-strong); }
+  .theme-design[aria-pressed='true'] {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: transparent;
+  }
+</style>

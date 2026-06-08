@@ -3,38 +3,20 @@
 
 /* ============================================================
    taranity.com — design tokens (see DESIGN-SYSTEM.md)
-   "Operator Console": near-black depth, rationed holographic
-   violet→cyan accent, glass surfaces, telemetry mono type.
+
+   Theming model (Phase B foundation):
+   - @theme below holds only THEME-INVARIANT primitives (type, spacing,
+     fonts, radii, easing). Colors/surfaces/glows are NOT here — they are
+     runtime-swappable semantic tokens defined per [data-design][data-mode].
+   - Semantic tokens (--bg, --surface, --text, --accent, …) are the source
+     of truth. The legacy --color-* names are thin ALIASES over them so the
+     existing component <style> blocks keep working unchanged.
+   - Default (:root, no attributes) = console / dark — pixel-identical to the
+     original site, so there is no visual regression before JS runs.
+   - A design = a token set (+ optional additive layers, added in later phases).
+     All designs share one semantic DOM (REWORK-PLAN A1).
    ============================================================ */
 @theme {
-  /* ---- Surfaces (deepest → raised) ---- */
-  --color-void: #070709;
-  --color-surface: #0a0a0c;
-  --color-deep: #0f172a;
-  --color-glass: rgba(255, 255, 255, 0.045);
-  --color-glass-2: rgba(255, 255, 255, 0.07);
-
-  /* ---- Hairlines ---- */
-  --color-line: rgba(255, 255, 255, 0.1);
-  --color-line-strong: rgba(255, 255, 255, 0.18);
-
-  /* ---- Accents (rationed) ---- */
-  --color-cyan: #22d3ee;
-  --color-cyan-bright: #67e8f9;
-  --color-violet: #8b5cf6;
-  --color-violet-bright: #a78bfa;
-
-  /* ---- Text ramp ---- */
-  --color-ink: #f4f6fb;
-  --color-ink-dim: #9aa7bd;
-  /* ~5:1 on the near-black bg → AA for small mono labels (was #5b6678 ≈ 3.3:1, failed). */
-  --color-ink-faint: #7c8597;
-  --color-on-accent: #04121a;
-
-  /* ---- Status ---- */
-  --color-success: #34d399;
-  --color-danger: #fb7185;
-
   /* ---- Type families ---- */
   --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, sans-serif;
   --font-display: "Space Grotesk Variable", "Space Grotesk", system-ui, sans-serif;
@@ -68,14 +50,6 @@
   --radius-panel: 1.25rem;
   --radius-chip: 999px;
 
-  /* ---- Glow ---- */
-  --shadow-glow-cyan: 0 0 0 1px rgba(34, 211, 238, 0.35), 0 0 28px -4px rgba(34, 211, 238, 0.45);
-  --shadow-glow-violet: 0 0 0 1px rgba(139, 92, 246, 0.35), 0 0 28px -4px rgba(139, 92, 246, 0.45);
-  --shadow-panel: 0 24px 60px -24px rgba(0, 0, 0, 0.8);
-
-  /* ---- Holographic gradient ---- */
-  --grad-holo: linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%);
-
   /* ---- Easing ---- */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -84,16 +58,155 @@
 }
 
 /* ============================================================
+   Semantic theme tokens (runtime-swappable)
+   Default = console / dark. Each [data-design][data-mode] block (specificity
+   0,2,0) overrides the :root defaults (0,1,0). All selectors target <html>,
+   so the --color-* aliases (also on :root) resolve to whichever block wins.
+   ============================================================ */
+@layer base {
+  :root,
+  [data-design="console"][data-mode="dark"] {
+    color-scheme: dark;
+
+    --bg: #070709;
+    --surface: #0a0a0c;
+    --surface-2: #0f172a;
+    --glass: rgba(255, 255, 255, 0.045);
+    --glass-2: rgba(255, 255, 255, 0.07);
+    --glass-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+    --glass-solid: #0e1118;
+    --tint-soft: rgba(255, 255, 255, 0.05);
+    --tint-faint: rgba(255, 255, 255, 0.03);
+
+    --line: rgba(255, 255, 255, 0.1);
+    --line-strong: rgba(255, 255, 255, 0.18);
+
+    --text: #f4f6fb;
+    --text-dim: #9aa7bd;
+    --text-faint: #7c8597;
+
+    --accent: #22d3ee;
+    --accent-bright: #67e8f9;
+    --accent-2: #8b5cf6;
+    --accent-2-bright: #a78bfa;
+    --accent-on: #04121a;
+    --accent-rgb: 34, 211, 238;
+    --accent-2-rgb: 139, 92, 246;
+
+    --success: #34d399;
+    --success-rgb: 52, 211, 153;
+    --danger: #fb7185;
+
+    --gradient: linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%);
+    --glow-accent: 0 0 0 1px rgba(var(--accent-rgb), 0.35), 0 0 28px -4px rgba(var(--accent-rgb), 0.45);
+    --glow-accent-2: 0 0 0 1px rgba(var(--accent-2-rgb), 0.35), 0 0 28px -4px rgba(var(--accent-2-rgb), 0.45);
+    --shadow-panel: 0 24px 60px -24px rgba(0, 0, 0, 0.8);
+
+    --selection-bg: rgba(var(--accent-rgb), 0.28);
+    --scrollbar-track: var(--bg);
+    --scrollbar-thumb: rgba(255, 255, 255, 0.14);
+    --scrollbar-thumb-hover: rgba(var(--accent-rgb), 0.4);
+    --dot-color: rgba(255, 255, 255, 0.05);
+
+    --nav-bg: rgba(10, 10, 12, 0.55);
+    --nav-bg-solid: #0c0e14;
+    --sheet-bg: rgba(7, 7, 9, 0.92);
+    --palette-bg: rgba(5, 5, 7, 0.55);
+
+    --body-glow-1: rgba(var(--accent-2-rgb), 0.16);
+    --body-glow-2: rgba(var(--accent-rgb), 0.1);
+    --fx-opacity: 0.5;
+  }
+
+  /* Console / light — "blueprint" console: cool paper, dark ink, darkened
+     cyan/violet accents. All text/surface pairings verified ≥4.5:1 (AA). */
+  [data-design="console"][data-mode="light"] {
+    color-scheme: light;
+
+    --bg: #eef1f7;
+    --surface: #ffffff;
+    --surface-2: #e4e9f2;
+    --glass: rgba(12, 18, 32, 0.04);
+    --glass-2: rgba(12, 18, 32, 0.06);
+    --glass-strong: linear-gradient(180deg, rgba(12, 18, 32, 0.05), rgba(12, 18, 32, 0.02));
+    --glass-solid: #ffffff;
+    --tint-soft: rgba(12, 18, 32, 0.05);
+    --tint-faint: rgba(12, 18, 32, 0.03);
+
+    --line: rgba(12, 18, 32, 0.12);
+    --line-strong: rgba(12, 18, 32, 0.22);
+
+    --text: #0c1220;
+    --text-dim: #44506a;
+    --text-faint: #54607a;
+
+    --accent: #0e7490;
+    --accent-bright: #155e75;
+    --accent-2: #7c3aed;
+    --accent-2-bright: #6d28d9;
+    --accent-on: #ffffff;
+    --accent-rgb: 14, 116, 144;
+    --accent-2-rgb: 124, 58, 237;
+
+    --success: #047857;
+    --success-rgb: 4, 120, 87;
+    --danger: #b91c1c;
+
+    --gradient: linear-gradient(135deg, #7c3aed 0%, #0891b2 100%);
+    --glow-accent: 0 0 0 1px rgba(var(--accent-rgb), 0.3), 0 0 22px -6px rgba(var(--accent-rgb), 0.4);
+    --glow-accent-2: 0 0 0 1px rgba(var(--accent-2-rgb), 0.3), 0 0 22px -6px rgba(var(--accent-2-rgb), 0.4);
+    --shadow-panel: 0 24px 60px -28px rgba(20, 30, 60, 0.22);
+
+    --selection-bg: rgba(var(--accent-rgb), 0.22);
+    --scrollbar-track: var(--bg);
+    --scrollbar-thumb: rgba(12, 18, 32, 0.2);
+    --scrollbar-thumb-hover: rgba(var(--accent-rgb), 0.5);
+    --dot-color: rgba(12, 18, 32, 0.06);
+
+    --nav-bg: rgba(255, 255, 255, 0.62);
+    --nav-bg-solid: #f4f6fb;
+    --sheet-bg: rgba(238, 241, 247, 0.94);
+    --palette-bg: rgba(40, 50, 70, 0.25);
+
+    --body-glow-1: rgba(var(--accent-2-rgb), 0.08);
+    --body-glow-2: rgba(var(--accent-rgb), 0.06);
+    --fx-opacity: 0.22;
+  }
+
+  /* ---- Legacy aliases: existing components reference these names ----
+     They map onto the semantic tokens, so a single theme switch recolours
+     the whole site. New components (Phase C+) should use the semantic names. */
+  :root {
+    --color-void: var(--bg);
+    --color-surface: var(--surface);
+    --color-deep: var(--surface-2);
+    --color-glass: var(--glass);
+    --color-glass-2: var(--glass-2);
+    --color-line: var(--line);
+    --color-line-strong: var(--line-strong);
+    --color-cyan: var(--accent);
+    --color-cyan-bright: var(--accent-bright);
+    --color-violet: var(--accent-2);
+    --color-violet-bright: var(--accent-2-bright);
+    --color-ink: var(--text);
+    --color-ink-dim: var(--text-dim);
+    --color-ink-faint: var(--text-faint);
+    --color-on-accent: var(--accent-on);
+    --color-success: var(--success);
+    --color-danger: var(--danger);
+    --grad-holo: var(--gradient);
+    --shadow-glow-cyan: var(--glow-accent);
+    --shadow-glow-violet: var(--glow-accent-2);
+  }
+}
+
+/* ============================================================
    Base
    ============================================================ */
 @layer base {
-  :root {
-    color-scheme: dark;
-  }
-
   html {
-    background-color: var(--color-void);
-    color: var(--color-ink);
+    background-color: var(--bg);
+    color: var(--text);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -106,9 +219,9 @@
     min-height: 100svh;
     overflow-x: clip;
     background:
-      radial-gradient(120% 80% at 85% -10%, rgba(139, 92, 246, 0.16), transparent 55%),
-      radial-gradient(90% 70% at 0% 0%, rgba(34, 211, 238, 0.1), transparent 50%),
-      var(--color-void);
+      radial-gradient(120% 80% at 85% -10%, var(--body-glow-1), transparent 55%),
+      radial-gradient(90% 70% at 0% 0%, var(--body-glow-2), transparent 50%),
+      var(--bg);
     background-attachment: fixed;
   }
 
@@ -128,13 +241,13 @@
   }
 
   ::selection {
-    background-color: rgba(34, 211, 238, 0.28);
-    color: var(--color-ink);
+    background-color: var(--selection-bg);
+    color: var(--text);
   }
 
   /* Visible focus everywhere (a11y) */
   :focus-visible {
-    outline: 2px solid var(--color-cyan);
+    outline: 2px solid var(--accent);
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -144,12 +257,12 @@
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 9px; height: 9px; }
-  ::-webkit-scrollbar-track { background: var(--color-void); }
+  ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.14);
+    background: var(--scrollbar-thumb);
     border-radius: 999px;
   }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.4); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
   /* Visually-hidden (screen-reader only) */
   .sr-only {
@@ -172,8 +285,8 @@
     z-index: 100;
     transform: translateY(-150%);
     transition: transform 0.2s var(--ease-out-expo);
-    background: var(--color-cyan);
-    color: var(--color-on-accent);
+    background: var(--accent);
+    color: var(--accent-on);
     font-family: var(--font-mono);
     font-size: 0.8rem;
     padding: 0.6rem 1rem;
@@ -188,22 +301,22 @@
 @layer components {
   /* Glass surfaces */
   .glass {
-    background: var(--color-glass);
+    background: var(--glass);
     backdrop-filter: blur(14px) saturate(140%);
     -webkit-backdrop-filter: blur(14px) saturate(140%);
-    border: 1px solid var(--color-line);
+    border: 1px solid var(--line);
     border-radius: var(--radius-panel);
   }
   .glass-strong {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+    background: var(--glass-strong);
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
-    border: 1px solid var(--color-line-strong);
+    border: 1px solid var(--line-strong);
     border-radius: var(--radius-panel);
   }
   /* Solid fallback where backdrop-filter is unsupported (never unreadable) */
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .glass, .glass-strong { background: #0e1118; }
+    .glass, .glass-strong { background: var(--glass-solid); }
   }
 
   /* Holographic edge that reveals on hover/focus */
@@ -217,7 +330,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: var(--grad-holo);
+    background: var(--gradient);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
@@ -232,7 +345,7 @@
 
   /* Holographic text */
   .gradient-text {
-    background: var(--grad-holo);
+    background: var(--gradient);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -245,12 +358,12 @@
     font-size: var(--text-label);
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-ink-faint);
+    color: var(--text-faint);
   }
 
   /* Console substrate dot grid */
   .dot-grid {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
     background-size: 28px 28px;
     -webkit-mask-image: radial-gradient(100% 100% at 50% 0%, #000 30%, transparent 75%);
     mask-image: radial-gradient(100% 100% at 50% 0%, #000 30%, transparent 75%);
@@ -275,24 +388,25 @@
   }
   .btn:active { transform: translateY(1px); }
   .btn-primary {
-    background: var(--color-cyan);
-    color: var(--color-on-accent);
+    background: var(--accent);
+    color: var(--accent-on);
     font-weight: 600;
-    border: 1px solid var(--color-cyan);
+    border: 1px solid var(--accent);
   }
   .btn-primary:hover {
-    background: var(--color-cyan-bright);
-    box-shadow: var(--shadow-glow-cyan);
+    background: var(--accent-bright);
+    border-color: var(--accent-bright);
+    box-shadow: var(--glow-accent);
     transform: translateY(-2px);
   }
   .btn-ghost {
     background: transparent;
-    color: var(--color-ink);
-    border: 1px solid var(--color-line-strong);
+    color: var(--text);
+    border: 1px solid var(--line-strong);
   }
   .btn-ghost:hover {
     border-color: transparent;
-    box-shadow: var(--shadow-glow-cyan);
+    box-shadow: var(--glow-accent);
     transform: translateY(-2px);
   }
   .btn .arrow { transition: transform 0.25s var(--ease-out-expo); }
@@ -308,9 +422,9 @@
     letter-spacing: 0.06em;
     padding: 0.3rem 0.7rem;
     border-radius: var(--radius-chip);
-    border: 1px solid var(--color-line);
-    color: var(--color-ink-dim);
-    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    background: var(--tint-faint);
   }
 }
 
@@ -323,7 +437,7 @@
   z-index: 1;
   pointer-events: none;
   mix-blend-mode: overlay;
-  opacity: 0.5;
+  opacity: var(--fx-opacity);
 }
 .fx-overlay::before {
   /* film grain */
@@ -347,7 +461,7 @@
   );
 }
 @media (max-width: 768px) {
-  .fx-overlay { opacity: 0.3; }
+  .fx-overlay { opacity: calc(var(--fx-opacity) * 0.6); }
 }
 
 /* ============================================================
@@ -363,7 +477,7 @@
   position: absolute;
   width: 26px;
   height: 26px;
-  border-color: rgba(34, 211, 238, 0.5);
+  border-color: rgba(var(--accent-rgb), 0.5);
   border-style: solid;
   border-width: 0;
 }
