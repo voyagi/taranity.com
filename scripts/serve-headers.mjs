@@ -3,9 +3,9 @@
 // (astro preview ignores _headers). Not for production; CF Pages serves the real site.
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync } from 'node:fs';
-import { join, normalize, extname } from 'node:path';
+import { join, normalize, extname, resolve } from 'node:path';
 
-const DIST = 'dist';
+const DIST = resolve('dist'); // absolute, so the traversal guard is cwd-independent
 const PORT = 4321;
 
 const TYPES = {
@@ -65,20 +65,32 @@ const send = (res, status, path, body, type) => {
 };
 
 createServer((req, res) => {
-  const reqPath = decodeURIComponent((req.url || '/').split('?')[0]);
-  // Resolve to a file inside DIST (block traversal).
-  let rel = normalize(reqPath).replace(/^(\.\.[/\\])+/, '');
-  let file = join(DIST, rel);
-  if (!file.startsWith(normalize(DIST))) return send(res, 403, reqPath, 'Forbidden');
+  let reqPath = '/';
+  try {
+    // decodeURIComponent throws on malformed %-encoding — keep one bad request
+    // from crashing the whole dev server.
+    reqPath = decodeURIComponent((req.url || '/').split('?')[0]);
+    // Resolve to a file inside DIST (block traversal).
+    const rel = normalize(reqPath).replace(/^(\.\.[/\\])+/, '');
+    let file = join(DIST, rel);
+    if (!file.startsWith(DIST)) return send(res, 403, reqPath, 'Forbidden');
 
-  if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
-  else if (!existsSync(file) && existsSync(join(DIST, rel, 'index.html'))) file = join(DIST, rel, 'index.html');
-  else if (!existsSync(file) && existsSync(file + '.html')) file += '.html';
+    if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
+    else if (!existsSync(file) && existsSync(join(DIST, rel, 'index.html'))) file = join(DIST, rel, 'index.html');
+    else if (!existsSync(file) && existsSync(file + '.html')) file += '.html';
 
-  if (!existsSync(file) || statSync(file).isDirectory()) {
-    const notFound = join(DIST, '404.html');
-    const body = existsSync(notFound) ? readFileSync(notFound) : 'Not found';
-    return send(res, 404, reqPath, body, 'text/html; charset=utf-8');
+    if (!existsSync(file) || statSync(file).isDirectory()) {
+      const notFound = join(DIST, '404.html');
+      const body = existsSync(notFound) ? readFileSync(notFound) : 'Not found';
+      return send(res, 404, reqPath, body, 'text/html; charset=utf-8');
+    }
+    send(res, 200, reqPath, readFileSync(file), TYPES[extname(file)] || 'application/octet-stream');
+  } catch {
+    try {
+      res.writeHead(400);
+      res.end('Bad request');
+    } catch {
+      /* response already started */
+    }
   }
-  send(res, 200, reqPath, readFileSync(file), TYPES[extname(file)] || 'application/octet-stream');
 }).listen(PORT, '127.0.0.1', () => console.log(`serve-headers: dist/ with _headers on http://localhost:${PORT}`));
