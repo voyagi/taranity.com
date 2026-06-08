@@ -217,6 +217,49 @@ for (const [w, h, name] of viewports) {
   }
 }
 
+// ---- theme switcher: default, mode toggle, persistence, after-swap, designs ----
+// Reset the error trackers so this block is isolated from the prior navigations.
+consoleErrors = [];
+pageErrors = [];
+failedResponses = [];
+failedRequests = [];
+await page.setViewportSize({ width: 1440, height: 900 });
+await page.goto(BASE + '/', { waitUntil: 'load' });
+await page.evaluate(() => { try { localStorage.clear(); } catch {} });
+await page.reload({ waitUntil: 'load' });
+await settle(400);
+const dattr = (k) => page.evaluate((x) => document.documentElement.getAttribute(x), k);
+rec('theme: default design=aurora', (await dattr('data-design')) === 'aurora', await dattr('data-design'));
+rec('theme: default mode=light', (await dattr('data-mode')) === 'light', await dattr('data-mode'));
+
+await page.click('[data-theme-mode-toggle]');
+await settle(250);
+rec('theme: toggle flips mode to dark', (await dattr('data-mode')) === 'dark', await dattr('data-mode'));
+
+await page.reload({ waitUntil: 'load' });
+await settle(250);
+rec('theme: mode persists across reload', (await dattr('data-mode')) === 'dark', await dattr('data-mode'));
+
+await page.click('.nav-links a[href="/about"]');
+for (let i = 0; i < 25 && !/\/about/.test(page.url()); i++) await settle(200); // await the VT swap
+await settle(300);
+rec(
+  'theme: persists across View-Transition navigation',
+  (await dattr('data-mode')) === 'dark' && /\/about/.test(page.url()),
+  (await dattr('data-mode')) + ' @ ' + page.url(),
+);
+
+// every ready design is selectable from the picker
+await page.goto(BASE + '/', { waitUntil: 'load' });
+await settle(300);
+for (const d of ['console', 'world', 'aurora']) {
+  await page.click(`[data-theme-design="${d}"]`);
+  await settle(450);
+  rec(`theme: design picker selects "${d}"`, (await dattr('data-design')) === d, await dattr('data-design'));
+}
+// reset to the default theme for the evidence screenshots below
+await page.evaluate(() => { try { localStorage.clear(); } catch {} });
+
 // evidence: work gallery (desktop, motion on) + a mobile home
 await page.setViewportSize({ width: 1440, height: 900 });
 await page.goto(BASE + '/work', { waitUntil: 'load' });

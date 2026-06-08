@@ -6,7 +6,7 @@ import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join, normalize, extname, resolve } from 'node:path';
 
 const DIST = resolve('dist'); // absolute, so the traversal guard is cwd-independent
-const PORT = 4321;
+const PORT = Number(process.env.PORT) || 4321;
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
