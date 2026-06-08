@@ -10,13 +10,17 @@ const env = import.meta.env;
 
 export const site = {
   name: 'Taranity',
-  /** Display name. Inferred from domain/email — confirm in HUMAN-TODO. */
-  person: 'Taran',
-  role: 'Full-stack developer & automation architect',
+  /**
+   * Founder's name. Used only for the Organization's `founder` in structured
+   * data — never as a public byline. Taranity is presented as a studio ("we").
+   */
+  founder: 'Taran',
+  /** One-line studio descriptor (footer tagline + Organization description). */
+  role: 'A digital studio that builds AI systems, apps, and websites',
   /** Used in <title> templates and OG. */
-  shortTagline: 'I automate what slows you down',
+  shortTagline: 'If you can describe it, we build it',
   description:
-    'Taran builds AI tooling and workflow automation that delete busywork — full-stack developer and automation architect based in the Netherlands.',
+    'Taranity is a digital studio that builds AI systems, apps, and websites — from the impossible-looking to the production-ready. Based in the Netherlands.',
   location: 'Eindhoven, Netherlands',
   timezone: 'Europe/Amsterdam',
   url: env.PUBLIC_SITE_URL || 'https://taranity.com',

@@ -1,24 +1,25 @@
 /**
- * About-page content: origin story, skills, timeline, values, languages.
- * Real, specific copy. Persona facts inferred from context — confirm in HUMAN-TODO.
+ * About-page content: studio origin story, principles, capabilities, timeline,
+ * languages. Real, specific copy in the studio's "we" voice (Taranity is a small
+ * studio — "we" means the studio, not a fabricated team). Confirm facts in HUMAN-TODO.
  */
 
 /** Lead paragraphs for the about page. */
 export const story: string[] = [
-  'I got into automation the way most people do: by getting tired of doing the same thing twice. The first thing I ever automated was my own university timetable — the official portal was slow and ugly, so I built something that checked it for me. The moment a script did a chore I used to dread, I was hooked.',
-  'That instinct never left. I moved to the Netherlands, studied software at Fontys, and kept pulling the same thread: find the manual, repetitive, error-prone part of a workflow and replace it with a system that runs itself. Schedules became dashboards. Dashboards became agents. Agents became an entire personal automation layer that now ships code while I sleep.',
-  'Today I build full-stack products and the AI tooling underneath them — the kind of plumbing that turns "we should automate this" into something that actually runs in production. I care less about clever code and more about the outcome: fewer late nights, fewer dropped balls, a measurable number that got better.',
+  'Taranity started the way most good tools do: someone got tired of doing the same thing twice. The first thing we ever automated was a university timetable — the official portal was slow and ugly, so we built something that checked it for us. The moment a script did a chore we used to dread, the studio had its reason to exist.',
+  'That instinct never left. We put down roots in the Netherlands, learned to build software properly at Fontys, and kept pulling the same thread: find the manual, repetitive, fragile part of a problem and replace it with something that runs itself. Schedules became dashboards. Dashboards became agents. Agents became an entire automation layer that now ships code overnight.',
+  'Today Taranity builds across the whole digital stack — AI systems, web apps, websites, and the automation underneath them. The kind of work that turns "someone should build this" into something running in production. We care less about clever code and more about the outcome: fewer late nights, fewer dropped balls, a number that moved in the right direction.',
 ];
 
 /** Short, quotable principles. */
 export const principles: { title: string; body: string }[] = [
   {
     title: 'Outcomes over output',
-    body: 'A feature nobody measures is a guess. Every project here has a number attached because that is the only honest way to know it worked.',
+    body: 'A feature nobody measures is a guess. Every project here carries a number, because that is the only honest way to know it worked.',
   },
   {
     title: 'Deterministic where it matters',
-    body: 'AI is powerful and forgetful. I wrap it in guardrails — hooks, schemas, review gates — so the smart part can move fast without breaking things.',
+    body: 'AI is powerful and forgetful. We wrap it in guardrails — hooks, schemas, review gates — so the smart part can move fast without breaking things.',
   },
   {
     title: 'Local-first, privacy-first',
@@ -32,7 +33,7 @@ export const principles: { title: string; body: string }[] = [
 
 export interface SkillGroup {
   label: string;
-  /** 0–100 proficiency for the bar; honest, not everyone-is-100. */
+  /** 0–100 capability level for the bar; honest, not everything-is-100. */
   skills: { name: string; level: number }[];
 }
 
@@ -78,23 +79,23 @@ export interface TimelineEntry {
 export const timeline: TimelineEntry[] = [
   {
     when: 'The spark',
-    title: 'Automated my own timetable',
-    body: 'Built a better front-end for the university schedule because the official one drove me up the wall. First taste of letting code do the chore.',
+    title: 'Automated a broken timetable',
+    body: 'Built a better front-end for a university schedule because the official one drove us up the wall. First taste of letting code do the chore.',
   },
   {
-    when: 'Fontys',
-    title: 'Studied software in the Netherlands',
-    body: 'Formal grounding in software engineering — and a steady supply of real problems worth automating.',
+    when: 'Foundations',
+    title: 'Learned to build, in the Netherlands',
+    body: 'Formal software engineering at Fontys — and a steady supply of real problems worth solving properly.',
   },
   {
-    when: 'Going full-stack',
+    when: 'Full-stack',
     title: 'Shipped products end to end',
-    body: 'CallCatch, Cortex, and a string of client builds — owning the whole stack from telephony and data to UI.',
+    body: 'CallCatch, Cortex, and a run of client builds — owning the whole stack from telephony and data to UI.',
   },
   {
     when: 'Now',
-    title: 'Automation architect',
-    body: 'Building the AI tooling layer — agents, MCP servers, an overnight build system — and consulting for teams who want the same.',
+    title: 'Taranity, the studio',
+    body: 'Building across the digital stack — AI systems, apps, websites, and the automation layer underneath — for teams who want it done right.',
   },
 ];
 

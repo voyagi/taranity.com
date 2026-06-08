@@ -8,13 +8,13 @@ const [lead, ...rest] = story;
 ---
 
 <BaseLayout
-  title="About — the automation origin story"
-  description="How Taran went from automating a university timetable to building AI tooling and an overnight autonomous build system."
+  title="About — the studio behind the work"
+  description="How Taranity grew from automating a university timetable into a studio building AI systems, apps, and websites across the whole digital stack."
 >
   <section class="about-hero">
     <p class="band-label mono-label" data-reveal>/ about</p>
     <h1 class="about-title" data-reveal>
-      I build systems that <span class="gradient-text">run themselves.</span>
+      We build across the whole <span class="gradient-text">digital stack.</span>
     </h1>
     <p class="about-lead" data-reveal>{lead}</p>
   </section>
@@ -25,8 +25,8 @@ const [lead, ...rest] = story;
 
   <!-- Principles -->
   <section class="band">
-    <h2 class="sr-only">How I work</h2>
-    <p class="band-label mono-label" data-reveal>/ how I work</p>
+    <h2 class="sr-only">How we work</h2>
+    <p class="band-label mono-label" data-reveal>/ how we work</p>
     <div class="principles">
       {
         principles.map((p, i) => (
@@ -42,7 +42,7 @@ const [lead, ...rest] = story;
   <!-- Skills -->
   <section class="band">
     <p class="band-label mono-label" data-reveal>/ the toolkit</p>
-    <h2 class="section-title" data-reveal>What I reach for</h2>
+    <h2 class="section-title" data-reveal>What we reach for</h2>
     <div class="skills">
       {
         skillGroups.map((group) => (
@@ -94,7 +94,7 @@ const [lead, ...rest] = story;
       </ul>
     </div>
     <div class="about-cta glass-strong holo-edge" data-reveal>
-      <h2>Have something that should run itself?</h2>
+      <h2>Have something hard to build?</h2>
       <a href={cta.primaryHref} class="btn btn-primary" data-cursor="hover">
         {cta.primaryLabel}<Icon name="arrow-right" size={16} class="arrow" />
       </a>

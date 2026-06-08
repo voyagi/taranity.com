@@ -27,7 +27,7 @@ const projectLd = {
   abstract: project.summary,
   about: project.tags,
   url: `${site.url}/projects/${project.slug}`,
-  creator: { '@type': 'Person', name: site.person },
+  creator: { '@type': 'Organization', name: site.name },
   dateCreated: project.year,
 };
 
