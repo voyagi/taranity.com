@@ -91,7 +91,9 @@ function setupHero() {
   if (!title || reduceMotion()) return;
   let split: SplitText | null = null;
   try {
-    split = new SplitText(title, { type: 'chars' });
+    // Split words *and* chars: chars animate, but the word wrappers keep the
+    // browser from breaking lines mid-word (e.g. "d|escribe").
+    split = new SplitText(title, { type: 'words,chars' });
     const tween = gsap.from(split.chars, {
       yPercent: 115,
       opacity: 0,

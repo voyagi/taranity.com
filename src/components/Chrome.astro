@@ -7,6 +7,9 @@
 import CommandPalette from './CommandPalette.astro';
 ---
 
+<!-- Aurora design: living gradient mesh (CSS-only, visible only for [data-design="aurora"]) -->
+<div class="aurora-bg" aria-hidden="true" transition:persist="aurora"><b></b><b></b><b></b><b></b></div>
+
 <!-- Film grain + scanline texture -->
 <div class="fx-overlay" aria-hidden="true" transition:persist="fx"></div>
 

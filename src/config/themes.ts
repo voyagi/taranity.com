@@ -24,13 +24,19 @@ export interface ThemeDesign {
 
 export const designs: ThemeDesign[] = [
   {
+    id: 'aurora',
+    label: 'Aurora',
+    blurb: 'Bright, living gradients in motion.',
+    defaultMode: 'light',
+    ready: true,
+  },
+  {
     id: 'console',
     label: 'Operator Console',
     blurb: 'Dark, holographic, telemetry-grade.',
     defaultMode: 'dark',
     ready: true,
   },
-  // Phase C — Aurora (bright maximalist + WebGL hero): becomes the default once built.
   // Phase E — World (full WebGL): opt-in, heaviest.
 ];
 
@@ -39,7 +45,7 @@ export const readyDesigns = designs.filter((d) => d.ready);
 /** Applied when the visitor has no stored preference (and as the inline-script fallback).
  *  DEFAULT_MODE follows the default design's preferred mode, so promoting a new
  *  default design (e.g. light-first Aurora in Phase C) flips the site default too. */
-export const DEFAULT_DESIGN = 'console';
+export const DEFAULT_DESIGN = 'aurora';
 export const DEFAULT_MODE: ThemeMode =
   designs.find((d) => d.id === DEFAULT_DESIGN)?.defaultMode ?? 'dark';
 
@@ -48,12 +54,14 @@ export const STORAGE_KEY_MODE = 'taranity-mode';
 
 /** `<meta name="theme-color">` per design×mode — matches each theme's --bg. */
 const THEME_COLORS: Record<string, string> = {
+  'aurora:light': '#f6f4ff',
+  'aurora:dark': '#0a0613',
   'console:dark': '#070709',
   'console:light': '#eef1f7',
 };
 
 export function themeColorFor(design: string, mode: ThemeMode): string {
-  return THEME_COLORS[`${design}:${mode}`] ?? (mode === 'dark' ? '#070709' : '#eef1f7');
+  return THEME_COLORS[`${design}:${mode}`] ?? (mode === 'dark' ? '#0a0613' : '#f6f4ff');
 }
 
 /** Validate a stored value against the ready registry, falling back to defaults. */
