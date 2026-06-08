@@ -270,7 +270,7 @@ const isActive = (href: string) =>
     document.addEventListener('keydown', (e) => {
       const s = sheet();
       const open = s && !s.hidden;
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && open) {
         setOpen(false);
       } else if (e.key === 'Tab' && open && s) {
         // Trap focus inside the open mobile sheet.
