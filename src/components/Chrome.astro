@@ -1,0 +1,67 @@
+---
+/**
+ * Persistent site chrome: FX overlay, HUD frame + status rail, custom cursor,
+ * command palette. Each is transition:persist so it survives View Transitions
+ * and its JS wires up exactly once.
+ */
+import CommandPalette from './CommandPalette.astro';
+---
+
+<!-- Film grain + scanline texture -->
+<div class="fx-overlay" aria-hidden="true" transition:persist="fx"></div>
+
+<!-- Heads-up display frame -->
+<div class="hud" aria-hidden="true" transition:persist="hud">
+  <span class="hud-corner tl"></span>
+  <span class="hud-corner tr"></span>
+  <span class="hud-corner bl"></span>
+  <span class="hud-corner br"></span>
+  <div class="hud-rail">
+    <span class="rail-dot"></span>
+    <span class="rail-status">online</span>
+    <span class="rail-sep">·</span>
+    <span data-clock>--:--</span>
+    <span class="rail-tz">CET</span>
+  </div>
+</div>
+
+<!-- Custom cursor -->
+<div transition:persist="cursor">
+  <div class="cursor-dot" data-cursor-dot></div>
+  <div class="cursor-ring" data-cursor-ring><span data-cursor-label></span></div>
+</div>
+
+<CommandPalette transition:persist="palette" />
+
+<style>
+  .hud-rail {
+    position: absolute;
+    bottom: 18px;
+    right: 22px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+  .rail-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-success);
+    box-shadow: 0 0 8px 1px rgba(52, 211, 153, 0.8);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .rail-status { color: var(--color-success); }
+  .rail-tz { color: var(--color-ink-faint); opacity: 0.6; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @media (max-width: 640px) {
+    .hud-rail { display: none; }
+  }
+</style>
