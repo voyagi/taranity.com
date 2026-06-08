@@ -106,7 +106,12 @@ export function initCommandPalette() {
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
-      isOpen() ? close() : open();
+      if (isOpen()) close();
+      else open();
+    } else if (e.key === 'Escape' && isOpen()) {
+      // Global Escape so it closes regardless of where focus currently is.
+      e.preventDefault();
+      close();
     }
   });
   document.addEventListener('click', (e) => {
