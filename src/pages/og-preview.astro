@@ -1,0 +1,96 @@
+---
+/**
+ * Open Graph image source (1200×630). Rendered with the real fonts, then
+ * screenshotted to public/og.png. Disallowed in robots, excluded from sitemap.
+ * Regenerate: `npm run dev`, screenshot /og-preview at 1200×630 → public/og.png.
+ */
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>og</title>
+  </head>
+  <body class="og-body">
+    <div class="og">
+      <div class="og-grid dot-grid" aria-hidden="true"></div>
+      <div class="og-glow" aria-hidden="true"></div>
+      <span class="og-c tl"></span>
+      <span class="og-c tr"></span>
+      <span class="og-c bl"></span>
+      <span class="og-c br"></span>
+
+      <header class="og-top">
+        <span class="og-mark"><span class="p">~/</span>taranity<span class="d"></span></span>
+        <span class="og-tag">portfolio · 2026</span>
+      </header>
+
+      <div class="og-main">
+        <h1 class="og-h1">I automate what<br /><span class="gradient-text">slows you down.</span></h1>
+        <p class="og-role">Full-stack developer · Automation architect</p>
+      </div>
+
+      <footer class="og-foot">
+        <span>50+ automation hooks</span>
+        <span class="dotsep">·</span>
+        <span>8 products shipped</span>
+        <span class="dotsep">·</span>
+        <span class="og-url">taranity.com</span>
+      </footer>
+    </div>
+
+    <style>
+      .og-body { margin: 0; background: #050507; }
+      .og {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background:
+          radial-gradient(120% 90% at 88% -15%, rgba(139, 92, 246, 0.28), transparent 55%),
+          radial-gradient(90% 80% at -5% 110%, rgba(34, 211, 238, 0.2), transparent 55%),
+          var(--color-void);
+        padding: 64px 72px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font-family: var(--font-sans);
+      }
+      .og-grid { position: absolute; inset: 0; opacity: 0.5; }
+      .og-glow {
+        position: absolute; top: -120px; right: -120px; width: 560px; height: 560px;
+        background: radial-gradient(circle, rgba(34, 211, 238, 0.16), transparent 60%);
+        filter: blur(10px);
+      }
+      .og-c { position: absolute; width: 40px; height: 40px; border: solid rgba(34, 211, 238, 0.55); border-width: 0; }
+      .og-c.tl { top: 30px; left: 30px; border-top-width: 2px; border-left-width: 2px; }
+      .og-c.tr { top: 30px; right: 30px; border-top-width: 2px; border-right-width: 2px; }
+      .og-c.bl { bottom: 30px; left: 30px; border-bottom-width: 2px; border-left-width: 2px; }
+      .og-c.br { bottom: 30px; right: 30px; border-bottom-width: 2px; border-right-width: 2px; }
+
+      .og-top { position: relative; display: flex; justify-content: space-between; align-items: center; z-index: 1; }
+      .og-mark {
+        font-family: var(--font-display); font-weight: 700; font-size: 30px;
+        letter-spacing: -0.03em; color: var(--color-ink); display: inline-flex; align-items: center;
+      }
+      .og-mark .p { font-family: var(--font-mono); font-weight: 400; color: var(--color-ink-faint); margin-right: 4px; font-size: 24px; }
+      .og-mark .d { width: 10px; height: 10px; border-radius: 999px; background: var(--color-cyan); box-shadow: 0 0 14px 2px rgba(34, 211, 238, 0.8); margin-left: 4px; margin-bottom: -2px; }
+      .og-tag { font-family: var(--font-mono); font-size: 16px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-ink-faint); }
+
+      .og-main { position: relative; z-index: 1; }
+      .og-h1 { font-family: var(--font-display); font-weight: 700; font-size: 96px; line-height: 0.98; letter-spacing: -0.03em; margin: 0 0 24px; color: var(--color-ink); }
+      .og-role { font-family: var(--font-mono); font-size: 24px; letter-spacing: 0.04em; color: var(--color-ink-dim); margin: 0; }
+
+      .og-foot {
+        position: relative; z-index: 1; display: flex; align-items: center; gap: 16px;
+        font-family: var(--font-mono); font-size: 18px; letter-spacing: 0.05em;
+        text-transform: uppercase; color: var(--color-ink-faint);
+      }
+      .dotsep { color: var(--color-cyan); }
+      .og-url { color: var(--color-cyan); }
+    </style>
+  </body>
+</html>

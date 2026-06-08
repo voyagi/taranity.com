@@ -1,43 +1,57 @@
-# Astro Starter Kit: Minimal
+# taranity.com
+
+Personal portfolio of **Taran** — full-stack developer & automation architect. The site is built
+to be proof of skill, not just a list of work: dark operator-console glassmorphism, holographic
+motion, a command palette, a live "Currently" widget, and cinematic page transitions — all while
+staying static, fast, and accessible.
+
+> **Stack:** Astro 6 (static) · Tailwind v4 · GSAP + ScrollTrigger + SplitText · Lenis ·
+> Cloudflare Pages · Plausible · Web3Forms.
+> Rationale: [docs/adr/0001-stack.md](docs/adr/0001-stack.md).
+
+## Quick start
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install        # install dependencies
+npm run dev        # dev server at http://localhost:4321
+npm run build      # static build to ./dist
+npm run preview    # preview the production build locally
+npm run check      # astro type/diagnostics check
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The site runs in **demo mode with zero configuration** — the contact form, analytics, booking
+link, and "Currently" widget all have safe fallbacks. To wire the real services, copy
+`.env.example` to `.env` and fill in the `PUBLIC_*` values (see [HUMAN-TODO.md](HUMAN-TODO.md)).
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Project structure
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+  config/      site.ts, about.ts        — profile, socials, CTAs, story, skills
+  content/     projects.ts              — full case-study data (Problem→Solution→Result)
+  layouts/     BaseLayout.astro         — head, SEO, JSON-LD, analytics, global shell
+  components/  Nav, Footer, Cursor, CommandPalette, Currently, ProjectCard, ...
+  lib/         motion.ts, gh.ts         — animation runtime + Currently data source
+  pages/       index, work, projects/[slug], about, contact, 404
+  styles/      global.css               — Tailwind v4 @theme tokens + base
+public/        og.png, robots.txt, favicons
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Documentation
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- [PROJECT.md](PROJECT.md) — purpose, audience, success criteria
+- [ROADMAP.md](ROADMAP.md) — phased build plan
+- [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) — the original design language
+- [docs/](docs/) — ADRs and architecture notes
+- [HUMAN-TODO.md](HUMAN-TODO.md) — accounts, keys, deploy (the only human steps)
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Deploy
 
-## 🧞 Commands
+Static build → Cloudflare Pages (no adapter). Connect the repo in the Cloudflare dashboard with
+build command `npm run build` and output `dist`, or one-off:
+`npm run build && npx wrangler pages deploy dist --project-name taranity`. Full steps in
+[HUMAN-TODO.md](HUMAN-TODO.md).
 
-All commands are run from the root of the project, from a terminal:
+## License
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+[MIT](LICENSE) for the source code. Written content and brand assets © 2026 Taran.

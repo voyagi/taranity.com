@@ -1,0 +1,138 @@
+---
+import { nav, socials, cta, site, contactEmail } from '../config/site';
+import Icon from './Icon.astro';
+
+const year = new Date().getFullYear();
+const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
+  GitHub: 'github',
+  LinkedIn: 'linkedin',
+  'X / Twitter': 'x',
+};
+---
+
+<footer class="site-footer">
+  <div class="footer-cta glass-strong holo-edge">
+    <p class="mono-label">/ ready when you are</p>
+    <h2 class="footer-headline">Let's automate what's slowing you down.</h2>
+    <div class="footer-cta-actions">
+      <a href={cta.primaryHref} class="btn btn-primary" data-cursor="hover">
+        {cta.primaryLabel}
+        <Icon name="arrow-right" size={16} class="arrow" />
+      </a>
+      <a href="/contact" class="btn btn-ghost" data-cursor="hover">{cta.secondaryLabel}</a>
+    </div>
+  </div>
+
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="wordmark">
+        <span class="prompt">~/</span><span>taranity</span><span class="dot" aria-hidden="true"></span>
+      </a>
+      <p>{site.role}.<br />Based in {site.location}.</p>
+    </div>
+
+    <nav class="footer-col" aria-label="Footer">
+      <p class="mono-label">Index</p>
+      <ul>
+        <li><a href="/">Home</a></li>
+        {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="footer-col">
+      <p class="mono-label">Elsewhere</p>
+      <ul>
+        {
+          socials.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer">
+                <Icon name={iconFor[s.label] ?? 'arrow-up-right'} size={15} />
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a href={`mailto:${contactEmail}`}>
+            <Icon name="mail" size={15} />
+            {contactEmail}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-base">
+    <span class="mono-label">© {year} {site.person} · taranity.com · <a href="/privacy" class="footer-legal">Privacy</a></span>
+    <span class="mono-label credit">built with astro · gsap · lenis</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: var(--spacing-section) var(--spacing-gutter) 2.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  .footer-cta {
+    text-align: center;
+    padding: clamp(2.5rem, 6vw, 4.5rem);
+    margin-bottom: 4rem;
+  }
+  .footer-headline {
+    font-size: var(--text-h2);
+    margin: 0.6rem 0 1.6rem;
+    text-wrap: balance;
+  }
+  .footer-cta-actions {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1.2fr;
+    gap: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .footer-brand .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.8rem;
+  }
+  .footer-brand .prompt { font-family: var(--font-mono); font-weight: 400; color: var(--color-ink-faint); }
+  .footer-brand .dot {
+    width: 7px; height: 7px; border-radius: 999px; background: var(--color-cyan);
+    box-shadow: 0 0 10px 1px rgba(34, 211, 238, 0.8); margin-left: 2px; margin-bottom: -2px;
+  }
+  .footer-brand p { color: var(--color-ink-dim); font-size: 0.95rem; line-height: 1.6; }
+  .footer-col ul { list-style: none; margin: 0.9rem 0 0; padding: 0; display: grid; gap: 0.6rem; }
+  .footer-col a {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    color: var(--color-ink-dim); font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--color-cyan); }
+  .footer-base {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 1.5rem; flex-wrap: wrap; gap: 0.5rem;
+  }
+  .footer-legal { color: var(--color-ink-dim); text-decoration: underline; text-underline-offset: 2px; transition: color 0.2s; }
+  .footer-legal:hover { color: var(--color-cyan); }
+  @media (max-width: 760px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .footer-brand { grid-column: 1 / -1; }
+  }
+  @media (max-width: 460px) {
+    .footer-grid { grid-template-columns: 1fr; }
+  }
+</style>
