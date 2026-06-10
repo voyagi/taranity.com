@@ -81,7 +81,7 @@ a {
   font-family: ui-sans-serif, system-ui, sans-serif;
   font-size: 0.85rem;
 }
-.skip-link:focus {
+.skip-link:focus-visible {
   transform: translateY(0);
 }
 @media (prefers-reduced-motion: no-preference) {

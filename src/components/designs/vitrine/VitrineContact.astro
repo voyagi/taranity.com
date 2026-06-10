@@ -337,7 +337,10 @@ const year = new Date().getFullYear();
     const status = form.querySelector<HTMLElement>('[data-v-form-status]')!;
     const submitBtn = form.querySelector<HTMLButtonElement>('.v-submit')!;
     const submitLabel = form.querySelector<HTMLElement>('[data-v-submit-label]')!;
-    const successPanel = document.querySelector<HTMLElement>('[data-v-form-success]')!;
+    // The success panel is the form's sibling inside .v-form-wrap; scope the
+    // lookup there so a second instance of this component could never grab
+    // another form's panel.
+    const successPanel = form.closest('.v-form-wrap')!.querySelector<HTMLElement>('[data-v-form-success]')!;
 
     const setErr = (name: string, msg: string) => {
       const field = form.querySelector(`[name="${name}"]`)?.closest('.v-field');

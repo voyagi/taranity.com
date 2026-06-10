@@ -19,7 +19,9 @@ let lenis: Lenis | null = null;
 let rafCb: ((time: number) => void) | null = null;
 let ctx: gsap.Context | null = null;
 let removeAnchorHandler: (() => void) | null = null;
-let booted = false;
+// Guards the window-load fallback only; `load` fires once per full page load,
+// so this never needs to reset across View-Transition navigations.
+let pageLoadFired = false;
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -149,15 +151,15 @@ function setup() {
 
 // Initial load + every View-Transition navigation.
 document.addEventListener('astro:page-load', () => {
-  booted = true;
+  pageLoadFired = true;
   setup();
 });
 // Tear down (Lenis included) before the DOM is swapped out.
 document.addEventListener('astro:before-swap', teardown);
 // Belt-and-suspenders: if astro:page-load somehow didn't fire, wire up on load.
 window.addEventListener('load', () => {
-  if (!booted) {
-    booted = true;
+  if (!pageLoadFired) {
+    pageLoadFired = true;
     setup();
   }
 });
