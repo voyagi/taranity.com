@@ -25,7 +25,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
 
   <div class="footer-grid">
     <div class="footer-brand">
-      <a href="/" class="wordmark">
+      <a href="/" class="wordmark" data-astro-reload>
         <span class="prompt">~/</span><span>taranity</span><span class="dot" aria-hidden="true"></span>
       </a>
       <p>{site.role}.<br />Based in {site.location}.</p>
@@ -34,7 +34,7 @@ const iconFor: Record<string, 'github' | 'linkedin' | 'x'> = {
     <nav class="footer-col" aria-label="Footer">
       <p class="mono-label">Index</p>
       <ul>
-        <li><a href="/">Home</a></li>
+        <li><a href="/" data-astro-reload>Home</a></li>
         {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
       </ul>
     </nav>

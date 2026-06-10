@@ -1,0 +1,88 @@
+---
+/**
+ * Fixed control to switch designs and toggle light or dark. Only `ready` designs
+ * appear (registry flag), so the design list shows up once a second design ships.
+ * Neutral and unobtrusive so it sits over any design. Behaviour is in
+ * src/lib/design-theme.ts (delegated, View-Transition safe).
+ */
+import { readyDesigns } from '../config/designs';
+const items = readyDesigns();
+const multi = items.length > 1;
+---
+
+<div class="design-switcher" data-design-switcher>
+  <button type="button" class="ds-mode" data-mode-toggle aria-label="Toggle light or dark">
+    <span class="ds-mode-dot" aria-hidden="true"></span>
+  </button>
+  {
+    multi && (
+      <nav class="ds-designs" aria-label="Choose a design">
+        {items.map((d) => (
+          <a class="ds-design" href={d.route} data-design-go={d.id} title={`${d.tagline} for ${d.audience}`}>
+            {d.name}
+          </a>
+        ))}
+      </nav>
+    )
+  }
+</div>
+
+<style>
+  .design-switcher {
+    position: fixed;
+    z-index: 1000;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    right: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, Canvas 72%, transparent);
+    border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    color: CanvasText;
+  }
+  .ds-mode {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    color: inherit;
+  }
+  .ds-mode-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    border: 2px solid currentColor;
+    /* a half-filled disc reads as a light/dark toggle in any theme */
+    background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+  }
+  .ds-designs {
+    display: inline-flex;
+    gap: 0.15rem;
+  }
+  .ds-design {
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    letter-spacing: 0.02em;
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+  .ds-design:hover {
+    opacity: 1;
+    background: color-mix(in srgb, CanvasText 10%, transparent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ds-design { transition: opacity 0.2s, background-color 0.2s; }
+  }
+</style>

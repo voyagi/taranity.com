@@ -102,4 +102,9 @@ const multiDesign = readyDesigns.length > 1;
     border-color: var(--accent);
     background: transparent;
   }
+  /* Small screens: the three design buttons would overflow the nav (and the
+     page). Keep the mode toggle; the picker stays a desktop affordance. */
+  @media (max-width: 640px) {
+    .theme-designs { display: none; }
+  }
 </style>

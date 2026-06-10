@@ -1,0 +1,27 @@
+---
+/**
+ * Vitrine — the flagship design. Luxury editorial: oversized serif, hairline
+ * rules, full-bleed art plates, slow cinematic scroll. One self-contained
+ * page experience; SiteLayout provides head/meta and the floating switcher.
+ */
+import './vitrine.css';
+import VitrineHeader from './VitrineHeader.astro';
+import VitrineHero from './VitrineHero.astro';
+import VitrineManifesto from './VitrineManifesto.astro';
+import VitrineWork from './VitrineWork.astro';
+import VitrineStudio from './VitrineStudio.astro';
+import VitrineContact from './VitrineContact.astro';
+---
+
+<div class="vitrine" data-vitrine>
+  <VitrineHeader />
+  <VitrineHero />
+  <VitrineManifesto />
+  <VitrineWork />
+  <VitrineStudio />
+  <VitrineContact />
+</div>
+
+<script>
+  import '../../../lib/vitrine-motion';
+</script>

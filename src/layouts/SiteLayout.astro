@@ -1,0 +1,175 @@
+---
+/**
+ * Layout for the design-showcase pages. Head, SEO, JSON-LD, the pre-paint
+ * theme script, and the floating DesignSwitcher; everything visual belongs to
+ * the design rendered into the slot (each design ships its own header/footer).
+ *
+ * Light or dark follows the visitor's system setting until they choose with
+ * the toggle (src/lib/design-theme.ts). The inline script below must stay
+ * CONSTANT across pages: it reads the per-design theme colours from data
+ * attributes on <html>, so every design shares one CSP hash
+ * (regenerate with scripts/csp-hash.mjs if it ever changes).
+ */
+import '../styles/site.css';
+import { ClientRouter } from 'astro:transitions';
+import DesignSwitcher from '../components/DesignSwitcher.astro';
+import { site, services, socials, contactEmail } from '../config/site';
+
+interface Props {
+  /** Design id from src/config/designs.ts; sets data-design on <html>. */
+  design: string;
+  title: string;
+  description: string;
+  /** theme-color per mode; the pre-paint script and mode toggle read these. */
+  themeLight: string;
+  themeDark: string;
+  /** OG image path relative to site root. */
+  image?: string;
+  noindex?: boolean;
+  /** Extra JSON-LD injected for this page (object or array of objects). */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** LCP-critical font files to preload. */
+  preloadFonts?: string[];
+}
+
+const {
+  design,
+  title,
+  description,
+  themeLight,
+  themeDark,
+  image = '/og.png',
+  noindex = false,
+  jsonLd,
+  preloadFonts = ['/fonts/inter-latin-var.woff2'],
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, site.url);
+const ogImage = new URL(image, site.url);
+const fullTitle = title.includes(site.name) ? title : `${title} · ${site.name}`;
+
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: site.url,
+  email: contactEmail,
+  description: site.description,
+  slogan: site.shortTagline,
+  logo: new URL('/apple-touch-icon.png', site.url).href,
+  founder: { '@type': 'Person', name: site.founder },
+  address: { '@type': 'PostalAddress', addressLocality: 'Eindhoven', addressCountry: 'NL' },
+  knowsAbout: [
+    'Web design',
+    'Web development',
+    'App development',
+    'Workflow automation',
+    'AI systems',
+    'Full-stack development',
+    'TypeScript',
+  ],
+  sameAs: socials.map((s) => s.href),
+};
+---
+
+<!doctype html>
+<html lang="en" data-design={design} data-theme-light={themeLight} data-theme-dark={themeDark}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content={themeLight} />
+
+    {preloadFonts.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
+
+    <!-- Primary SEO -->
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Icons + PWA manifest -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Structured data -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(orgLd).replace(/</g, '\\u003c')} />
+    {
+      jsonLd &&
+        (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((ld) => (
+          <script is:inline type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
+        ))
+    }
+
+    <!-- Pre-paint: mark JS available (motion gates on it) + resolve the mode
+         (stored choice, else system) + sync theme-color, all before first paint
+         so there is no flash. Keep this byte-identical across pages: the CSP
+         allows exactly this script by hash. -->
+    <script is:inline>
+      (() => {
+        const el = document.documentElement;
+        el.classList.add('js');
+        let mode = null;
+        try {
+          const stored = localStorage.getItem('taranity-mode');
+          if (stored === 'light' || stored === 'dark') mode = stored;
+        } catch {
+          /* storage blocked (private mode / lockdown): follow the system */
+        }
+        if (!mode) mode = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        el.setAttribute('data-mode', mode);
+        const color = el.getAttribute('data-theme-' + mode);
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta && color) meta.setAttribute('content', color);
+      })();
+    </script>
+
+    <!-- Cookieless analytics (only when configured) -->
+    {
+      services.plausibleDomain && (
+        <script
+          is:inline
+          defer
+          data-domain={services.plausibleDomain}
+          src="https://plausible.io/js/script.js"
+        />
+      )
+    }
+
+    <ClientRouter />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <main id="main">
+      <slot />
+    </main>
+    <DesignSwitcher />
+
+    <script>
+      import { initDesignTheme } from '../lib/design-theme';
+      initDesignTheme();
+    </script>
+  </body>
+</html>

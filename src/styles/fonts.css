@@ -19,6 +19,16 @@
   src: url('/fonts/inter-latin-var.woff2') format('woff2-variations');
 }
 
+/* Editorial serif for the Vitrine design (wght + opsz axes, so optical sizing
+   sharpens it at display sizes and softens it at text sizes). */
+@font-face {
+  font-family: 'Fraunces Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('/fonts/fraunces-latin-var.woff2') format('woff2-variations');
+}
+
 @font-face {
   font-family: 'JetBrains Mono';
   font-style: normal;

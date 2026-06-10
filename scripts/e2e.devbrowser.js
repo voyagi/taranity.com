@@ -43,6 +43,16 @@ page.on('requestfailed', (req) => failedRequests.push(req.url()));
 // "last push" now resolves at build time, so there is no client GitHub request.)
 const isBenign = (u) => /plausible\.io/.test(u);
 
+// Deterministic checks: entrance animations caught mid-fade make axe's
+// contrast checks flaky, and reduced motion also exposes the reveal-gated
+// text to the audit (better coverage). Motion is re-enabled for the evidence
+// screenshots at the end.
+try {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+} catch {
+  /* harness without emulateMedia: checks still run, just with motion on */
+}
+
 const pages200 = [
   ['/', 'home'],
   ['/work', 'work'],
@@ -163,9 +173,9 @@ rec('404: returns HTTP 404', r404 && r404.status() === 404, 'status=' + (r404 ? 
 const body404 = await page.evaluate(() => document.body.innerText);
 rec('404: shows custom "route not found" copy', /route not found/i.test(body404));
 
-// ---- command palette ----
+// ---- command palette (legacy chrome — lives on the BaseLayout pages) ----
 await page.setViewportSize({ width: 1440, height: 900 });
-await page.goto(BASE + '/', { waitUntil: 'load' });
+await page.goto(BASE + '/work', { waitUntil: 'load' });
 await settle(400);
 await page.keyboard.press('Control+k');
 await settle(350);
@@ -224,7 +234,9 @@ pageErrors = [];
 failedResponses = [];
 failedRequests = [];
 await page.setViewportSize({ width: 1440, height: 900 });
-await page.goto(BASE + '/', { waitUntil: 'load' });
+// The legacy theme system lives on the BaseLayout pages (the showcase home has
+// its own design system, checked separately below).
+await page.goto(BASE + '/work', { waitUntil: 'load' });
 await page.evaluate(() => { try { localStorage.clear(); } catch {} });
 await page.reload({ waitUntil: 'load' });
 await settle(400);
@@ -250,7 +262,7 @@ rec(
 );
 
 // every ready design is selectable from the picker
-await page.goto(BASE + '/', { waitUntil: 'load' });
+await page.goto(BASE + '/work', { waitUntil: 'load' });
 await settle(300);
 for (const d of ['console', 'world', 'aurora']) {
   await page.click(`[data-theme-design="${d}"]`);
@@ -260,7 +272,33 @@ for (const d of ['console', 'world', 'aurora']) {
 // reset to the default theme for the evidence screenshots below
 await page.evaluate(() => { try { localStorage.clear(); } catch {} });
 
+// ---- Vitrine (showcase home): design attr, system-default mode, toggle, persistence ----
+await page.goto(BASE + '/', { waitUntil: 'load' });
+await page.evaluate(() => { try { localStorage.clear(); } catch {} });
+await page.reload({ waitUntil: 'load' });
+await settle(400);
+rec('vitrine: home renders design=vitrine', (await dattr('data-design')) === 'vitrine', await dattr('data-design'));
+const modeBefore = await dattr('data-mode');
+rec('vitrine: mode resolved from system', modeBefore === 'light' || modeBefore === 'dark', String(modeBefore));
+await page.click('[data-mode-toggle]');
+await settle(250);
+const modeAfter = await dattr('data-mode');
+rec(
+  'vitrine: toggle flips mode',
+  (modeAfter === 'light' || modeAfter === 'dark') && modeAfter !== modeBefore,
+  `${modeBefore} -> ${modeAfter}`,
+);
+await page.reload({ waitUntil: 'load' });
+await settle(250);
+rec('vitrine: mode persists across reload', (await dattr('data-mode')) === modeAfter, await dattr('data-mode'));
+await page.evaluate(() => { try { localStorage.clear(); } catch {} });
+
 // evidence: work gallery (desktop, motion on) + a mobile home
+try {
+  await page.emulateMedia({ reducedMotion: null });
+} catch {
+  /* see above */
+}
 await page.setViewportSize({ width: 1440, height: 900 });
 await page.goto(BASE + '/work', { waitUntil: 'load' });
 await settle(600);
