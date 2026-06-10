@@ -7,9 +7,18 @@ The previous build (Aurora / Operator Console / World, Phases A to F, PRs #2 to 
 main but the user REJECTED those designs as too similar (just different backgrounds). We are
 rebuilding the front end from scratch as a showcase of several genuinely different designs.
 
-- Branch: `feat/multi-design-showcase` (off main).
-- Last commit: `000207d` wip foundation (designs registry, theme runtime, switcher). NOT pushed yet.
-- Build still green (the new files are additive and not yet wired into any page).
+- Branch: `feat/multi-design-showcase` (off main), PR'd as the Vitrine PR.
+- DONE Phase 1 (Vitrine): SiteLayout.astro (head/meta + constant pre-paint theme script reading
+  data-theme-light/dark attrs, one CSP hash for all designs), src/styles/site.css (shared reset),
+  Fraunces variable font self-hosted, src/components/designs/vitrine/* (hero, manifesto,
+  work plates, studio, contact + footer), src/lib/vitrine-motion.ts (Lenis + GSAP, gated on
+  [data-vitrine], full teardown before VT swaps), `/` renders Vitrine, registry ready=true.
+  Old-design links to `/` carry data-astro-reload (old motion.ts never destroys its Lenis).
+  e2e suite retargeted (legacy theme/palette checks on /work, Vitrine checks on /), 71/71 green.
+- NEXT Phase 2 (Atlas): immersive dark 3D journey at /atlas under
+  src/components/designs/atlas/, three@0.184.0 already a dep, lazy-load the GL after first paint,
+  reuse SiteLayout (pass design="atlas", themeLight/themeDark). Flip atlas ready=true in
+  designs.ts in the same PR; the switcher list appears automatically at 2+ ready designs.
 
 ## Hard rules (apply to EVERY design and to replies to the user)
 1. No booking or calls anywhere. Written contact only (form + email).

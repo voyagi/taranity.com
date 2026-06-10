@@ -34,7 +34,13 @@ const systemMode = (): 'light' | 'dark' =>
 const effectiveMode = (): 'light' | 'dark' => readStoredMode() ?? systemMode();
 
 function applyMode(mode: 'light' | 'dark') {
-  document.documentElement.setAttribute('data-mode', mode);
+  const el = document.documentElement;
+  el.setAttribute('data-mode', mode);
+  // Keep the browser chrome in step: SiteLayout exposes per-design colours as
+  // data-theme-light/-dark on <html> (also read by the pre-paint script).
+  const color = el.getAttribute(mode === 'dark' ? 'data-theme-dark' : 'data-theme-light');
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta && color) meta.setAttribute('content', color);
   document.dispatchEvent(new CustomEvent('mode:change', { detail: { mode } }));
 }
 

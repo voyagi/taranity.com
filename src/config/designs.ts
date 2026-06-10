@@ -26,7 +26,7 @@ export interface Design {
 }
 
 export const designs: Design[] = [
-  { id: 'vitrine', name: 'Vitrine', tagline: 'Luxury and editorial', audience: 'Fashion, hospitality, architecture', route: '/', modes: ['dark', 'light'], ready: false },
+  { id: 'vitrine', name: 'Vitrine', tagline: 'Luxury and editorial', audience: 'Fashion, hospitality, architecture', route: '/', modes: ['dark', 'light'], ready: true },
   { id: 'atlas', name: 'Atlas', tagline: 'Immersive 3D', audience: 'Agencies, tech, launches', route: '/atlas', modes: ['dark'], ready: false },
   { id: 'signal', name: 'Signal', tagline: 'Clean product', audience: 'SaaS, fintech, startups', route: '/signal', modes: ['light', 'dark'], ready: false },
   { id: 'storefront', name: 'Storefront', tagline: 'Commerce', audience: 'E-commerce and DTC brands', route: '/storefront', modes: ['light'], ready: false },

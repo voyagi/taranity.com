@@ -1,0 +1,103 @@
+---
+/**
+ * The studio, told briefly: where the habit of replacing manual work came
+ * from, and the principles the work is held to. A tonal band (deeper paper /
+ * lifted black) separates it from the work gallery.
+ */
+const principles = [
+  { title: 'Outcomes over output', body: 'Every engagement carries a number it is expected to move.' },
+  { title: 'Detail is the product', body: 'Type, rhythm, and pace are not decoration. They are the brand.' },
+  { title: 'Quietly engineered', body: 'Fast on a phone, kind to a screen reader, private by default.' },
+  { title: 'Built to last', body: 'Still working, still elegant, long after the launch.' },
+];
+---
+
+<section class="v-studio v-tonal" id="studio" tabindex="-1">
+  <h2 class="v-sr">The studio</h2>
+  <p class="v-label" data-v-fade>03 · The studio</p>
+
+  <div class="v-studio-grid">
+    <div class="v-studio-story">
+      <p class="v-studio-lede v-serif" data-v-fade>Small by choice, senior by default.</p>
+      <p data-v-fade>
+        Taranity began with a small irritation: a university schedule portal so
+        slow that building a better one felt like self-defense. The habit stuck.
+        Find the part of the day that wastes human attention, and replace it
+        with something that runs on its own.
+      </p>
+      <p data-v-fade>
+        Today the studio designs and builds across the whole stack from
+        Eindhoven. Sites that read like editorials, products that feel
+        inevitable, automation that never calls in sick. The last five percent
+        gets sweated, because that is the part people feel.
+      </p>
+    </div>
+
+    <ul class="v-principles">
+      {
+        principles.map((p) => (
+          <li class="v-principle" data-v-fade>
+            <h3 class="v-principle-title v-serif">{p.title}</h3>
+            <p class="v-principle-body">{p.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .v-studio {
+    padding: var(--v-section) var(--v-gutter);
+    background: var(--v-bg-deep);
+  }
+  .v-studio:focus {
+    outline: none;
+  }
+  .v-studio-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(3rem, 7vw, 6.5rem);
+    margin-top: clamp(2rem, 5vh, 3rem);
+  }
+  .v-studio-lede {
+    margin-bottom: clamp(1.5rem, 4vh, 2.2rem);
+    font-size: clamp(1.7rem, 3.2vw, 2.7rem);
+    font-weight: 400;
+    line-height: 1.15;
+  }
+  .v-studio-story p:not(.v-studio-lede) {
+    max-width: 58ch;
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--v-muted);
+  }
+  .v-principles {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .v-principle {
+    padding-block: clamp(1.2rem, 3vh, 1.7rem);
+    border-top: 1px solid var(--v-line);
+  }
+  .v-principle:last-child {
+    border-bottom: 1px solid var(--v-line);
+  }
+  .v-principle-title {
+    margin-bottom: 0.45rem;
+    font-size: 1.25rem;
+    font-weight: 480;
+  }
+  .v-principle-body {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--v-muted);
+  }
+  @media (max-width: 860px) {
+    .v-studio-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

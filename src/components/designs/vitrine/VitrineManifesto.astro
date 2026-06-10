@@ -1,0 +1,97 @@
+---
+/**
+ * The point of the studio, stated as an editorial spread, then the four
+ * capabilities as a numbered index. AI is one capability and listed last,
+ * per the content rules.
+ */
+const capabilities = [
+  { index: '01', name: 'Websites', line: 'Editorial, fast, and made to be looked at twice.' },
+  { index: '02', name: 'Applications', line: 'Products and tools, designed and built end to end.' },
+  { index: '03', name: 'Automation', line: 'The repetitive work, rebuilt to run itself.' },
+  { index: '04', name: 'Intelligent systems', line: 'AI applied with restraint, where it earns its place.' },
+];
+---
+
+<section class="v-manifesto">
+  <p class="v-label" data-v-fade>01 · The point</p>
+
+  <h2 class="v-statement v-serif" data-v-lines>
+    <span class="v-mask"><span class="v-mask-inner">Beauty gets the first look.</span></span>
+    <span class="v-mask"><span class="v-mask-inner">Craft earns the second.</span></span>
+    <span class="v-mask"><span class="v-mask-inner">Results pay for both.</span></span>
+  </h2>
+
+  <p class="v-manifesto-copy" data-v-fade>
+    Taranity is a digital studio in the Netherlands. We design and build for
+    ateliers, hotels, architects, and the people who sell considered things:
+    every line of type, every transition, every second of load time treated
+    as part of the brand.
+  </p>
+
+  <ol class="v-capabilities">
+    {
+      capabilities.map((cap) => (
+        <li class="v-cap" data-v-fade>
+          <span class="v-cap-index v-serif" aria-hidden="true">{cap.index}</span>
+          <h3 class="v-cap-name v-serif">{cap.name}</h3>
+          <p class="v-cap-line">{cap.line}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .v-manifesto {
+    padding: var(--v-section) var(--v-gutter);
+  }
+  .v-statement {
+    margin-block: clamp(1.8rem, 4vh, 2.8rem) clamp(2rem, 5vh, 3rem);
+    font-size: clamp(2rem, 5.4vw, 4.6rem);
+    font-weight: 400;
+    line-height: 1.06;
+  }
+  .v-manifesto-copy {
+    max-width: 56ch;
+    font-size: 1.02rem;
+    line-height: 1.7;
+    color: var(--v-muted);
+  }
+  .v-capabilities {
+    margin: clamp(3.5rem, 9vh, 5.5rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .v-cap {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr 1.4fr;
+    gap: 1rem 2rem;
+    align-items: baseline;
+    padding-block: clamp(1.3rem, 3vh, 1.9rem);
+    border-top: 1px solid var(--v-line);
+  }
+  .v-cap:last-child {
+    border-bottom: 1px solid var(--v-line);
+  }
+  .v-cap-index {
+    font-size: 1rem;
+    color: var(--v-muted);
+  }
+  .v-cap-name {
+    font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+    font-weight: 420;
+  }
+  .v-cap-line {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--v-muted);
+  }
+  @media (max-width: 720px) {
+    .v-cap {
+      grid-template-columns: 3rem 1fr;
+    }
+    .v-cap-line {
+      grid-column: 2;
+    }
+  }
+</style>

@@ -1,0 +1,131 @@
+/* ==========================================================================
+   Vitrine — luxury editorial. Oversized Fraunces serif, hairline rules, warm
+   paper / warm near-black, slow cinematic scroll (src/lib/vitrine-motion.ts).
+
+   Tokens and cross-section primitives live here; section layout lives in each
+   component under src/components/designs/vitrine/. Mode follows data-mode on
+   <html> (set pre-paint by SiteLayout); without JS the media-query duplicate
+   below follows the system directly.
+   ========================================================================== */
+
+.vitrine {
+  /* light: warm gallery paper */
+  --v-bg: #f4f0e8;
+  --v-bg-deep: #ebe5d8;
+  --v-ink: #1a1712;
+  --v-muted: #5d5645;
+  --v-line: rgba(26, 23, 18, 0.16);
+  --v-line-strong: rgba(26, 23, 18, 0.4);
+  --v-accent: #7d5f35;
+  --v-error: #9c3322;
+  --v-plate-ink: #f1ebdf; /* on the art plates, which stay dark in both modes */
+  --v-serif: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --v-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --v-gutter: clamp(1.25rem, 5vw, 5.5rem);
+  --v-section: clamp(6rem, 16vh, 11rem);
+
+  background: var(--v-bg);
+  color: var(--v-ink);
+  font-family: var(--v-sans);
+  overflow-x: clip;
+}
+
+/* Dark: warm near-black. Keep in sync with the no-JS duplicate below. */
+:root[data-mode='dark'] .vitrine {
+  --v-bg: #110f0c;
+  --v-bg-deep: #181410;
+  --v-ink: #ece5d8;
+  --v-muted: #b3a98f;
+  --v-line: rgba(236, 229, 216, 0.16);
+  --v-line-strong: rgba(236, 229, 216, 0.42);
+  --v-accent: #c9a36a;
+  --v-error: #e08870;
+}
+/* No-JS fallback: no data-mode attribute, follow the system. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode]) .vitrine {
+    --v-bg: #110f0c;
+    --v-bg-deep: #181410;
+    --v-ink: #ece5d8;
+    --v-muted: #b3a98f;
+    --v-line: rgba(236, 229, 216, 0.16);
+    --v-line-strong: rgba(236, 229, 216, 0.42);
+    --v-accent: #c9a36a;
+    --v-error: #e08870;
+  }
+}
+
+.vitrine ::selection {
+  background: var(--v-accent);
+  color: var(--v-bg);
+}
+
+/* ---- primitives ---- */
+
+.v-serif {
+  font-family: var(--v-serif);
+  font-optical-sizing: auto;
+  font-weight: 380;
+  letter-spacing: -0.01em;
+}
+
+.v-label {
+  font-family: var(--v-sans);
+  font-size: 0.68rem;
+  font-weight: 560;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--v-accent);
+}
+
+.v-rule {
+  display: block;
+  height: 1px;
+  background: var(--v-line);
+  transform-origin: left;
+}
+
+/* Masked line reveals: the wrapper clips, the inner line rises. */
+.v-mask {
+  display: block;
+  overflow: hidden;
+}
+.v-mask-inner {
+  display: block;
+}
+
+/* Screen-reader-only headings (sections labelled visually by .v-label). */
+.v-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Initial hidden states for the motion choreography. Gated on html.js (set
+   pre-paint) AND motion-ok, so no-JS clients, crawlers, and reduced-motion
+   visitors always see complete content. vitrine-motion.ts animates these in. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .vitrine .v-mask-inner {
+    transform: translateY(112%);
+  }
+  html.js .vitrine [data-v-fade],
+  html.js .vitrine [data-v-hero-fade] {
+    opacity: 0;
+  }
+  html.js .vitrine [data-v-rule],
+  html.js .vitrine [data-v-hero-rule] {
+    transform: scaleX(0);
+  }
+
+  /* The mode toggle cross-fades the canvas instead of snapping. */
+  .vitrine,
+  .vitrine .v-tonal {
+    transition: background-color 0.45s ease, color 0.45s ease;
+  }
+}
