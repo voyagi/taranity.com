@@ -1,0 +1,87 @@
+---
+/**
+ * Full-viewport editorial opening. The statement leads with what the work is
+ * for (being remembered, results), never with the tooling. Server-rendered
+ * and fully visible without JS; motion only adds the entrance.
+ */
+---
+
+<section class="v-hero">
+  <p class="v-label v-hero-kicker" data-v-hero-fade>Digital studio · Eindhoven</p>
+
+  <h1 class="v-hero-title v-serif">
+    <span class="v-mask"><span class="v-mask-inner">Made to be</span></span>
+    <span class="v-mask"><span class="v-mask-inner"><em>remembered.</em></span></span>
+  </h1>
+
+  <div class="v-hero-foot">
+    <p class="v-hero-sub" data-v-hero-fade>
+      Websites, apps, and the quiet systems behind them, for brands built on
+      detail. Designed and engineered in the Netherlands.
+    </p>
+    <p class="v-hero-scroll" data-v-hero-fade aria-hidden="true">
+      Scroll<span class="v-hero-scroll-line"></span>
+    </p>
+  </div>
+
+  <span class="v-rule" data-v-hero-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .v-hero {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    padding: clamp(6rem, 14vh, 9rem) var(--v-gutter) clamp(1.8rem, 4vh, 3rem);
+  }
+  .v-hero-kicker {
+    color: var(--v-muted);
+  }
+  .v-hero-title {
+    margin-block: auto;
+    font-size: clamp(3.4rem, 12.5vw, 11.5rem);
+    font-weight: 360;
+    line-height: 0.93;
+    letter-spacing: -0.015em;
+  }
+  .v-hero-title em {
+    font-style: normal;
+    font-weight: 250;
+  }
+  .v-hero-foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: clamp(1.6rem, 4vh, 2.6rem);
+  }
+  .v-hero-sub {
+    max-width: 44ch;
+    font-size: clamp(0.95rem, 1.4vw, 1.08rem);
+    line-height: 1.65;
+    color: var(--v-muted);
+  }
+  .v-hero-scroll {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.66rem;
+    font-weight: 540;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--v-muted);
+    white-space: nowrap;
+  }
+  .v-hero-scroll-line {
+    width: clamp(2.6rem, 7vw, 5.5rem);
+    height: 1px;
+    background: var(--v-line-strong);
+  }
+  @media (max-width: 640px) {
+    .v-hero-foot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.4rem;
+    }
+  }
+</style>

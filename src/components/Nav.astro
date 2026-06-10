@@ -10,7 +10,7 @@ const isActive = (href: string) =>
 
 <header class="site-nav">
   <nav class="nav-inner" aria-label="Primary">
-    <a href="/" class="wordmark" aria-label={`${site.name} — home`} data-cursor-text="home">
+    <a href="/" class="wordmark" aria-label={`${site.name} — home`} data-cursor-text="home" data-astro-reload>
       <span class="prompt">~/</span><span class="word">taranity</span><span class="dot" aria-hidden="true"></span>
     </a>
 
@@ -233,6 +233,11 @@ const isActive = (href: string) =>
   @media (max-width: 860px) {
     .nav-links, .nav-cta { display: none; }
     .nav-burger { display: inline-flex; }
+  }
+  /* Small screens: the ⌘K chip is a keyboard affordance and was pushing the
+     nav past the viewport edge. */
+  @media (max-width: 640px) {
+    .kbd-chip { display: none; }
   }
   @media (min-width: 861px) {
     .mobile-sheet { display: none !important; }

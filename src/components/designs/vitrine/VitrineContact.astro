@@ -1,0 +1,430 @@
+---
+/**
+ * Written contact only (hard rule: no booking, no calls): a short form and a
+ * direct email address, then the page footer. Submission posts to Web3Forms
+ * with the same hardened pattern as the original contact page (hardcoded
+ * endpoint, honeypot, demo mode without a key, inline validation).
+ */
+import { services, socials, contactEmail, site } from '../../../config/site';
+
+const hasKey = Boolean(services.web3formsKey);
+const year = new Date().getFullYear();
+---
+
+<section class="v-contact" id="contact" tabindex="-1">
+  <p class="v-label" data-v-fade>04 · Contact</p>
+
+  <h2 class="v-contact-title v-serif" data-v-lines>
+    <span class="v-mask"><span class="v-mask-inner">Tell us what</span></span>
+    <span class="v-mask"><span class="v-mask-inner">you are building.</span></span>
+  </h2>
+
+  <div class="v-contact-grid">
+    <div class="v-contact-aside" data-v-fade>
+      <p class="v-contact-lead">
+        Write a few lines about the work. We read everything and reply within a
+        day, in writing.
+      </p>
+      <a class="v-contact-email v-serif" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      <p class="v-contact-loc">{site.location}</p>
+      <ul class="v-contact-socials">
+        {
+          socials.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="v-form-wrap" data-v-fade>
+      <form
+        class="v-form"
+        data-v-form
+        data-fallback-email={contactEmail}
+        action="https://api.web3forms.com/submit"
+        method="POST"
+        novalidate
+      >
+        <input type="hidden" name="access_key" value={services.web3formsKey} />
+        <input type="hidden" name="subject" value="New enquiry via taranity.com (Vitrine)" />
+        <input type="hidden" name="from_name" value="taranity.com" />
+        <!-- Honeypot -->
+        <input type="checkbox" name="botcheck" class="v-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        {
+          !hasKey && (
+            <p class="v-demo-note">Demo mode: add a Web3Forms key to send for real (see HUMAN-TODO).</p>
+          )
+        }
+
+        <div class="v-field">
+          <label for="v-name">Name</label>
+          <input id="v-name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="v-err-name" />
+          <span class="v-field-err" id="v-err-name" data-v-err="name" role="alert"></span>
+        </div>
+
+        <div class="v-field">
+          <label for="v-email">Email</label>
+          <input id="v-email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="v-err-email" />
+          <span class="v-field-err" id="v-err-email" data-v-err="email" role="alert"></span>
+        </div>
+
+        <div class="v-field">
+          <label for="v-message">Message</label>
+          <textarea id="v-message" name="message" rows="5" required maxlength="3000" aria-describedby="v-err-message"></textarea>
+          <span class="v-field-err" id="v-err-message" data-v-err="message" role="alert"></span>
+        </div>
+
+        <button type="submit" class="v-submit">
+          <span data-v-submit-label>Send message</span>
+          <span class="v-submit-line" aria-hidden="true"></span>
+        </button>
+
+        <p class="v-form-status" data-v-form-status role="status" aria-live="polite"></p>
+        <p class="v-form-privacy">
+          Delivered via Web3Forms and used only to reply. No cookies, nothing
+          sold. <a href="/privacy" data-astro-reload>How your data is handled</a>.
+        </p>
+      </form>
+
+      <div class="v-form-success" data-v-form-success hidden>
+        <h3 class="v-serif">Received.</h3>
+        <p>Thank you. We reply within a day, usually sooner, and always in writing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="v-footer">
+  <p>© {year} Taranity</p>
+  <p class="v-footer-note" aria-hidden="true">Vitrine · a Taranity design language</p>
+  <a href="/privacy" data-astro-reload>Privacy</a>
+</footer>
+
+<style>
+  .v-contact {
+    padding: var(--v-section) var(--v-gutter) clamp(3.5rem, 9vh, 6rem);
+  }
+  .v-contact:focus {
+    outline: none;
+  }
+  .v-contact-title {
+    margin-block: clamp(1.6rem, 4vh, 2.4rem) clamp(2.5rem, 6vh, 4rem);
+    font-size: clamp(2.6rem, 7.5vw, 7rem);
+    font-weight: 380;
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+  }
+  .v-contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: clamp(3rem, 7vw, 6.5rem);
+    align-items: start;
+  }
+  .v-contact-lead {
+    max-width: 38ch;
+    margin-bottom: clamp(1.8rem, 5vh, 2.6rem);
+    font-size: 1.04rem;
+    line-height: 1.7;
+    color: var(--v-muted);
+  }
+  .v-contact-email {
+    font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+    font-weight: 400;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 6px;
+  }
+  .v-contact-loc {
+    margin-top: 0.9rem;
+    font-size: 0.9rem;
+    color: var(--v-muted);
+  }
+  .v-contact-socials {
+    display: flex;
+    gap: 1.6rem;
+    margin: 2.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .v-contact-socials a {
+    font-size: 0.7rem;
+    font-weight: 540;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--v-muted);
+  }
+  .v-contact-socials a:hover {
+    color: var(--v-ink);
+  }
+
+  /* Form: editorial underline fields. */
+  .v-hp {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+  .v-demo-note {
+    margin-bottom: 1.6rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--v-line);
+    font-size: 0.8rem;
+    color: var(--v-accent);
+  }
+  .v-field {
+    margin-bottom: 1.7rem;
+  }
+  .v-field label {
+    display: block;
+    margin-bottom: 0.55rem;
+    font-size: 0.68rem;
+    font-weight: 560;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v-muted);
+  }
+  .v-field input,
+  .v-field textarea {
+    width: 100%;
+    padding: 0.45rem 0 0.75rem;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--v-line-strong);
+    border-radius: 0;
+    font-size: 1.05rem;
+    color: var(--v-ink);
+  }
+  .v-field textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+  .v-field input:focus-visible,
+  .v-field textarea:focus-visible {
+    outline: none;
+    border-bottom: 2px solid var(--v-accent);
+    padding-bottom: calc(0.75rem - 1px);
+  }
+  .v-field.invalid input,
+  .v-field.invalid textarea {
+    border-bottom-color: var(--v-error);
+  }
+  .v-field-err {
+    display: block;
+    min-height: 1rem;
+    margin-top: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--v-error);
+  }
+
+  .v-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.4rem;
+    padding: 1rem 2.1rem;
+    border: 1px solid var(--v-line-strong);
+    border-radius: 999px;
+    background: transparent;
+    font-size: 0.74rem;
+    font-weight: 580;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--v-ink);
+    cursor: pointer;
+  }
+  .v-submit-line {
+    width: 2rem;
+    height: 1px;
+    background: currentColor;
+  }
+  .v-submit:hover {
+    background: var(--v-ink);
+    border-color: var(--v-ink);
+    color: var(--v-bg);
+  }
+  .v-submit[disabled] {
+    opacity: 0.55;
+    cursor: progress;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .v-submit {
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+    .v-submit-line {
+      transition: width 0.3s;
+    }
+    .v-submit:hover .v-submit-line {
+      width: 3rem;
+    }
+  }
+
+  .v-form-status {
+    min-height: 1rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+  }
+  .v-form-status.is-error {
+    color: var(--v-error);
+  }
+  .v-form-privacy {
+    margin-top: 1.3rem;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--v-muted);
+  }
+  .v-form-privacy a {
+    color: inherit;
+  }
+
+  .v-form-success h3 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 380;
+    margin-bottom: 0.8rem;
+  }
+  .v-form-success p {
+    max-width: 40ch;
+    color: var(--v-muted);
+    line-height: 1.7;
+  }
+  .v-form-success[hidden] {
+    display: none;
+  }
+
+  .v-footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    flex-wrap: wrap;
+    margin-inline: var(--v-gutter);
+    padding-block: 1.8rem 2.4rem;
+    border-top: 1px solid var(--v-line);
+    font-size: 0.78rem;
+    color: var(--v-muted);
+  }
+  .v-footer a {
+    color: inherit;
+    text-underline-offset: 4px;
+  }
+  .v-footer a:hover {
+    color: var(--v-ink);
+  }
+
+  @media (max-width: 860px) {
+    .v-contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Same hardened submit flow as the original contact page: client validation,
+   * honeypot, demo mode without a key, and a hardcoded endpoint (never trust a
+   * DOM attribute for the POST target).
+   */
+  const KEY = (import.meta.env.PUBLIC_WEB3FORMS_KEY as string) || '';
+
+  function bindVitrineForm() {
+    const form = document.querySelector<HTMLFormElement>('[data-v-form]');
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = '1';
+
+    const status = form.querySelector<HTMLElement>('[data-v-form-status]')!;
+    const submitBtn = form.querySelector<HTMLButtonElement>('.v-submit')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-v-submit-label]')!;
+    // The success panel is the form's sibling inside .v-form-wrap; scope the
+    // lookup there so a second instance of this component could never grab
+    // another form's panel.
+    const successPanel = form.closest('.v-form-wrap')!.querySelector<HTMLElement>('[data-v-form-success]')!;
+
+    const setErr = (name: string, msg: string) => {
+      const field = form.querySelector(`[name="${name}"]`)?.closest('.v-field');
+      const errEl = form.querySelector(`[data-v-err="${name}"]`);
+      if (field) field.classList.toggle('invalid', Boolean(msg));
+      if (errEl) errEl.textContent = msg;
+    };
+
+    const validate = () => {
+      let ok = true;
+      const data = new FormData(form);
+      const name = String(data.get('name') || '').trim();
+      const email = String(data.get('email') || '').trim();
+      const message = String(data.get('message') || '').trim();
+
+      setErr('name', name ? '' : 'Tell us your name.');
+      if (!name) ok = false;
+
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      setErr('email', email ? (emailOk ? '' : 'That email looks off.') : 'We need an email to reply.');
+      if (!emailOk) ok = false;
+
+      setErr('message', message.length >= 10 ? '' : 'A sentence or two, please (10+ characters).');
+      if (message.length < 10) ok = false;
+
+      if (!ok) {
+        form.querySelector<HTMLElement>('.v-field.invalid input, .v-field.invalid textarea')?.focus();
+      }
+      return ok;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '';
+      status.classList.remove('is-error');
+      if (!validate()) return;
+
+      if ((form.querySelector('[name="botcheck"]') as HTMLInputElement)?.checked) return;
+
+      submitBtn.disabled = true;
+      submitLabel.textContent = 'Sending…';
+
+      const showSuccess = () => {
+        form.hidden = true;
+        successPanel.hidden = false;
+        successPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+
+      // Demo mode: no key, simulate success so the flow stays reviewable.
+      if (!KEY) {
+        await new Promise((r) => setTimeout(r, 700));
+        showSuccess();
+        return;
+      }
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        const json = await res.json().catch(() => ({}));
+        if (res.ok && json.success) {
+          showSuccess();
+        } else {
+          throw new Error(json.message || 'Send failed');
+        }
+      } catch {
+        const fallbackEmail = form.dataset.fallbackEmail || 'hello@taranity.com';
+        status.textContent = `Could not send. Email ${fallbackEmail} directly?`;
+        status.classList.add('is-error');
+        submitBtn.disabled = false;
+        submitLabel.textContent = 'Try again';
+      }
+    });
+
+    // Clear an error as soon as the visitor edits the field.
+    form.querySelectorAll('input, textarea').forEach((el) => {
+      el.addEventListener('input', () => {
+        const name = (el as HTMLInputElement).name;
+        if (el.closest('.v-field')?.classList.contains('invalid')) setErr(name, '');
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindVitrineForm);
+</script>
