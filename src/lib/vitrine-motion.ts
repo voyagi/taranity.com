@@ -35,6 +35,10 @@ function teardown() {
   if (rafCb) {
     gsap.ticker.remove(rafCb);
     rafCb = null;
+    // Undo the lagSmoothing(0) below: the ticker is shared GSAP state, and the
+    // next design's motion would otherwise inherit disabled smoothing. GSAP has
+    // no getter for it, so restore the documented defaults.
+    gsap.ticker.lagSmoothing(500, 33);
   }
 }
 
