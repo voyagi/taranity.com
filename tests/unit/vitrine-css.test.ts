@@ -61,6 +61,7 @@ describe('vitrine atmosphere layer wiring', () => {
   });
 
   it('the CSS addresses every paper layer it expects', () => {
+    expect(css.includes('.v-paper i:first-child'), 'first-child rule missing').toBe(true);
     for (const n of [2, 3, 4, 5]) {
       expect(css.includes(`.v-paper i:nth-child(${n})`), `nth-child(${n}) rule missing`).toBe(true);
     }
