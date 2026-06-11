@@ -22,6 +22,11 @@
   --v-serif: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --v-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --v-gutter: clamp(1.25rem, 5vw, 5.5rem);
+  /* Composition frame: content is capped and centred so ultrawide screens get
+     a designed canvas with symmetric margins instead of leftover space.
+     Sections use padding-inline: var(--v-pad); the % resolves per section. */
+  --v-max: 1680px;
+  --v-pad: max(var(--v-gutter), calc((100% - var(--v-max)) / 2));
   --v-section: clamp(6rem, 16vh, 11rem);
 
   background: var(--v-bg);

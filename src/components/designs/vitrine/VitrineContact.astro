@@ -107,14 +107,14 @@ const year = new Date().getFullYear();
 
 <style>
   .v-contact {
-    padding: var(--v-section) var(--v-gutter) clamp(3.5rem, 9vh, 6rem);
+    padding: var(--v-section) var(--v-pad) clamp(3.5rem, 9vh, 6rem);
   }
   .v-contact:focus {
     outline: none;
   }
   .v-contact-title {
     margin-block: clamp(1.6rem, 4vh, 2.4rem) clamp(2.5rem, 6vh, 4rem);
-    font-size: clamp(2.6rem, 7.5vw, 7rem);
+    font-size: clamp(2.6rem, 7.5vw, 7.5rem);
     font-weight: 380;
     line-height: 0.98;
     letter-spacing: -0.015em;
@@ -162,7 +162,10 @@ const year = new Date().getFullYear();
     color: var(--v-ink);
   }
 
-  /* Form: editorial underline fields. */
+  /* Form: editorial underline fields, capped so inputs keep a humane measure. */
+  .v-form-wrap {
+    max-width: 680px;
+  }
   .v-hp {
     position: absolute;
     left: -9999px;
@@ -300,7 +303,7 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     gap: 1rem 2rem;
     flex-wrap: wrap;
-    margin-inline: var(--v-gutter);
+    margin-inline: var(--v-pad);
     padding-block: 1.8rem 2.4rem;
     border-top: 1px solid var(--v-line);
     font-size: 0.78rem;
