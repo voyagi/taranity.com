@@ -9,7 +9,10 @@
 // command palette (Ctrl+K / Esc), contact form validation + success (demo mode),
 // custom 404, and no horizontal overflow at mobile/tablet/desktop.
 
-const BASE = 'http://localhost:4321';
+// IPv4-explicit on purpose: serve-headers.mjs binds 127.0.0.1, while a stray
+// `astro preview` (no _headers applied) binds ::1 — and `localhost` resolves
+// to ::1 first, silently swapping the server under the suite.
+const BASE = 'http://127.0.0.1:4321';
 // axe-core served from the site's own origin (copied into dist by prep-e2e.mjs)
 // so the production CSP can stay strict (no CDN in script-src).
 const AXE = BASE + '/axe-test.js';
@@ -307,6 +310,53 @@ await page.setViewportSize({ width: 390, height: 844 });
 await page.goto(BASE + '/', { waitUntil: 'load' });
 await settle(400);
 const mobilePath = await saveScreenshot(await page.screenshot(), 'e2e-home-mobile-motion.png');
+
+// ---- motion ON: reveal-gated content actually becomes visible ----
+// (The audits above run under reduced motion, where nothing is ever hidden;
+// this guards the real reveal path. A mask line that stays translated by its
+// own height reads as a blank page to visitors.)
+// Force no-preference explicitly: the earlier reset restores the HOST default,
+// and a host with OS-level reduced motion would pass these checks trivially
+// without ever exercising the reveal path.
+try {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+} catch {
+  /* harness without emulateMedia: best effort, matches the rest of the suite */
+}
+const maskOffsets = (sel) =>
+  page.evaluate(
+    (s) =>
+      [...document.querySelectorAll(s)].map((el) =>
+        Math.round(el.getBoundingClientRect().top - el.parentElement.getBoundingClientRect().top)),
+    sel,
+  );
+const revealed = (offs) => offs.length > 0 && offs.every((o) => Math.abs(o) < 8);
+// Poll instead of a flat sleep: the reveal sits behind animation time plus
+// (for scrolled sections) ScrollTrigger firing, both of which stretch under load.
+const awaitReveal = async (sel, deadlineMs) => {
+  const start = Date.now();
+  let offs = await maskOffsets(sel);
+  while (!revealed(offs) && Date.now() - start < deadlineMs) {
+    await settle(250);
+    offs = await maskOffsets(sel);
+  }
+  return offs;
+};
+
+await page.setViewportSize({ width: 1440, height: 900 });
+await page.goto(BASE + '/', { waitUntil: 'load' });
+const heroCount = await page.evaluate(() => document.querySelectorAll('.v-hero .v-mask-inner').length);
+rec('vitrine motion: hero has its two masked lines', heroCount === 2, 'count=' + heroCount);
+const heroOffsets = await awaitReveal('.v-hero .v-mask-inner', 6000); // entrance is ~2.2s
+rec('vitrine motion: hero title lines rise fully into view', revealed(heroOffsets), 'offsets=' + JSON.stringify(heroOffsets));
+
+// The contact statement reveals after the in-page anchor glide (goes through
+// the design's own Lenis scroll, like a real visitor).
+await page.click('.v-nav a[href="#contact"]');
+const stmtCount = await page.evaluate(() => document.querySelectorAll('.v-contact [data-v-lines] .v-mask-inner').length);
+rec('vitrine motion: contact statement has its two masked lines', stmtCount === 2, 'count=' + stmtCount);
+const stmtOffsets = await awaitReveal('.v-contact [data-v-lines] .v-mask-inner', 8000); // 1.6s glide + 1.05s reveal
+rec('vitrine motion: contact statement lines rise fully into view', revealed(stmtOffsets), 'offsets=' + JSON.stringify(stmtOffsets));
 
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
