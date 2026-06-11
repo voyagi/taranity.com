@@ -90,7 +90,7 @@ const hasKey = Boolean(services.web3formsKey);
         </p>
       </form>
 
-      <div class="v-form-success" data-v-form-success hidden>
+      <div class="v-form-success" data-v-form-success hidden tabindex="-1">
         <h3 class="v-serif">Received.</h3>
         <p>Thank you. We reply within a day, usually sooner, and always in writing.</p>
       </div>
@@ -276,6 +276,9 @@ const hasKey = Boolean(services.web3formsKey);
     color: inherit;
   }
 
+  .v-form-success:focus {
+    outline: none;
+  }
   .v-form-success h3 {
     font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 380;
@@ -363,6 +366,9 @@ const hasKey = Boolean(services.web3formsKey);
         form.hidden = true;
         successPanel.hidden = false;
         successPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Keyboard/SR users were focused on the now-hidden submit button:
+        // move focus so the confirmation is announced and reachable.
+        successPanel.focus({ preventScroll: true });
       };
 
       // Demo mode: no key, simulate success so the flow stays reviewable.

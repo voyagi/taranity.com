@@ -389,7 +389,10 @@ rec('atlas motion: hero title lines rise fully into view', revealed(aHeroOffsets
 
 // The WebGL journey is lazy (idle callback + dynamic three.js chunk) and
 // must resolve deterministically: data-gl='on' with a live canvas, or a
-// clean 'off' fallback. Anything else means the boot path wedged.
+// clean 'off' fallback. Anything else means the boot path wedged. A null
+// state also FAILS by design: it means motion never ran (e.g. a harness
+// without emulateMedia on a reduced-motion host), and an environment that
+// cannot exercise the motion path must fail loudly, not skip silently.
 let glState = null;
 for (const start = Date.now(); Date.now() - start < 12000; ) {
   glState = await page.evaluate(() => document.querySelector('[data-atlas]')?.getAttribute('data-gl') ?? null);

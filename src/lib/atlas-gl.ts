@@ -192,7 +192,10 @@ function buildRings(): { group: Group; geometries: BufferGeometry[]; material: L
 
 /* The route: camera keyframes over scroll progress. Hero frames the globe
    right of the type; the journey orbits it, climbs over the method, then
-   pulls away for the contact close. */
+   pulls away for the contact close.
+   INVARIANT: p values must be strictly increasing. poseAt's smoothstep
+   divides by (b.p - a.p); a repeated p would yield NaN and silently corrupt
+   the camera position. */
 const POSES: Array<{ p: number; pos: Vector3; look: Vector3 }> = [
   { p: 0.0, pos: new Vector3(-1.9, 0.35, 4.3), look: new Vector3(-0.95, 0.08, 0) },
   { p: 0.22, pos: new Vector3(-0.5, 0.7, 3.3), look: new Vector3(-0.1, 0.15, 0) },
@@ -263,6 +266,7 @@ export function createAtlasScene(root: HTMLElement): AtlasScene | null {
   let raf = 0;
   let running = false;
   let destroyed = false;
+  let contextLost = false;
   let lastTime = 0;
   let elapsed = 0;
 
@@ -321,6 +325,7 @@ export function createAtlasScene(root: HTMLElement): AtlasScene | null {
   // than leaving a black hole behind the content.
   const onContextLost = (e: Event) => {
     e.preventDefault();
+    contextLost = true;
     destroy();
     root.setAttribute('data-gl', 'off');
   };
@@ -347,8 +352,12 @@ export function createAtlasScene(root: HTMLElement): AtlasScene | null {
     starsMaterial.dispose();
     rings.geometries.forEach((g) => g.dispose());
     rings.material.dispose();
-    renderer.dispose();
-    renderer.forceContextLoss();
+    // On a lost context the driver already reclaimed everything; walking the
+    // renderer's allocator (or re-losing the context) can log GL errors.
+    if (!contextLost) {
+      renderer.dispose();
+      renderer.forceContextLoss();
+    }
     canvas.remove();
     container?.classList.remove('is-live');
   }
