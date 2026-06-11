@@ -1,0 +1,55 @@
+---
+/**
+ * Outlined-serif marquee band between the studio and contact sections. Pure
+ * CSS animation (no JS), paused into a static strip under reduced motion.
+ * Decorative: the same words live in the capabilities index, so the whole
+ * band is hidden from assistive tech.
+ */
+const phrase = 'Websites · Applications · Automation · Intelligent systems · ';
+---
+
+<div class="v-marquee" aria-hidden="true">
+  <div class="v-marquee-track">
+    <span class="v-marquee-text v-serif">{phrase}{phrase}</span>
+  </div>
+</div>
+
+<style>
+  .v-marquee {
+    overflow: hidden;
+    padding-block: clamp(1.4rem, 4vh, 2.6rem);
+    border-bottom: 1px solid var(--v-line);
+    white-space: nowrap;
+  }
+  .v-marquee-track {
+    display: inline-block;
+  }
+  .v-marquee-text {
+    display: inline-block;
+    font-size: clamp(3rem, 7.5vw, 6.5rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--v-ink) 55%, transparent);
+  }
+  /* No text-stroke support: a faint solid fill keeps the band readable. */
+  @supports not (-webkit-text-stroke: 1px black) {
+    .v-marquee-text {
+      color: color-mix(in srgb, var(--v-ink) 30%, transparent);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .v-marquee-track {
+      animation: v-marquee-drift 46s linear infinite;
+    }
+  }
+  @keyframes v-marquee-drift {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      /* The text is the phrase twice, so -50% loops seamlessly. */
+      transform: translateX(-50%);
+    }
+  }
+</style>

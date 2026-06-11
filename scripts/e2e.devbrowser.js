@@ -351,12 +351,24 @@ const heroOffsets = await awaitReveal('.v-hero .v-mask-inner', 6000); // entranc
 rec('vitrine motion: hero title lines rise fully into view', revealed(heroOffsets), 'offsets=' + JSON.stringify(heroOffsets));
 
 // The contact statement reveals after the in-page anchor glide (goes through
-// the design's own Lenis scroll, like a real visitor).
+// the design's own Lenis scroll, like a real visitor). The glide passes every
+// work plate, so their wipe reveals must have fired by the time we arrive.
 await page.click('.v-nav a[href="#contact"]');
 const stmtCount = await page.evaluate(() => document.querySelectorAll('.v-contact [data-v-lines] .v-mask-inner').length);
 rec('vitrine motion: contact statement has its two masked lines', stmtCount === 2, 'count=' + stmtCount);
 const stmtOffsets = await awaitReveal('.v-contact [data-v-lines] .v-mask-inner', 8000); // 1.6s glide + 1.05s reveal
 rec('vitrine motion: contact statement lines rise fully into view', revealed(stmtOffsets), 'offsets=' + JSON.stringify(stmtOffsets));
+const readPlateClips = () =>
+  page.evaluate(() =>
+    [...document.querySelectorAll('[data-v-plate-art]')].map((el) => getComputedStyle(el).clipPath),
+  );
+const platesOpen = (clips) => clips.length === 4 && clips.every((c) => !c.includes('100%'));
+let plateClips = await readPlateClips();
+for (const start = Date.now(); !platesOpen(plateClips) && Date.now() - start < 4000; ) {
+  await settle(250);
+  plateClips = await readPlateClips();
+}
+rec('vitrine motion: work plates wiped fully open', platesOpen(plateClips), JSON.stringify(plateClips));
 
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
