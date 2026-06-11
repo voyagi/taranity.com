@@ -55,8 +55,17 @@ function setup() {
   // hidden (dragging it fights the smoothing loop) and the top hairline
   // takes over as the position indicator.
   lenis = new Lenis({ duration: 1.35, smoothWheel: true, touchMultiplier: 1.4 });
+  // Usually already set pre-paint by SiteLayout's inline script (data-smooth);
+  // re-adding covers the mid-session "reduced motion turned off" path.
   document.documentElement.classList.add('v-lenis');
   const progress = document.querySelector<HTMLElement>('[data-v-progress]');
+  // Sync immediately so a visitor already mid-page (motion toggled on, or a
+  // restored scroll position) does not see the bar stuck at zero until the
+  // first scroll event.
+  if (progress) {
+    const limit = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.transform = `scaleX(${limit > 0 ? window.scrollY / limit : 0})`;
+  }
   lenis.on('scroll', (l: Lenis) => {
     ScrollTrigger.update();
     if (progress && l.limit > 0) progress.style.transform = `scaleX(${l.scroll / l.limit})`;
@@ -199,5 +208,7 @@ window.addEventListener('load', () => {
 });
 
 // Respond to a mid-session prefers-reduced-motion change in either direction:
-// setup() handles its own teardown, and the CSS gates flip with the media query.
+// setup() calls teardown() first (that teardown doubles as the cleanup when
+// the new state is reduce, removing v-lenis and the progress transform), and
+// the CSS gates flip with the media query.
 window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => setup());
