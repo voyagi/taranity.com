@@ -1,10 +1,12 @@
 ---
 /**
- * Selected work as full-bleed editorial plates. The imagery is generative and
- * ships in CSS/SVG instead of megabytes of photography: a layered gradient
- * field, an engraved line motif unique to each piece, an oversized roman
- * numeral, and film grain. Copy is bespoke to Vitrine; the canonical
- * case-study data stays in src/content/projects.ts.
+ * Selected work as cinematic full-bleed plates: edge-to-edge generative
+ * artwork (gradient field + engraved SVG motif + cropped roman numeral +
+ * grain) with the project title set directly on the piece. Each plate wipes
+ * open as it enters (vitrine-motion.ts). The artwork layers are decorative
+ * (aria-hidden); the overlaid text is the real content and stays outside.
+ * Copy is bespoke to Vitrine; canonical case-study data lives in
+ * src/content/projects.ts.
  */
 interface Plate {
   numeral: string;
@@ -44,7 +46,7 @@ const plates: Plate[] = [
     numeral: 'III',
     title: 'Overnight Engineering',
     category: 'Automation system',
-    line: 'An engineering system that ships finished work while everyone sleeps.',
+    line: 'Finished work ships while everyone sleeps.',
     metricValue: '300+',
     metricLabel: 'working sessions carried',
     motif: 'arcs',
@@ -87,7 +89,7 @@ const arcRadii = [620, 780, 950, 1130, 1320];
 
   {
     plates.map((p, i) => (
-      <article class:list={['v-plate', { 'is-flip': i % 2 === 1 }]}>
+      <article class="v-plate">
         <div
           class="v-plate-art"
           data-v-plate-art
@@ -133,14 +135,19 @@ const arcRadii = [620, 780, 950, 1130, 1320];
             <span class="v-plate-numeral v-serif">{p.numeral}</span>
           </div>
         </div>
-        <div class="v-plate-text">
-          <p class="v-label" data-v-fade>{p.category}</p>
-          <h3 class="v-plate-title v-serif" data-v-fade>{p.title}</h3>
-          <p class="v-plate-line" data-v-fade>{p.line}</p>
-          <p class="v-plate-metric" data-v-fade>
-            <span class="v-plate-metric-value v-serif">{p.metricValue}</span>
-            <span class="v-plate-metric-label">{p.metricLabel}</span>
-          </p>
+
+        <div class="v-plate-overlay">
+          <p class="v-plate-index" data-v-fade>{String(i + 1).padStart(2, '0')} · {p.category}</p>
+          <div class="v-plate-foot">
+            <div>
+              <h3 class="v-plate-title v-serif" data-v-fade>{p.title}</h3>
+              <p class="v-plate-line" data-v-fade>{p.line}</p>
+            </div>
+            <p class="v-plate-metric" data-v-fade>
+              <span class="v-plate-metric-value v-serif">{p.metricValue}</span>
+              <span class="v-plate-metric-label">{p.metricLabel}</span>
+            </p>
+          </div>
         </div>
       </article>
     ))
@@ -148,8 +155,13 @@ const arcRadii = [620, 780, 950, 1130, 1320];
 </section>
 
 <style>
+  /* No inline padding on the section itself: the plates must reach the
+     viewport edges natively (a negative-margin breakout cannot, because the
+     --v-pad percentage would resolve against the already-padded content box).
+     The head and each plate overlay re-align to the frame via --v-pad, whose
+     100% here is the full-width section. */
   .v-work {
-    padding: var(--v-section) var(--v-pad);
+    padding-block: var(--v-section);
   }
   .v-work:focus {
     outline: none;
@@ -160,41 +172,28 @@ const arcRadii = [620, 780, 950, 1130, 1320];
     justify-content: space-between;
     gap: 1.5rem;
     flex-wrap: wrap;
-    margin-bottom: clamp(3rem, 8vh, 5rem);
+    margin-bottom: clamp(2.5rem, 7vh, 4.5rem);
+    padding-inline: var(--v-pad);
   }
   .v-work-note {
     font-size: 0.92rem;
     color: var(--v-muted);
   }
 
+  /* Full-bleed cinema: the plate spans the viewport; the overlaid text
+     re-aligns to the composition frame via the same --v-pad. */
   .v-plate {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 1.5rem 2rem;
-    align-items: end;
+    position: relative;
+    height: clamp(480px, 82svh, 920px);
+    overflow: hidden;
   }
   .v-plate + .v-plate {
-    margin-top: clamp(4.5rem, 12vh, 8rem);
+    margin-top: clamp(3rem, 8vh, 6rem);
   }
   .v-plate-art {
-    position: relative;
-    grid-column: 1 / span 9;
-    aspect-ratio: 16 / 11;
-    overflow: hidden;
-    border-radius: 2px;
-    border: 1px solid color-mix(in srgb, var(--v-plate-ink) 10%, transparent);
+    position: absolute;
+    inset: 0;
     background: var(--v-bg-deep);
-  }
-  .v-plate.is-flip .v-plate-art {
-    grid-column: 4 / span 9;
-  }
-  .v-plate-text {
-    grid-column: 10 / span 3;
-    grid-row: 1;
-    padding-bottom: 0.4rem;
-  }
-  .v-plate.is-flip .v-plate-text {
-    grid-column: 1 / span 3;
   }
 
   /* Oversized inner layer: the parallax travels within it, so edges never show. */
@@ -214,7 +213,7 @@ const arcRadii = [620, 780, 950, 1130, 1320];
     width: 100%;
     height: 100%;
     color: var(--v-plate-ink);
-    opacity: 0.16;
+    opacity: 0.2;
   }
   .v-plate-motif line,
   .v-plate-motif circle {
@@ -233,77 +232,85 @@ const arcRadii = [620, 780, 950, 1130, 1320];
     mix-blend-mode: overlay;
     pointer-events: none;
   }
+  /* Cropped on purpose: a watermark, not a label. */
   .v-plate-numeral {
     position: absolute;
-    right: 10%;
-    bottom: 4%;
-    font-size: clamp(8rem, 18vw, 19rem);
+    top: -7%;
+    right: 8%;
+    font-size: clamp(14rem, 30vw, 34rem);
     font-weight: 320;
     line-height: 1;
     color: var(--v-plate-ink);
-    opacity: 0.3;
+    opacity: 0.22;
   }
 
+  /* The text lives ON the piece, aligned back to the page frame. */
+  .v-plate-overlay {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: clamp(1.6rem, 4vh, 3rem) var(--v-pad);
+    color: var(--v-plate-ink);
+  }
+  .v-plate-index {
+    font-size: 0.7rem;
+    font-weight: 560;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+  .v-plate-foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
   .v-plate-title {
-    margin-block: 0.7rem 0.6rem;
-    font-size: clamp(1.9rem, 2.6vw, 3rem);
-    font-weight: 420;
-    line-height: 1.05;
+    font-size: clamp(2.6rem, 6vw, 5.8rem);
+    font-weight: 360;
+    line-height: 0.98;
+    letter-spacing: -0.015em;
   }
   .v-plate-line {
-    max-width: 30ch;
-    font-size: 0.98rem;
-    line-height: 1.6;
-    color: var(--v-muted);
+    max-width: 44ch;
+    margin-top: 0.9rem;
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    line-height: 1.55;
+    color: color-mix(in srgb, var(--v-plate-ink) 88%, transparent);
   }
   .v-plate-metric {
-    margin-top: clamp(1.4rem, 3vh, 2rem);
-    padding-top: 1.1rem;
-    border-top: 1px solid var(--v-line);
+    flex: 0 0 auto;
+    padding-top: 1rem;
+    border-top: 1px solid color-mix(in srgb, var(--v-plate-ink) 35%, transparent);
+    text-align: right;
   }
   .v-plate-metric-value {
     display: block;
-    font-size: clamp(2.4rem, 3.2vw, 3.6rem);
+    font-size: clamp(2.2rem, 3.4vw, 3.8rem);
     font-weight: 330;
     line-height: 1.1;
   }
   .v-plate-metric-label {
-    font-size: 0.8rem;
-    color: var(--v-muted);
+    font-size: 0.78rem;
+    color: color-mix(in srgb, var(--v-plate-ink) 88%, transparent);
   }
 
-  /* Narrow desktops/portrait tablets: 3 text columns get too tight before the
-     stack point, so hold the art at 8 columns and give the text 4. */
-  @media (max-width: 1100px) and (min-width: 901px) {
-    .v-plate-art {
-      grid-column: 1 / span 8;
+  @media (max-width: 700px) {
+    .v-plate {
+      height: clamp(440px, 72svh, 640px);
     }
-    .v-plate.is-flip .v-plate-art {
-      grid-column: 5 / span 8;
+    .v-plate-foot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.4rem;
     }
-    .v-plate-text {
-      grid-column: 9 / span 4;
+    .v-plate-metric {
+      text-align: left;
     }
-    .v-plate.is-flip .v-plate-text {
-      grid-column: 1 / span 4;
-    }
-  }
-  @media (max-width: 900px) {
-    .v-plate,
-    .v-plate.is-flip {
-      grid-template-columns: 1fr;
-    }
-    .v-plate-art,
-    .v-plate.is-flip .v-plate-art,
-    .v-plate-text,
-    .v-plate.is-flip .v-plate-text {
-      grid-column: 1;
-    }
-    .v-plate-text {
-      grid-row: auto;
-    }
-    .v-plate-art {
-      aspect-ratio: 4 / 3;
+    .v-plate-numeral {
+      right: -4%;
     }
   }
 </style>
