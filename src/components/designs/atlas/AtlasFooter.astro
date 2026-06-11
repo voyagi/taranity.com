@@ -1,0 +1,40 @@
+---
+/**
+ * Page footer. Kept deliberately small: legal line, design note, privacy.
+ */
+const year = new Date().getFullYear();
+---
+
+<footer class="a-footer">
+  <p>© {year} Taranity</p>
+  <p class="a-footer-note" aria-hidden="true">Atlas · a Taranity design language</p>
+  <a href="/privacy">Privacy</a>
+</footer>
+
+<style>
+  .a-footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    flex-wrap: wrap;
+    margin-inline: var(--a-pad);
+    padding-block: 1.8rem 2.4rem;
+    border-top: 1px solid var(--a-line);
+    font-size: 0.78rem;
+    color: var(--a-muted);
+  }
+  .a-footer-note {
+    font-family: var(--a-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .a-footer a {
+    color: inherit;
+    text-underline-offset: 4px;
+  }
+  .a-footer a:hover {
+    color: var(--a-ink);
+  }
+</style>

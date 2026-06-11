@@ -1,0 +1,97 @@
+---
+/**
+ * Who is behind the work. Small crew, worldwide range, written-first; the
+ * principles read like an operations card rather than an about page.
+ */
+const principles = [
+  'Written over meetings',
+  'Speed is a feature',
+  'Craft over volume',
+  'We stay after launch',
+];
+---
+
+<section class="a-section a-studio" id="studio" tabindex="-1">
+  <p class="a-label" data-a-fade>04 · Studio</p>
+
+  <h2 class="a-statement a-display" data-a-lines>
+    <span class="a-mask"><span class="a-mask-inner">A small crew</span></span>
+    <span class="a-mask"><span class="a-mask-inner">with global range.</span></span>
+  </h2>
+
+  <div class="a-studio-grid">
+    <div class="a-studio-copy" data-a-fade>
+      <p>
+        Taranity works with founders, agencies, and teams of every size, across
+        every timezone, in writing. Small on purpose: the people who scope your
+        work are the people who build it.
+      </p>
+      <p>
+        One craft at a time, taken end to end. We would rather ship one thing
+        that moves the needle than five things that merely exist.
+      </p>
+    </div>
+    <ul class="a-principles" data-a-fade>
+      {
+        principles.map((p, i) => (
+          <li>
+            <span class="a-principle-index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            {p}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <span class="a-rule" data-a-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .a-studio-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: start;
+    margin-bottom: clamp(3rem, 8vh, 5rem);
+  }
+  .a-studio-copy p {
+    max-width: 52ch;
+    font-size: clamp(0.98rem, 1.4vw, 1.12rem);
+    line-height: 1.7;
+    color: var(--a-muted);
+  }
+  .a-studio-copy p + p {
+    margin-top: 1.2rem;
+  }
+  .a-principles {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .a-principles li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding-block: 0.95rem;
+    border-top: 1px solid var(--a-line);
+    font-family: var(--a-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .a-principles li:last-child {
+    border-bottom: 1px solid var(--a-line);
+  }
+  .a-principle-index {
+    font-size: 0.58rem;
+    color: var(--a-accent);
+  }
+  @media (max-width: 860px) {
+    .a-studio-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,272 @@
+/* ==========================================================================
+   Atlas — immersive dark 3D journey. Space Grotesk display, JetBrains Mono
+   instrument labels, ion-blue accent over deep-space navy. A fixed Three.js
+   particle globe travels behind the content as the page scrolls
+   (src/lib/atlas-motion.ts orchestrates; src/lib/atlas-gl.ts is lazy-loaded
+   after first paint and skipped under reduced motion or missing WebGL).
+
+   Atlas is dark-only (designs.ts modes: ['dark']): tokens live on .atlas
+   directly and ignore data-mode, and color-scheme is pinned to dark so native
+   widgets never flip light underneath the scene.
+   ========================================================================== */
+
+/* INVARIANT: never declare transform, filter, perspective, contain, isolation,
+   or will-change on .atlas (or its ancestors) — any of them would turn it into
+   a containing block and re-pin the fixed .a-field / .a-gl / .a-track layers
+   inside it instead of the viewport. Pinned by tests/unit/atlas-css.test.ts. */
+.atlas {
+  --a-bg: #05070d;
+  --a-bg-raise: #0a0e18;
+  --a-ink: #e3eaf6;
+  --a-muted: #97a6bf;
+  --a-line: rgba(227, 234, 246, 0.14);
+  --a-line-strong: rgba(227, 234, 246, 0.38);
+  --a-accent: #7cc7ff;
+  --a-accent-dim: rgba(124, 199, 255, 0.32);
+  --a-error: #ff9d85;
+  --a-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --a-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --a-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --a-gutter: clamp(1.25rem, 5vw, 5.5rem);
+  /* Composition frame: content capped and centred, symmetric margins on
+     ultrawide. Sections use padding-inline: var(--a-pad). */
+  --a-max: 1680px;
+  --a-pad: max(var(--a-gutter), calc((100% - var(--a-max)) / 2));
+  --a-section: clamp(6rem, 16vh, 11rem);
+
+  background: var(--a-bg);
+  color: var(--a-ink);
+  font-family: var(--a-sans);
+  overflow-x: clip;
+  color-scheme: dark;
+}
+
+.atlas ::selection {
+  background: var(--a-accent);
+  color: #04121f;
+}
+
+/* ---- the field (CSS atmosphere: always present, also the no-GL fallback) ---- */
+
+/* Three fixed sheets behind everything: a cold starfield, nebula light pools,
+   and a faint survey graticule. The WebGL scene fades in over them; when GL
+   is live they recede a little so the particle globe owns the depth. */
+.a-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.atlas[data-gl='on'] .a-field {
+  opacity: 0.55;
+}
+.a-field i {
+  position: absolute;
+  /* Oversized on purpose: the drift animation must never expose an edge. */
+  inset: -7%;
+  background-repeat: repeat;
+}
+.a-field i:first-child {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='760'%3E%3Cg fill='%23e3eaf6'%3E%3Ccircle cx='42' cy='110' r='.7' fill-opacity='.65'/%3E%3Ccircle cx='128' cy='52' r='1.1' fill-opacity='.9'/%3E%3Ccircle cx='214' cy='176' r='.6' fill-opacity='.5'/%3E%3Ccircle cx='296' cy='88' r='.9' fill-opacity='.75'/%3E%3Ccircle cx='368' cy='214' r='.7' fill-opacity='.55'/%3E%3Ccircle cx='446' cy='44' r='1.2' fill-opacity='.85'/%3E%3Ccircle cx='522' cy='154' r='.6' fill-opacity='.5'/%3E%3Ccircle cx='604' cy='96' r='.8' fill-opacity='.7'/%3E%3Ccircle cx='688' cy='206' r='1' fill-opacity='.8'/%3E%3Ccircle cx='80' cy='306' r='.9' fill-opacity='.8'/%3E%3Ccircle cx='190' cy='378' r='.6' fill-opacity='.45'/%3E%3Ccircle cx='312' cy='336' r='1.1' fill-opacity='.9'/%3E%3Ccircle cx='410' cy='426' r='.7' fill-opacity='.6'/%3E%3Ccircle cx='520' cy='362' r='.8' fill-opacity='.7'/%3E%3Ccircle cx='628' cy='436' r='.6' fill-opacity='.5'/%3E%3Ccircle cx='706' cy='336' r='.9' fill-opacity='.75'/%3E%3Ccircle cx='46' cy='478' r='.7' fill-opacity='.6'/%3E%3Ccircle cx='150' cy='552' r='1' fill-opacity='.85'/%3E%3Ccircle cx='264' cy='508' r='.6' fill-opacity='.5'/%3E%3Ccircle cx='382' cy='568' r='.8' fill-opacity='.7'/%3E%3Ccircle cx='482' cy='618' r='.7' fill-opacity='.55'/%3E%3Ccircle cx='578' cy='548' r='1.2' fill-opacity='.9'/%3E%3Ccircle cx='672' cy='608' r='.6' fill-opacity='.5'/%3E%3Ccircle cx='96' cy='658' r='.8' fill-opacity='.7'/%3E%3Ccircle cx='220' cy='698' r='.7' fill-opacity='.6'/%3E%3Ccircle cx='342' cy='648' r='.9' fill-opacity='.8'/%3E%3Ccircle cx='620' cy='688' r='.7' fill-opacity='.6'/%3E%3Ccircle cx='716' cy='64' r='.6' fill-opacity='.5'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 760px 760px;
+}
+/* Nebula pools: indigo overhead, a cyan shoal low on the other side, and the
+   deep-space gradient that keeps the page floor darker than the sky. */
+.a-field i:nth-child(2) {
+  background-image:
+    radial-gradient(58% 46% at 72% 16%, rgba(74, 118, 196, 0.2), transparent 70%),
+    radial-gradient(44% 36% at 16% 64%, rgba(78, 168, 208, 0.1), transparent 72%),
+    radial-gradient(70% 52% at 50% 116%, rgba(16, 32, 74, 0.5), transparent 72%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+/* The survey graticule: a faint coordinate grid, fading toward the edges so
+   it reads as instrument glass rather than wallpaper. */
+.a-field i:nth-child(3) {
+  background-image:
+    linear-gradient(rgba(124, 199, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 199, 255, 0.045) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(75% 65% at 50% 40%, rgba(0, 0, 0, 0.9), transparent 92%);
+  -webkit-mask-image: radial-gradient(75% 65% at 50% 40%, rgba(0, 0, 0, 0.9), transparent 92%);
+}
+
+/* ---- the WebGL scene (lazy; src/lib/atlas-gl.ts appends the canvas) ---- */
+
+.a-gl {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.a-gl canvas {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+.a-gl.is-live canvas {
+  opacity: 1;
+}
+
+/* The content rides above the fixed field and scene. The header is already
+   positioned (absolute, z-index 10), so it needs no help. */
+.atlas > section,
+.atlas > footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- scroll affordance ---- */
+
+/* While Lenis drives the scroll, dragging the native scrollbar fights the
+   smoothing loop, so it is hidden for exactly that case (atlas-motion.ts
+   toggles html.v-lenis; the class is shared across designs and set pre-paint
+   by SiteLayout). Reduced-motion and no-JS visitors keep their scrollbar.
+   Duplicated from vitrine.css because each design's stylesheet ships alone. */
+html.v-lenis {
+  scrollbar-width: none;
+}
+html.v-lenis::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* The instrument rail that replaces it: a vertical track on the right edge
+   with a fill and a altitude-style percentage readout, driven from the Lenis
+   scroll handler in atlas-motion.ts. */
+.a-track {
+  position: fixed;
+  right: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  height: min(32vh, 300px);
+  width: 1px;
+  background: var(--a-line);
+  pointer-events: none;
+}
+.a-track-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: var(--a-accent);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+.a-track-pct {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  right: -0.35rem;
+  font-family: var(--a-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: var(--a-muted);
+}
+html:not(.v-lenis) .a-track {
+  display: none;
+}
+
+/* ---- primitives ---- */
+
+.a-display {
+  font-family: var(--a-display);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.a-label {
+  font-family: var(--a-mono);
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--a-accent);
+}
+
+.a-rule {
+  display: block;
+  height: 1px;
+  background: var(--a-line);
+  transform-origin: left;
+}
+
+/* Masked line reveals: the wrapper clips, the inner line rises. The bottom
+   padding gives descenders room to paint; the negative margin keeps the
+   stacked-line rhythm unchanged. The hidden state must clear line + padding,
+   hence 120% (must match the yPercent in atlas-motion.ts). */
+.a-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.a-mask-inner {
+  display: block;
+}
+
+/* Section headers share one shape: mono index label, then a masked display
+   statement. Sections own their layout below that. */
+.a-section {
+  padding: var(--a-section) var(--a-pad) 0;
+}
+.a-section:focus {
+  outline: none;
+}
+.a-statement {
+  margin-block: clamp(1.4rem, 3.5vh, 2.2rem) clamp(2.2rem, 6vh, 3.6rem);
+  font-size: clamp(2.4rem, 6.5vw, 6.4rem);
+  line-height: 0.98;
+}
+
+/* ---- motion gates ---- */
+
+/* Initial hidden states for the choreography. Gated on html.js (set
+   pre-paint) AND motion-ok, so no-JS clients, crawlers, and reduced-motion
+   visitors always see complete content. atlas-motion.ts animates these in. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .atlas .a-mask-inner {
+    transform: translateY(120%);
+  }
+  html.js .atlas [data-a-fade],
+  html.js .atlas [data-a-hero-fade] {
+    opacity: 0;
+  }
+  html.js .atlas [data-a-rule],
+  html.js .atlas [data-a-hero-rule] {
+    transform: scaleX(0);
+  }
+  /* Waypoint cards wipe open left-to-right as they enter (atlas-motion.ts). */
+  html.js .atlas [data-a-card] {
+    clip-path: inset(0% 100% 0% 0%);
+  }
+
+  /* The canvas fades up once the scene is live. */
+  .a-gl canvas {
+    transition: opacity 1.2s ease;
+  }
+
+  /* The field breathes: stars twinkle, nebulae drift on a slow clock. */
+  .a-field i:first-child {
+    animation: a-twinkle 8s ease-in-out infinite alternate;
+  }
+  .a-field i:nth-child(2) {
+    animation: a-drift 64s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes a-twinkle {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes a-drift {
+  from {
+    transform: translate3d(-0.6%, -0.4%, 0);
+  }
+  to {
+    transform: translate3d(0.6%, 0.5%, 0);
+  }
+}

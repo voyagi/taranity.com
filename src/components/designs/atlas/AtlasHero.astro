@@ -1,0 +1,83 @@
+---
+/**
+ * Full-viewport opening. The statement leads with what the work is for
+ * (claiming new ground), never with the tooling. The type holds the left
+ * half so the particle globe owns the right; server-rendered and fully
+ * visible without JS, motion only adds the entrance.
+ */
+---
+
+<section class="a-hero">
+  <p class="a-label a-hero-kicker" data-a-hero-fade>Taranity · Digital studio · Worldwide</p>
+
+  <h1 class="a-hero-title a-display">
+    <span class="a-mask"><span class="a-mask-inner">We build what isn't</span></span>
+    <span class="a-mask"><span class="a-mask-inner">on the map yet.</span></span>
+  </h1>
+
+  <div class="a-hero-foot">
+    <p class="a-hero-sub" data-a-hero-fade>
+      Websites, products, and the systems behind a serious launch. Designed and
+      engineered end to end, tuned until they feel inevitable.
+    </p>
+    <p class="a-hero-scroll" data-a-hero-fade aria-hidden="true">
+      Scroll to descend<span class="a-hero-scroll-line"></span>
+    </p>
+  </div>
+
+  <span class="a-rule" data-a-hero-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .a-hero {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    padding: clamp(6rem, 14vh, 9rem) var(--a-pad) clamp(1.8rem, 4vh, 3rem);
+  }
+  .a-hero-kicker {
+    color: var(--a-muted);
+  }
+  .a-hero-title {
+    margin-block: auto;
+    max-width: 12ch;
+    font-size: clamp(2.9rem, 9.5vw, 9.5rem);
+    line-height: 0.96;
+  }
+  .a-hero-foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: clamp(1.6rem, 4vh, 2.6rem);
+  }
+  .a-hero-sub {
+    max-width: 44ch;
+    font-size: clamp(0.95rem, 1.4vw, 1.08rem);
+    line-height: 1.65;
+    color: var(--a-muted);
+  }
+  .a-hero-scroll {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-family: var(--a-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--a-muted);
+    white-space: nowrap;
+  }
+  .a-hero-scroll-line {
+    width: clamp(2.6rem, 7vw, 5.5rem);
+    height: 1px;
+    background: var(--a-line-strong);
+  }
+  @media (max-width: 640px) {
+    .a-hero-foot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.4rem;
+    }
+  }
+</style>

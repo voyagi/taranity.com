@@ -6,9 +6,10 @@
 //
 // Covers: page status, single non-empty <h1>, <title>, console/page errors,
 // image loading, internal-link resolution, axe-core WCAG2A/AA per page,
-// contact form validation + success (demo mode), custom 404, no horizontal
-// overflow at mobile/tablet/desktop, theme persistence, and the Vitrine
-// motion reveals (hero masks, statements, plate wipes).
+// contact form validation + success (demo mode, both designs), custom 404,
+// no horizontal overflow at mobile/tablet/desktop, theme persistence, the
+// Vitrine motion reveals (hero masks, statements, plate wipes), and the
+// Atlas journey (switcher swap, hero masks, waypoint wipes, lazy WebGL).
 
 // IPv4-explicit on purpose: serve-headers.mjs binds 127.0.0.1, while a stray
 // `astro preview` (no _headers applied) binds ::1 — and `localhost` resolves
@@ -59,6 +60,7 @@ try {
 const pages200 = [
   ['/', 'home'],
   ['/privacy', 'privacy'],
+  ['/atlas', 'atlas'],
 ];
 
 async function runAxe(label) {
@@ -203,7 +205,7 @@ const viewports = [
 ];
 for (const [w, h, name] of viewports) {
   await page.setViewportSize({ width: w, height: h });
-  for (const route of ['/', '/privacy']) {
+  for (const route of ['/', '/privacy', '/atlas']) {
     await page.goto(BASE + route, { waitUntil: 'load' });
     await settle(250);
     const o = await page.evaluate(() => ({
@@ -252,6 +254,42 @@ rec(
   `${await dattr('data-mode')} / ${await dattr('data-design')} @ ${page.url()}`,
 );
 await page.evaluate(() => { try { localStorage.clear(); } catch {} });
+
+// ---- Atlas (second design): registry exposure, dark-only controls, form ----
+// Still under reduced motion: these are content checks, the journey motion
+// has its own block below.
+await page.goto(BASE + '/atlas', { waitUntil: 'load' });
+await settle(400);
+rec('atlas: renders design=atlas', (await dattr('data-design')) === 'atlas', await dattr('data-design'));
+const switcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
+rec(
+  'atlas: switcher lists both ready designs',
+  switcherLinks.includes('/') && switcherLinks.includes('/atlas'),
+  JSON.stringify(switcherLinks),
+);
+const atlasToggle = await page.$('[data-mode-toggle]');
+rec('atlas: dark-only design offers no mode toggle', atlasToggle === null);
+await page.goto(BASE + '/', { waitUntil: 'load' });
+const homeToggle = await page.$('[data-mode-toggle]');
+rec('vitrine: dual-mode design keeps the mode toggle', homeToggle !== null);
+
+// Atlas contact form: same hardened flow as the home form, Atlas selectors.
+await page.goto(BASE + '/atlas', { waitUntil: 'load' });
+await settle(400);
+await page.click('.a-submit');
+await settle(300);
+const aEmptyErrs = await page.$$eval('[data-a-err]', (es) => es.map((e) => e.textContent.trim()).filter(Boolean));
+rec('atlas contact: empty submit shows inline errors', aEmptyErrs.length >= 2, JSON.stringify(aEmptyErrs));
+await page.fill('#a-name', 'Jane Tester');
+await page.fill('#a-email', 'jane@example.com');
+await page.fill('#a-message', 'We are launching a product this autumn and need the works.');
+await page.click('.a-submit');
+await settle(1300); // demo-mode success has a ~700ms simulated delay
+const aSuccessVisible = await page.evaluate(() => {
+  const el = document.querySelector('[data-a-form-success]');
+  return el ? !el.hidden : false;
+});
+rec('atlas contact: valid submit shows success panel (demo mode)', aSuccessVisible);
 
 // evidence: the privacy subpage (desktop, motion on) + a mobile home
 try {
@@ -327,9 +365,90 @@ for (const start = Date.now(); !platesOpen(plateClips) && Date.now() - start < 4
 }
 rec('vitrine motion: craft plates wiped fully open', platesOpen(plateClips), JSON.stringify(plateClips));
 
+// ---- Atlas motion ON: switcher swap, reveals, waypoint wipes, lazy WebGL ----
+// Arrive the way a visitor does: through the floating switcher and a
+// View-Transition swap. This exercises the vitrine→atlas teardown path for
+// real (Lenis handover, no double-driven scroll).
+consoleErrors = [];
+pageErrors = [];
+failedResponses = [];
+failedRequests = [];
+await page.click('.ds-design[href="/atlas"]');
+for (let i = 0; i < 25 && !/\/atlas/.test(page.url()); i++) await settle(200); // await the VT swap
+await settle(300);
+rec(
+  'atlas motion: switcher swap lands on design=atlas',
+  (await dattr('data-design')) === 'atlas' && /\/atlas/.test(page.url()),
+  `${await dattr('data-design')} @ ${page.url()}`,
+);
+
+const aHeroCount = await page.evaluate(() => document.querySelectorAll('.a-hero .a-mask-inner').length);
+rec('atlas motion: hero has its two masked lines', aHeroCount === 2, 'count=' + aHeroCount);
+const aHeroOffsets = await awaitReveal('.a-hero .a-mask-inner', 6000); // entrance is ~2.2s
+rec('atlas motion: hero title lines rise fully into view', revealed(aHeroOffsets), 'offsets=' + JSON.stringify(aHeroOffsets));
+
+// The WebGL journey is lazy (idle callback + dynamic three.js chunk) and
+// must resolve deterministically: data-gl='on' with a live canvas, or a
+// clean 'off' fallback. Anything else means the boot path wedged.
+let glState = null;
+for (const start = Date.now(); Date.now() - start < 12000; ) {
+  glState = await page.evaluate(() => document.querySelector('[data-atlas]')?.getAttribute('data-gl') ?? null);
+  if (glState === 'on' || glState === 'off') break;
+  await settle(300);
+}
+const glCanvas = await page.evaluate(() => Boolean(document.querySelector('[data-a-gl] canvas')));
+rec(
+  'atlas motion: WebGL journey resolves (on with canvas, or clean fallback)',
+  glState === 'on' ? glCanvas : glState === 'off' && !glCanvas,
+  `data-gl=${glState} canvas=${glCanvas}`,
+);
+
+// The contact statement reveals after the in-page anchor glide (through the
+// design's own Lenis). The glide passes every waypoint row, so their wipe
+// reveals must have fired by the time we arrive.
+await page.click('.a-nav a[href="#contact"]');
+const aStmtCount = await page.evaluate(() => document.querySelectorAll('.a-contact [data-a-lines] .a-mask-inner').length);
+rec('atlas motion: contact statement has its two masked lines', aStmtCount === 2, 'count=' + aStmtCount);
+const aStmtOffsets = await awaitReveal('.a-contact [data-a-lines] .a-mask-inner', 8000); // 1.6s glide + 1.05s reveal
+rec('atlas motion: contact statement lines rise fully into view', revealed(aStmtOffsets), 'offsets=' + JSON.stringify(aStmtOffsets));
+
+const readCardClips = () =>
+  page.evaluate(() =>
+    [...document.querySelectorAll('[data-a-card]')].map((el) => getComputedStyle(el).clipPath),
+  );
+const cardsOpen = (clips) => clips.length === 6 && clips.every((c) => !c.includes('100%'));
+let cardClips = await readCardClips();
+for (const start = Date.now(); !cardsOpen(cardClips) && Date.now() - start < 4000; ) {
+  await settle(250);
+  cardClips = await readCardClips();
+}
+rec('atlas motion: waypoint rows wiped fully open', cardsOpen(cardClips), JSON.stringify(cardClips));
+
+// The whole journey (swap, reveals, GL boot) must stay error-free.
+const atlasFirstParty = [
+  ...failedResponses.filter((f) => !isBenign(f.url)),
+  ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
+];
+rec(
+  'atlas motion: no first-party console/page errors across the journey',
+  consoleErrors.length === 0 && pageErrors.length === 0 && atlasFirstParty.length === 0,
+  [...consoleErrors, ...pageErrors].join(' | ').slice(0, 240) || 'clean',
+);
+
+// evidence: the atlas opening (desktop, motion on; fresh load rather than a
+// scroll-to-top so the capture never races Lenis's animated scroll state)
+await page.goto(BASE + '/atlas', { waitUntil: 'load' });
+for (const start = Date.now(); Date.now() - start < 8000; ) {
+  const s = await page.evaluate(() => document.querySelector('[data-atlas]')?.getAttribute('data-gl') ?? null);
+  if (s === 'on' || s === 'off') break;
+  await settle(300);
+}
+await settle(1200); // canvas fade-in + hero settle
+const atlasPath = await saveScreenshot(await page.screenshot(), 'e2e-atlas-desktop.png');
+
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
-console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath] }));
+console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath, atlasPath] }));
 if (failed.length) {
   console.log('FAILURES:');
   failed.forEach((f) => console.log('  - ' + f.name + ' :: ' + f.detail));

@@ -1,0 +1,395 @@
+---
+/**
+ * Written contact only (hard rule: no booking, no calls): a short form and a
+ * direct email address. Submission posts to Web3Forms with the same hardened
+ * pattern as the Vitrine form (hardcoded endpoint, honeypot, demo mode
+ * without a key, inline validation), restyled for Atlas.
+ */
+import { services, socials, contactEmail } from '../../../config/site';
+
+const hasKey = Boolean(services.web3formsKey);
+---
+
+<section class="a-section a-contact" id="contact" tabindex="-1">
+  <p class="a-label" data-a-fade>05 · Contact</p>
+
+  <h2 class="a-statement a-display" data-a-lines>
+    <span class="a-mask"><span class="a-mask-inner">Send the</span></span>
+    <span class="a-mask"><span class="a-mask-inner">coordinates.</span></span>
+  </h2>
+
+  <div class="a-contact-grid">
+    <div class="a-contact-aside" data-a-fade>
+      <p class="a-contact-lead">
+        Tell us what you are building and where it needs to land. We read
+        everything and reply within a day, in writing.
+      </p>
+      <a class="a-contact-email a-display" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      <p class="a-contact-loc">Working with clients worldwide</p>
+      <ul class="a-contact-socials">
+        {
+          socials.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="a-form-wrap" data-a-fade>
+      <form
+        class="a-form"
+        data-a-form
+        data-fallback-email={contactEmail}
+        action="https://api.web3forms.com/submit"
+        method="POST"
+        novalidate
+      >
+        <input type="hidden" name="access_key" value={services.web3formsKey} />
+        <input type="hidden" name="subject" value="New enquiry via taranity.com (Atlas)" />
+        <input type="hidden" name="from_name" value="taranity.com" />
+        <!-- Honeypot -->
+        <input type="checkbox" name="botcheck" class="a-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        {
+          !hasKey && (
+            <p class="a-demo-note">Demo mode: add a Web3Forms key to send for real (see HUMAN-TODO).</p>
+          )
+        }
+
+        <div class="a-field-row">
+          <label for="a-name">Name</label>
+          <input id="a-name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="a-err-name" />
+          <span class="a-field-err" id="a-err-name" data-a-err="name" role="alert"></span>
+        </div>
+
+        <div class="a-field-row">
+          <label for="a-email">Email</label>
+          <input id="a-email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="a-err-email" />
+          <span class="a-field-err" id="a-err-email" data-a-err="email" role="alert"></span>
+        </div>
+
+        <div class="a-field-row">
+          <label for="a-message">Message</label>
+          <textarea id="a-message" name="message" rows="5" required maxlength="3000" aria-describedby="a-err-message"></textarea>
+          <span class="a-field-err" id="a-err-message" data-a-err="message" role="alert"></span>
+        </div>
+
+        <button type="submit" class="a-submit">
+          <span data-a-submit-label>Transmit</span>
+          <span class="a-submit-line" aria-hidden="true"></span>
+        </button>
+
+        <p class="a-form-status" data-a-form-status role="status" aria-live="polite"></p>
+        <p class="a-form-privacy">
+          Delivered via Web3Forms and used only to reply. No cookies, nothing
+          sold. <a href="/privacy" data-astro-reload>How your data is handled</a>.
+        </p>
+      </form>
+
+      <div class="a-form-success" data-a-form-success hidden>
+        <h3 class="a-display">Received.</h3>
+        <p>Thank you. We reply within a day, usually sooner, and always in writing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .a-contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: clamp(3rem, 7vw, 6.5rem);
+    align-items: start;
+    margin-bottom: clamp(3.5rem, 9vh, 6rem);
+  }
+  .a-contact-lead {
+    max-width: 38ch;
+    margin-bottom: clamp(1.8rem, 5vh, 2.6rem);
+    font-size: 1.04rem;
+    line-height: 1.7;
+    color: var(--a-muted);
+  }
+  .a-contact-email {
+    font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+    font-weight: 500;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 8px;
+  }
+  .a-contact-loc {
+    margin-top: 0.9rem;
+    font-family: var(--a-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--a-muted);
+  }
+  .a-contact-socials {
+    display: flex;
+    gap: 1.6rem;
+    margin: 2.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .a-contact-socials a {
+    font-family: var(--a-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--a-muted);
+  }
+  .a-contact-socials a:hover {
+    color: var(--a-ink);
+  }
+
+  /* Form: instrument-panel fields on hairlines, capped to a humane measure. */
+  .a-form-wrap {
+    max-width: 680px;
+  }
+  .a-hp {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+  .a-demo-note {
+    margin-bottom: 1.6rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--a-line);
+    font-size: 0.8rem;
+    color: var(--a-accent);
+  }
+  .a-field-row {
+    margin-bottom: 1.7rem;
+  }
+  .a-field-row label {
+    display: block;
+    margin-bottom: 0.55rem;
+    font-family: var(--a-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--a-muted);
+  }
+  .a-field-row input,
+  .a-field-row textarea {
+    width: 100%;
+    padding: 0.45rem 0 0.75rem;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--a-line-strong);
+    border-radius: 0;
+    font-size: 1.05rem;
+    color: var(--a-ink);
+  }
+  .a-field-row textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+  .a-field-row input:focus-visible,
+  .a-field-row textarea:focus-visible {
+    outline: none;
+    border-bottom: 2px solid var(--a-accent);
+    padding-bottom: calc(0.75rem - 1px);
+  }
+  .a-field-row.invalid input,
+  .a-field-row.invalid textarea {
+    border-bottom-color: var(--a-error);
+  }
+  .a-field-err {
+    display: block;
+    min-height: 1rem;
+    margin-top: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--a-error);
+  }
+
+  .a-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.4rem;
+    padding: 1rem 2.1rem;
+    border: 1px solid var(--a-line-strong);
+    background: transparent;
+    font-family: var(--a-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--a-ink);
+    cursor: pointer;
+  }
+  .a-submit-line {
+    width: 2rem;
+    height: 1px;
+    background: currentColor;
+  }
+  .a-submit:hover {
+    background: var(--a-accent);
+    border-color: var(--a-accent);
+    color: #04121f;
+  }
+  .a-submit[disabled] {
+    opacity: 0.55;
+    cursor: progress;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .a-submit {
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+    .a-submit-line {
+      transition: width 0.3s;
+    }
+    .a-submit:hover .a-submit-line {
+      width: 3rem;
+    }
+  }
+
+  .a-form-status {
+    min-height: 1rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+  }
+  .a-form-status.is-error {
+    color: var(--a-error);
+  }
+  .a-form-privacy {
+    margin-top: 1.3rem;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--a-muted);
+  }
+  .a-form-privacy a {
+    color: inherit;
+  }
+
+  .a-form-success h3 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 0.8rem;
+  }
+  .a-form-success p {
+    max-width: 40ch;
+    color: var(--a-muted);
+    line-height: 1.7;
+  }
+  .a-form-success[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 860px) {
+    .a-contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Same hardened submit flow as the Vitrine form: client validation,
+   * honeypot, demo mode without a key, and a hardcoded endpoint (never trust
+   * a DOM attribute for the POST target).
+   */
+  const KEY = (import.meta.env.PUBLIC_WEB3FORMS_KEY as string) || '';
+
+  function bindAtlasForm() {
+    const form = document.querySelector<HTMLFormElement>('[data-a-form]');
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = '1';
+
+    const status = form.querySelector<HTMLElement>('[data-a-form-status]')!;
+    const submitBtn = form.querySelector<HTMLButtonElement>('.a-submit')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-a-submit-label]')!;
+    // The success panel is the form's sibling inside .a-form-wrap; scope the
+    // lookup there so a second instance of this component could never grab
+    // another form's panel.
+    const successPanel = form.closest('.a-form-wrap')!.querySelector<HTMLElement>('[data-a-form-success]')!;
+
+    const setErr = (name: string, msg: string) => {
+      const field = form.querySelector(`[name="${name}"]`)?.closest('.a-field-row');
+      const errEl = form.querySelector(`[data-a-err="${name}"]`);
+      if (field) field.classList.toggle('invalid', Boolean(msg));
+      if (errEl) errEl.textContent = msg;
+    };
+
+    const validate = () => {
+      let ok = true;
+      const data = new FormData(form);
+      const name = String(data.get('name') || '').trim();
+      const email = String(data.get('email') || '').trim();
+      const message = String(data.get('message') || '').trim();
+
+      setErr('name', name ? '' : 'Tell us your name.');
+      if (!name) ok = false;
+
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      setErr('email', email ? (emailOk ? '' : 'That email looks off.') : 'We need an email to reply.');
+      if (!emailOk) ok = false;
+
+      setErr('message', message.length >= 10 ? '' : 'A sentence or two, please (10+ characters).');
+      if (message.length < 10) ok = false;
+
+      if (!ok) {
+        form.querySelector<HTMLElement>('.a-field-row.invalid input, .a-field-row.invalid textarea')?.focus();
+      }
+      return ok;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '';
+      status.classList.remove('is-error');
+      if (!validate()) return;
+
+      if ((form.querySelector('[name="botcheck"]') as HTMLInputElement)?.checked) return;
+
+      submitBtn.disabled = true;
+      submitLabel.textContent = 'Transmitting…';
+
+      const showSuccess = () => {
+        form.hidden = true;
+        successPanel.hidden = false;
+        successPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+
+      // Demo mode: no key, simulate success so the flow stays reviewable.
+      if (!KEY) {
+        await new Promise((r) => setTimeout(r, 700));
+        showSuccess();
+        return;
+      }
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        const json = await res.json().catch(() => ({}));
+        if (res.ok && json.success) {
+          showSuccess();
+        } else {
+          throw new Error(json.message || 'Send failed');
+        }
+      } catch {
+        const fallbackEmail = form.dataset.fallbackEmail || 'hello@taranity.com';
+        status.textContent = `Could not send. Email ${fallbackEmail} directly?`;
+        status.classList.add('is-error');
+        submitBtn.disabled = false;
+        submitLabel.textContent = 'Try again';
+      }
+    });
+
+    // Clear an error as soon as the visitor edits the field.
+    form.querySelectorAll('input, textarea').forEach((el) => {
+      el.addEventListener('input', () => {
+        const name = (el as HTMLInputElement).name;
+        if (el.closest('.a-field-row')?.classList.contains('invalid')) setErr(name, '');
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindAtlasForm);
+</script>
