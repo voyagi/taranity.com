@@ -121,13 +121,22 @@
 .v-paper i:first-child {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02 0.35' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='.5'/%3E%3C/svg%3E");
   background-size: 600px 600px;
-  opacity: 0.055;
+  opacity: 0.075;
   mix-blend-mode: multiply;
 }
 .v-paper i:nth-child(2) {
   background-image:
-    radial-gradient(42% 34% at 22% 24%, rgba(166, 124, 72, 0.09), transparent 70%),
-    radial-gradient(36% 30% at 76% 64%, rgba(190, 142, 92, 0.075), transparent 72%);
+    radial-gradient(46% 38% at 22% 22%, rgba(166, 124, 72, 0.13), transparent 70%),
+    radial-gradient(40% 34% at 76% 62%, rgba(190, 142, 92, 0.1), transparent 72%);
+}
+/* Engraved arc field sweeping in from the top corner: the same etching
+   language as the plates, at paper scale. */
+.v-paper i:nth-child(3) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1500' height='1500'%3E%3Cg fill='none' stroke='%236a5c42' stroke-opacity='.55'%3E%3Ccircle cx='1500' cy='0' r='320'/%3E%3Ccircle cx='1500' cy='0' r='520'/%3E%3Ccircle cx='1500' cy='0' r='720'/%3E%3Ccircle cx='1500' cy='0' r='930'/%3E%3Ccircle cx='1500' cy='0' r='1150'/%3E%3Ccircle cx='1500' cy='0' r='1380'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right -180px top -180px;
+  background-size: 1500px 1500px;
+  opacity: 0.12;
 }
 
 /* The content rides above the fixed atmospheres. The header is already
@@ -194,10 +203,17 @@ html:not(.v-lenis) .v-progress {
   transform-origin: left;
 }
 
-/* Masked line reveals: the wrapper clips, the inner line rises. */
+/* Masked line reveals: the wrapper clips, the inner line rises. The display
+   type uses very tight line-heights, so serif descenders extend below the
+   line box: the mask's bottom padding gives them room to paint (overflow
+   clips at the padding edge) while the negative margin keeps the stacked-line
+   rhythm unchanged. The hidden state must clear line + padding, hence 120%
+   (must match the yPercent in vitrine-motion.ts). */
 .v-mask {
   display: block;
   overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
 }
 .v-mask-inner {
   display: block;
@@ -300,7 +316,7 @@ html:not(.v-lenis) .v-progress {
    visitors always see complete content. vitrine-motion.ts animates these in. */
 @media (prefers-reduced-motion: no-preference) {
   html.js .vitrine .v-mask-inner {
-    transform: translateY(112%);
+    transform: translateY(120%);
   }
   html.js .vitrine [data-v-fade],
   html.js .vitrine [data-v-hero-fade] {
@@ -336,9 +352,12 @@ html:not(.v-lenis) .v-progress {
       v-twinkle 17s ease-in-out 4s infinite alternate-reverse,
       v-drift-b 180s ease-in-out infinite alternate;
   }
-  /* The light pools wander; the fibre grain holds still like real paper. */
+  /* The light pools and arcs wander; the fibre grain holds still like paper. */
   .v-paper i:nth-child(2) {
     animation: v-drift-b 160s ease-in-out infinite alternate;
+  }
+  .v-paper i:nth-child(3) {
+    animation: v-drift-a 190s ease-in-out infinite alternate;
   }
 }
 
