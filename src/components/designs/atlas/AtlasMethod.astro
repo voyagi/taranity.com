@@ -1,0 +1,104 @@
+---
+/**
+ * How an engagement travels: four legs from first conversation to long after
+ * launch. The journey motif carries the method; the promises stay concrete.
+ */
+const legs = [
+  {
+    index: 'LEG 01',
+    name: 'Survey',
+    copy: 'Listening first. The goal, the audience, and the constraints, mapped before anything is drawn.',
+  },
+  {
+    index: 'LEG 02',
+    name: 'Chart',
+    copy: 'One clear route. Scope, structure, and direction agreed in writing before the build begins.',
+  },
+  {
+    index: 'LEG 03',
+    name: 'Build',
+    copy: 'Design and engineering in one motion. You watch real progress, not slideware.',
+  },
+  {
+    index: 'LEG 04',
+    name: 'Stay',
+    copy: 'Launch is a waypoint, not the destination. We stay for the tuning, the measuring, and what comes next.',
+  },
+];
+---
+
+<section class="a-section a-method" id="method" tabindex="-1">
+  <p class="a-label" data-a-fade>03 · Method</p>
+
+  <h2 class="a-statement a-display" data-a-lines>
+    <span class="a-mask"><span class="a-mask-inner">Four legs,</span></span>
+    <span class="a-mask"><span class="a-mask-inner">one route.</span></span>
+  </h2>
+
+  <ol class="a-legs">
+    {
+      legs.map((leg) => (
+        <li class="a-leg" data-a-fade>
+          <p class="a-leg-index" aria-hidden="true">{leg.index}</p>
+          <h3 class="a-leg-name a-display">{leg.name}</h3>
+          <p class="a-leg-copy">{leg.copy}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <span class="a-rule" data-a-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .a-legs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(1.4rem, 3vw, 2.6rem);
+    margin: 0 0 clamp(3rem, 8vh, 5rem);
+    padding: 0;
+    list-style: none;
+    counter-reset: none;
+  }
+  .a-leg {
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--a-line);
+    position: relative;
+  }
+  .a-leg::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--a-accent);
+  }
+  .a-leg-index {
+    font-family: var(--a-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--a-accent);
+  }
+  .a-leg-name {
+    margin-top: 0.7rem;
+    font-size: clamp(1.3rem, 2.2vw, 1.9rem);
+  }
+  .a-leg-copy {
+    margin-top: 0.8rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--a-muted);
+  }
+  @media (max-width: 980px) {
+    .a-legs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 540px) {
+    .a-legs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

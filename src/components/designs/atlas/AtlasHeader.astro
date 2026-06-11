@@ -1,0 +1,97 @@
+---
+/**
+ * Mission-control masthead: wordmark left, indexed mono anchors right. Sits
+ * over the hero and scrolls away with it (single-page experience; the
+ * floating DesignSwitcher carries the persistent controls).
+ */
+const links = [
+  { index: '01', label: 'Crafts', hash: '#crafts' },
+  { index: '02', label: 'Method', hash: '#method' },
+  { index: '03', label: 'Studio', hash: '#studio' },
+  { index: '04', label: 'Contact', hash: '#contact' },
+];
+---
+
+<header class="a-header">
+  <a class="a-wordmark" href="/" aria-label="Taranity home">Taranity</a>
+  <nav class="a-nav" aria-label="Page sections">
+    {
+      links.map((l) => (
+        <a href={l.hash}>
+          <span class="a-nav-index" aria-hidden="true">{l.index}</span>
+          {l.label}
+        </a>
+      ))
+    }
+  </nav>
+</header>
+
+<style>
+  .a-header {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: clamp(1.2rem, 3.5vh, 2rem) var(--a-pad);
+  }
+  .a-wordmark {
+    font-family: var(--a-display);
+    font-size: 0.86rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .a-nav {
+    display: flex;
+    gap: clamp(1.1rem, 2.8vw, 2.2rem);
+  }
+  .a-nav a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    font-family: var(--a-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--a-muted);
+  }
+  .a-nav-index {
+    font-size: 0.56rem;
+    color: var(--a-accent);
+  }
+  .a-nav a:hover {
+    color: var(--a-ink);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .a-nav a {
+      transition: color 0.25s;
+    }
+  }
+  @media (max-width: 560px) {
+    /* Four anchors beside the wordmark exceed the narrowest viewports:
+       let the nav wrap onto its own row instead of overflowing. */
+    .a-header {
+      flex-wrap: wrap;
+      row-gap: 0.55rem;
+    }
+    .a-wordmark {
+      letter-spacing: 0.2em;
+    }
+    .a-nav {
+      gap: 0.85rem;
+    }
+    .a-nav a {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+    }
+    .a-nav-index {
+      display: none;
+    }
+  }
+</style>

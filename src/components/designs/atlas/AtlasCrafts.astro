@@ -1,0 +1,177 @@
+---
+/**
+ * The six crafts as waypoints on the route: indexed mono coordinates, a big
+ * display title, one line, and what an engagement includes. No project
+ * portfolio anywhere on the site (hard rule 7): these rows present the
+ * offerings, intelligent systems last per the content rules. Each row wipes
+ * open left-to-right as it enters (atlas-motion.ts).
+ */
+interface Waypoint {
+  index: string;
+  title: string;
+  kicker: string;
+  line: string;
+  includes: string[];
+}
+
+const waypoints: Waypoint[] = [
+  {
+    index: '01',
+    title: 'Websites',
+    kicker: 'Flagships with gravity',
+    line: 'Sites that pull people in and point them, unmistakably, at what happens next.',
+    includes: ['Design direction', 'Build and launch', 'Speed, SEO, accessibility'],
+  },
+  {
+    index: '02',
+    title: 'Commerce',
+    kicker: 'Checkout without friction',
+    line: 'Storefronts engineered from the first visit through payment, built to convert quietly.',
+    includes: ['Store design', 'Build and payments', 'Conversion care'],
+  },
+  {
+    index: '03',
+    title: 'Applications',
+    kicker: 'Products, end to end',
+    line: 'Web and mobile applications, designed and engineered as one continuous piece.',
+    includes: ['Product design', 'Full-stack build', 'Care after launch'],
+  },
+  {
+    index: '04',
+    title: 'Automation',
+    kicker: 'Systems on autopilot',
+    line: 'The repetitive work, mapped and rebuilt to run itself, with alerts when it matters.',
+    includes: ['Process mapping', 'Integrations', 'Monitoring and alerts'],
+  },
+  {
+    index: '05',
+    title: 'Advisory',
+    kicker: 'Coordinates before commitment',
+    line: 'Honest answers and a clear route before you spend a build budget.',
+    includes: ['Audits and reviews', 'Technical direction', 'Roadmaps and estimates'],
+  },
+  {
+    index: '06',
+    title: 'Intelligent systems',
+    kicker: 'Applied with restraint',
+    line: 'AI only where it earns its place, with evaluation and guardrails to match.',
+    includes: ['Use-case selection', 'Implementation', 'Evaluation and guardrails'],
+  },
+];
+---
+
+<section class="a-section a-crafts" id="crafts" tabindex="-1">
+  <p class="a-label" data-a-fade>02 · Crafts</p>
+
+  <h2 class="a-statement a-display" data-a-lines>
+    <span class="a-mask"><span class="a-mask-inner">Six disciplines.</span></span>
+    <span class="a-mask"><span class="a-mask-inner">One expedition.</span></span>
+  </h2>
+
+  <ol class="a-waypoints">
+    {
+      waypoints.map((w) => (
+        <li class="a-card" data-a-card>
+          <p class="a-card-index" aria-hidden="true">
+            WPT·{w.index}
+          </p>
+          <div class="a-card-body">
+            <h3 class="a-card-title a-display">{w.title}</h3>
+            <p class="a-card-kicker">{w.kicker}</p>
+            <p class="a-card-line">{w.line}</p>
+          </div>
+          <ul class="a-card-includes">
+            {w.includes.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .a-waypoints {
+    margin: 0 0 clamp(3rem, 8vh, 5rem);
+    padding: 0;
+    list-style: none;
+  }
+  .a-card {
+    display: grid;
+    grid-template-columns: minmax(5.5rem, 0.35fr) 1.6fr 1fr;
+    gap: clamp(1.2rem, 3vw, 3rem);
+    align-items: start;
+    padding-block: clamp(1.8rem, 4.5vh, 3rem);
+    border-top: 1px solid var(--a-line);
+  }
+  .a-card:last-child {
+    border-bottom: 1px solid var(--a-line);
+  }
+  .a-card-index {
+    font-family: var(--a-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    color: var(--a-accent);
+  }
+  .a-card-title {
+    font-size: clamp(1.7rem, 3.6vw, 3.2rem);
+    line-height: 1.02;
+  }
+  .a-card-kicker {
+    margin-top: 0.5rem;
+    font-family: var(--a-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--a-muted);
+  }
+  .a-card-line {
+    margin-top: 0.9rem;
+    max-width: 46ch;
+    line-height: 1.65;
+    color: var(--a-muted);
+  }
+  .a-card-includes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin: 0.2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .a-card-includes li {
+    font-family: var(--a-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--a-muted);
+    padding-left: 1rem;
+    position: relative;
+  }
+  .a-card-includes li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--a-accent-dim);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .a-card {
+      transition: border-color 0.3s;
+    }
+  }
+  .a-card:hover {
+    border-top-color: var(--a-accent-dim);
+  }
+  @media (max-width: 860px) {
+    .a-card {
+      grid-template-columns: minmax(4rem, auto) 1fr;
+    }
+    .a-card-includes {
+      grid-column: 2;
+    }
+  }
+</style>

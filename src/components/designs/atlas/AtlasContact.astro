@@ -1,32 +1,32 @@
 ---
 /**
  * Written contact only (hard rule: no booking, no calls): a short form and a
- * direct email address, then the page footer. Submission posts to Web3Forms
- * with the same hardened pattern as the original contact page (hardcoded
- * endpoint, honeypot, demo mode without a key, inline validation).
+ * direct email address. Submission posts to Web3Forms with the same hardened
+ * pattern as the Vitrine form (hardcoded endpoint, honeypot, demo mode
+ * without a key, inline validation), restyled for Atlas.
  */
 import { services, socials, contactEmail } from '../../../config/site';
 
 const hasKey = Boolean(services.web3formsKey);
 ---
 
-<section class="v-contact" id="contact" tabindex="-1">
-  <p class="v-label" data-v-fade>04 · Contact</p>
+<section class="a-section a-contact" id="contact" tabindex="-1">
+  <p class="a-label" data-a-fade>05 · Contact</p>
 
-  <h2 class="v-contact-title v-serif" data-v-lines>
-    <span class="v-mask"><span class="v-mask-inner">Tell us what</span></span>
-    <span class="v-mask"><span class="v-mask-inner">you are building.</span></span>
+  <h2 class="a-statement a-display" data-a-lines>
+    <span class="a-mask"><span class="a-mask-inner">Send the</span></span>
+    <span class="a-mask"><span class="a-mask-inner">coordinates.</span></span>
   </h2>
 
-  <div class="v-contact-grid">
-    <div class="v-contact-aside" data-v-fade>
-      <p class="v-contact-lead">
-        Write a few lines about the work. We read everything and reply within a
-        day, in writing.
+  <div class="a-contact-grid">
+    <div class="a-contact-aside" data-a-fade>
+      <p class="a-contact-lead">
+        Tell us what you are building and where it needs to land. We read
+        everything and reply within a day, in writing.
       </p>
-      <a class="v-contact-email v-serif" href={`mailto:${contactEmail}`}>{contactEmail}</a>
-      <p class="v-contact-loc">Working with clients worldwide</p>
-      <ul class="v-contact-socials">
+      <a class="a-contact-email a-display" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      <p class="a-contact-loc">Working with clients worldwide</p>
+      <ul class="a-contact-socials">
         {
           socials.map((s) => (
             <li>
@@ -39,59 +39,59 @@ const hasKey = Boolean(services.web3formsKey);
       </ul>
     </div>
 
-    <div class="v-form-wrap" data-v-fade>
+    <div class="a-form-wrap" data-a-fade>
       <form
-        class="v-form"
-        data-v-form
+        class="a-form"
+        data-a-form
         data-fallback-email={contactEmail}
         action="https://api.web3forms.com/submit"
         method="POST"
         novalidate
       >
         <input type="hidden" name="access_key" value={services.web3formsKey} />
-        <input type="hidden" name="subject" value="New enquiry via taranity.com (Vitrine)" />
+        <input type="hidden" name="subject" value="New enquiry via taranity.com (Atlas)" />
         <input type="hidden" name="from_name" value="taranity.com" />
         <!-- Honeypot -->
-        <input type="checkbox" name="botcheck" class="v-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <input type="checkbox" name="botcheck" class="a-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
         {
           !hasKey && (
-            <p class="v-demo-note">Demo mode: add a Web3Forms key to send for real (see HUMAN-TODO).</p>
+            <p class="a-demo-note">Demo mode: add a Web3Forms key to send for real (see HUMAN-TODO).</p>
           )
         }
 
-        <div class="v-field">
-          <label for="v-name">Name</label>
-          <input id="v-name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="v-err-name" />
-          <span class="v-field-err" id="v-err-name" data-v-err="name" role="alert"></span>
+        <div class="a-field-row">
+          <label for="a-name">Name</label>
+          <input id="a-name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="a-err-name" />
+          <span class="a-field-err" id="a-err-name" data-a-err="name" role="alert"></span>
         </div>
 
-        <div class="v-field">
-          <label for="v-email">Email</label>
-          <input id="v-email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="v-err-email" />
-          <span class="v-field-err" id="v-err-email" data-v-err="email" role="alert"></span>
+        <div class="a-field-row">
+          <label for="a-email">Email</label>
+          <input id="a-email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="a-err-email" />
+          <span class="a-field-err" id="a-err-email" data-a-err="email" role="alert"></span>
         </div>
 
-        <div class="v-field">
-          <label for="v-message">Message</label>
-          <textarea id="v-message" name="message" rows="5" required maxlength="3000" aria-describedby="v-err-message"></textarea>
-          <span class="v-field-err" id="v-err-message" data-v-err="message" role="alert"></span>
+        <div class="a-field-row">
+          <label for="a-message">Message</label>
+          <textarea id="a-message" name="message" rows="5" required maxlength="3000" aria-describedby="a-err-message"></textarea>
+          <span class="a-field-err" id="a-err-message" data-a-err="message" role="alert"></span>
         </div>
 
-        <button type="submit" class="v-submit">
-          <span data-v-submit-label>Send message</span>
-          <span class="v-submit-line" aria-hidden="true"></span>
+        <button type="submit" class="a-submit">
+          <span data-a-submit-label>Transmit</span>
+          <span class="a-submit-line" aria-hidden="true"></span>
         </button>
 
-        <p class="v-form-status" data-v-form-status role="status" aria-live="polite"></p>
-        <p class="v-form-privacy">
+        <p class="a-form-status" data-a-form-status role="status" aria-live="polite"></p>
+        <p class="a-form-privacy">
           Delivered via Web3Forms and used only to reply. No cookies, nothing
           sold. <a href="/privacy" data-astro-reload>How your data is handled</a>.
         </p>
       </form>
 
-      <div class="v-form-success" data-v-form-success hidden tabindex="-1">
-        <h3 class="v-serif">Received.</h3>
+      <div class="a-form-success" data-a-form-success hidden tabindex="-1">
+        <h3 class="a-display">Received.</h3>
         <p>Thank you. We reply within a day, usually sooner, and always in writing.</p>
       </div>
     </div>
@@ -99,202 +99,191 @@ const hasKey = Boolean(services.web3formsKey);
 </section>
 
 <style>
-  .v-contact {
-    padding: var(--v-section) var(--v-pad) clamp(3.5rem, 9vh, 6rem);
-  }
-  .v-contact:focus {
-    outline: none;
-  }
-  .v-contact-title {
-    margin-block: clamp(1.6rem, 4vh, 2.4rem) clamp(2.5rem, 6vh, 4rem);
-    font-size: clamp(2.6rem, 7.5vw, 7.5rem);
-    font-weight: 380;
-    line-height: 0.98;
-    letter-spacing: -0.015em;
-  }
-  .v-contact-grid {
+  .a-contact-grid {
     display: grid;
     grid-template-columns: 1fr 1.15fr;
     gap: clamp(3rem, 7vw, 6.5rem);
     align-items: start;
+    margin-bottom: clamp(3.5rem, 9vh, 6rem);
   }
-  .v-contact-lead {
+  .a-contact-lead {
     max-width: 38ch;
     margin-bottom: clamp(1.8rem, 5vh, 2.6rem);
     font-size: 1.04rem;
     line-height: 1.7;
-    color: var(--v-muted);
+    color: var(--a-muted);
   }
-  .v-contact-email {
-    font-size: clamp(1.6rem, 3vw, 2.6rem);
-    font-weight: 400;
+  .a-contact-email {
+    font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+    font-weight: 500;
     text-decoration-thickness: 1px;
     text-underline-offset: 8px;
   }
-  .v-contact-loc {
+  .a-contact-loc {
     margin-top: 0.9rem;
-    font-size: 0.9rem;
-    color: var(--v-muted);
+    font-family: var(--a-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--a-muted);
   }
-  .v-contact-socials {
+  .a-contact-socials {
     display: flex;
     gap: 1.6rem;
     margin: 2.4rem 0 0;
     padding: 0;
     list-style: none;
   }
-  .v-contact-socials a {
-    font-size: 0.7rem;
-    font-weight: 540;
-    letter-spacing: 0.18em;
+  .a-contact-socials a {
+    font-family: var(--a-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     text-decoration: none;
-    color: var(--v-muted);
+    color: var(--a-muted);
   }
-  .v-contact-socials a:hover {
-    color: var(--v-ink);
+  .a-contact-socials a:hover {
+    color: var(--a-ink);
   }
 
-  /* Form: editorial underline fields, capped so inputs keep a humane measure. */
-  .v-form-wrap {
+  /* Form: instrument-panel fields on hairlines, capped to a humane measure. */
+  .a-form-wrap {
     max-width: 680px;
   }
-  .v-hp {
+  .a-hp {
     position: absolute;
     left: -9999px;
     opacity: 0;
   }
-  .v-demo-note {
+  .a-demo-note {
     margin-bottom: 1.6rem;
     padding: 0.7rem 0.9rem;
-    border: 1px solid var(--v-line);
+    border: 1px solid var(--a-line);
     font-size: 0.8rem;
-    color: var(--v-accent);
+    color: var(--a-accent);
   }
-  .v-field {
+  .a-field-row {
     margin-bottom: 1.7rem;
   }
-  .v-field label {
+  .a-field-row label {
     display: block;
     margin-bottom: 0.55rem;
-    font-size: 0.68rem;
-    font-weight: 560;
+    font-family: var(--a-mono);
+    font-size: 0.6rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--v-muted);
+    color: var(--a-muted);
   }
-  .v-field input,
-  .v-field textarea {
+  .a-field-row input,
+  .a-field-row textarea {
     width: 100%;
     padding: 0.45rem 0 0.75rem;
     background: transparent;
     border: 0;
-    border-bottom: 1px solid var(--v-line-strong);
+    border-bottom: 1px solid var(--a-line-strong);
     border-radius: 0;
     font-size: 1.05rem;
-    color: var(--v-ink);
+    color: var(--a-ink);
   }
-  .v-field textarea {
+  .a-field-row textarea {
     resize: vertical;
     min-height: 110px;
   }
-  .v-field input:focus-visible,
-  .v-field textarea:focus-visible {
+  .a-field-row input:focus-visible,
+  .a-field-row textarea:focus-visible {
     outline: none;
-    border-bottom: 2px solid var(--v-accent);
+    border-bottom: 2px solid var(--a-accent);
     padding-bottom: calc(0.75rem - 1px);
   }
-  .v-field.invalid input,
-  .v-field.invalid textarea {
-    border-bottom-color: var(--v-error);
+  .a-field-row.invalid input,
+  .a-field-row.invalid textarea {
+    border-bottom-color: var(--a-error);
   }
-  .v-field-err {
+  .a-field-err {
     display: block;
     min-height: 1rem;
     margin-top: 0.45rem;
     font-size: 0.78rem;
-    color: var(--v-error);
+    color: var(--a-error);
   }
 
-  .v-submit {
+  .a-submit {
     display: inline-flex;
     align-items: center;
     gap: 1rem;
     margin-top: 0.4rem;
     padding: 1rem 2.1rem;
-    border: 1px solid var(--v-line-strong);
-    border-radius: 999px;
+    border: 1px solid var(--a-line-strong);
     background: transparent;
-    font-size: 0.74rem;
-    font-weight: 580;
+    font-family: var(--a-mono);
+    font-size: 0.66rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--v-ink);
+    color: var(--a-ink);
     cursor: pointer;
   }
-  .v-submit-line {
+  .a-submit-line {
     width: 2rem;
     height: 1px;
     background: currentColor;
   }
-  .v-submit:hover {
-    background: var(--v-ink);
-    border-color: var(--v-ink);
-    color: var(--v-bg);
+  .a-submit:hover {
+    background: var(--a-accent);
+    border-color: var(--a-accent);
+    color: #04121f;
   }
-  .v-submit[disabled] {
+  .a-submit[disabled] {
     opacity: 0.55;
     cursor: progress;
   }
   @media (prefers-reduced-motion: no-preference) {
-    .v-submit {
+    .a-submit {
       transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
-    .v-submit-line {
+    .a-submit-line {
       transition: width 0.3s;
     }
-    .v-submit:hover .v-submit-line {
+    .a-submit:hover .a-submit-line {
       width: 3rem;
     }
   }
 
-  .v-form-status {
+  .a-form-status {
     min-height: 1rem;
     margin-top: 1rem;
     font-size: 0.85rem;
   }
-  .v-form-status.is-error {
-    color: var(--v-error);
+  .a-form-status.is-error {
+    color: var(--a-error);
   }
-  .v-form-privacy {
+  .a-form-privacy {
     margin-top: 1.3rem;
     font-size: 0.8rem;
     line-height: 1.6;
-    color: var(--v-muted);
+    color: var(--a-muted);
   }
-  .v-form-privacy a {
+  .a-form-privacy a {
     color: inherit;
   }
 
-  .v-form-success:focus {
+  .a-form-success:focus {
     outline: none;
   }
-  .v-form-success h3 {
+  .a-form-success h3 {
     font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 380;
     margin-bottom: 0.8rem;
   }
-  .v-form-success p {
+  .a-form-success p {
     max-width: 40ch;
-    color: var(--v-muted);
+    color: var(--a-muted);
     line-height: 1.7;
   }
-  .v-form-success[hidden] {
+  .a-form-success[hidden] {
     display: none;
   }
 
   @media (max-width: 860px) {
-    .v-contact-grid {
+    .a-contact-grid {
       grid-template-columns: 1fr;
     }
   }
@@ -302,28 +291,28 @@ const hasKey = Boolean(services.web3formsKey);
 
 <script>
   /**
-   * Same hardened submit flow as the original contact page: client validation,
-   * honeypot, demo mode without a key, and a hardcoded endpoint (never trust a
-   * DOM attribute for the POST target).
+   * Same hardened submit flow as the Vitrine form: client validation,
+   * honeypot, demo mode without a key, and a hardcoded endpoint (never trust
+   * a DOM attribute for the POST target).
    */
   const KEY = (import.meta.env.PUBLIC_WEB3FORMS_KEY as string) || '';
 
-  function bindVitrineForm() {
-    const form = document.querySelector<HTMLFormElement>('[data-v-form]');
+  function bindAtlasForm() {
+    const form = document.querySelector<HTMLFormElement>('[data-a-form]');
     if (!form || form.dataset.bound) return;
     form.dataset.bound = '1';
 
-    const status = form.querySelector<HTMLElement>('[data-v-form-status]')!;
-    const submitBtn = form.querySelector<HTMLButtonElement>('.v-submit')!;
-    const submitLabel = form.querySelector<HTMLElement>('[data-v-submit-label]')!;
-    // The success panel is the form's sibling inside .v-form-wrap; scope the
+    const status = form.querySelector<HTMLElement>('[data-a-form-status]')!;
+    const submitBtn = form.querySelector<HTMLButtonElement>('.a-submit')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-a-submit-label]')!;
+    // The success panel is the form's sibling inside .a-form-wrap; scope the
     // lookup there so a second instance of this component could never grab
     // another form's panel.
-    const successPanel = form.closest('.v-form-wrap')!.querySelector<HTMLElement>('[data-v-form-success]')!;
+    const successPanel = form.closest('.a-form-wrap')!.querySelector<HTMLElement>('[data-a-form-success]')!;
 
     const setErr = (name: string, msg: string) => {
-      const field = form.querySelector(`[name="${name}"]`)?.closest('.v-field');
-      const errEl = form.querySelector(`[data-v-err="${name}"]`);
+      const field = form.querySelector(`[name="${name}"]`)?.closest('.a-field-row');
+      const errEl = form.querySelector(`[data-a-err="${name}"]`);
       if (field) field.classList.toggle('invalid', Boolean(msg));
       if (errEl) errEl.textContent = msg;
     };
@@ -346,7 +335,7 @@ const hasKey = Boolean(services.web3formsKey);
       if (message.length < 10) ok = false;
 
       if (!ok) {
-        form.querySelector<HTMLElement>('.v-field.invalid input, .v-field.invalid textarea')?.focus();
+        form.querySelector<HTMLElement>('.a-field-row.invalid input, .a-field-row.invalid textarea')?.focus();
       }
       return ok;
     };
@@ -360,7 +349,7 @@ const hasKey = Boolean(services.web3formsKey);
       if ((form.querySelector('[name="botcheck"]') as HTMLInputElement)?.checked) return;
 
       submitBtn.disabled = true;
-      submitLabel.textContent = 'Sending…';
+      submitLabel.textContent = 'Transmitting…';
 
       const showSuccess = () => {
         form.hidden = true;
@@ -410,10 +399,10 @@ const hasKey = Boolean(services.web3formsKey);
     form.querySelectorAll('input, textarea').forEach((el) => {
       el.addEventListener('input', () => {
         const name = (el as HTMLInputElement).name;
-        if (el.closest('.v-field')?.classList.contains('invalid')) setErr(name, '');
+        if (el.closest('.a-field-row')?.classList.contains('invalid')) setErr(name, '');
       });
     });
   }
 
-  document.addEventListener('astro:page-load', bindVitrineForm);
+  document.addEventListener('astro:page-load', bindAtlasForm);
 </script>

@@ -31,13 +31,35 @@ rebuilding the front end from scratch as a showcase of several genuinely differe
   - e2e (scripts/e2e.devbrowser.js, 38/38): pages / + /privacy; audits under emulated reduced
     motion; motion-ON guards assert hero/statement reveal offsets and plate wipes (6 plates);
     form checks on the home form (#v-name etc.); BASE pinned to http://127.0.0.1:4321.
-- NEXT Phase 2 (Atlas): immersive dark 3D journey at /atlas under src/components/designs/atlas/,
-  three@0.184.0 already a dep, lazy-load the GL after first paint (rule 6), reuse SiteLayout
-  (design="atlas", themeLight/themeDark, smooth if it runs Lenis, preloadFonts). Copy the
-  vitrine-motion teardown pattern EXACTLY (gate on a [data-atlas] root, destroy everything on
-  astro:before-swap) so designs never double-drive scroll. Content = crafts + method, rule 7.
-  Flip atlas ready=true in designs.ts in the same PR; the switcher list appears automatically
-  at 2+ ready designs. Add Atlas e2e blocks mirroring the Vitrine ones (motion-on guards!).
+- PHASE 2 (Atlas) BUILT (branch feat/atlas-design): immersive dark 3D journey at /atlas.
+  - src/components/designs/atlas/: Atlas.astro shell ([data-atlas] root, 3-layer .a-field CSS
+    starfield/nebula/graticule fallback, [data-a-gl] mount, .a-track instrument rail) + Header/
+    Hero/Manifesto/Crafts (6 waypoint rows, wipe reveals)/Method (Survey/Chart/Build/Stay)/
+    Studio/Contact (hardened Web3Forms clone, a-* ids)/Footer. Space Grotesk display,
+    JetBrains Mono labels, ion-blue #7cc7ff on #05070d. Dark-only: color-scheme pinned dark,
+    themeLight=themeDark; DesignSwitcher now takes a design prop and hides the mode toggle on
+    single-mode designs.
+  - src/lib/atlas-motion.ts: vitrine-motion teardown pattern copied exactly (Lenis 1.1,
+    v-lenis class, lagSmoothing restore, astro:before-swap teardown); also owns the lazy GL
+    boot: requestIdleCallback + dynamic import('./atlas-gl') with a generation guard, sets
+    data-gl="on|off" on the root (deterministic e2e signal), destroys the scene on teardown
+    and on mid-session reduced-motion flips.
+  - src/lib/atlas-gl.ts: three.js lazy chunk (~492KB raw, idle-loaded after paint). Particle
+    globe (fibonacci sphere, layered-sine continents, deterministic: no Math.random) + star
+    shell + 3 graticule LineLoops; scroll-driven camera POSES (lerp+smoothstep), pointer
+    parallax (fine pointers only), DPR cap 2 (1.5 narrow), visibilitychange pause,
+    webglcontextlost -> clean fallback, full dispose + forceContextLoss on destroy.
+    Point-size constant 13.0 and the POSES were tuned against real screenshots (140.0 made
+    white-hot blobs that swallowed the hero type).
+  - atlas ready=true in designs.ts; switcher list live at 2 designs. CSP: AtlasContact's
+    inline form script added hash 'sha256-e/kTl7qvdni+...' to public/_headers (4 total).
+  - Tests: tests/unit/atlas-css.test.ts (containment invariant, color-scheme dark pin,
+    standalone v-lenis rules, CSS gate <-> motion pose sync incl. exact clip-path string,
+    field layer count, registry wiring). e2e 63/63: /atlas page checks + axe, overflow at 4
+    viewports (header wraps <=560px: 4 anchors overflowed 320px), switcher lists both designs,
+    no mode toggle on /atlas, atlas form validation+success, motion-ON guards (switcher VT
+    swap from /, hero mask offsets, contact statement after anchor glide, 6 card wipes,
+    data-gl resolves on+canvas, zero console/page errors across the journey).
 
 ## Session gotchas (cost real time; read before working)
 - scripts/serve-headers.mjs caches dist/_headers AT STARTUP: restart it after any rebuild that

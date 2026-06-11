@@ -1,0 +1,46 @@
+---
+/**
+ * Atlas — immersive dark 3D journey. Space Grotesk display over deep-space
+ * navy; a fixed Three.js particle globe travels behind the content as the
+ * page scrolls. One self-contained page experience; SiteLayout provides
+ * head/meta and the floating switcher.
+ *
+ * The server HTML is complete and visible without JS: the WebGL scene is
+ * pure atmosphere, lazy-loaded after first paint (src/lib/atlas-motion.ts),
+ * and the .a-field CSS backdrop stands in whenever GL is absent.
+ */
+import './atlas.css';
+import AtlasHeader from './AtlasHeader.astro';
+import AtlasHero from './AtlasHero.astro';
+import AtlasManifesto from './AtlasManifesto.astro';
+import AtlasCrafts from './AtlasCrafts.astro';
+import AtlasMethod from './AtlasMethod.astro';
+import AtlasStudio from './AtlasStudio.astro';
+import AtlasContact from './AtlasContact.astro';
+import AtlasFooter from './AtlasFooter.astro';
+---
+
+<div class="atlas" data-atlas>
+  <!-- Fixed CSS atmosphere (stars, nebulae, graticule): always present, and
+       the complete fallback for reduced motion, no JS, or no WebGL. -->
+  <div class="a-field" aria-hidden="true"><i></i><i></i><i></i></div>
+  <!-- The lazy WebGL scene mounts its canvas here (atlas-gl.ts). -->
+  <div class="a-gl" data-a-gl aria-hidden="true"></div>
+  <!-- Instrument rail: replaces the native scrollbar while Lenis drives. -->
+  <span class="a-track" aria-hidden="true">
+    <span class="a-track-fill" data-a-track-fill></span>
+    <span class="a-track-pct" data-a-track-pct>0%</span>
+  </span>
+  <AtlasHeader />
+  <AtlasHero />
+  <AtlasManifesto />
+  <AtlasCrafts />
+  <AtlasMethod />
+  <AtlasStudio />
+  <AtlasContact />
+  <AtlasFooter />
+</div>
+
+<script>
+  import '../../../lib/atlas-motion';
+</script>
