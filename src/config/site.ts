@@ -32,43 +32,22 @@ export const services = {
   web3formsKey: env.PUBLIC_WEB3FORMS_KEY || '',
   /** Plausible domain; empty → no analytics script injected. */
   plausibleDomain: env.PUBLIC_PLAUSIBLE_DOMAIN || '',
-  /** Booking link; falls back to /contact. */
-  bookingUrl: env.PUBLIC_BOOKING_URL || '/contact',
 } as const;
 
 export interface SocialLink {
   label: string;
   href: string;
-  /** Short keyword set for the command palette. */
-  keywords: string;
 }
 
 export const socials: SocialLink[] = [
-  { label: 'GitHub', href: 'https://github.com/voyagi', keywords: 'github code repos source voyagi' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/taranity', keywords: 'linkedin profile work cv resume' },
-  { label: 'X / Twitter', href: 'https://x.com/taranity', keywords: 'twitter x social posts' },
+  { label: 'GitHub', href: 'https://github.com/voyagi' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/taranity' },
+  { label: 'X / Twitter', href: 'https://x.com/taranity' },
 ];
 
 /** Public-facing contact email (domain address, not a personal inbox). */
 export const contactEmail = 'hello@taranity.com';
 
-export interface NavItem {
-  label: string;
-  href: string;
-  /** Two-digit telemetry index shown in the nav. */
-  index: string;
-}
-
-// No project portfolio anywhere on the site (owner decision, 2026-06-11):
-// the navigation carries no Work entry and no case-study routes exist.
-export const nav: NavItem[] = [
-  { label: 'About', href: '/about', index: '01' },
-  { label: 'Contact', href: '/contact', index: '02' },
-];
-
-export const cta = {
-  primaryLabel: 'Book a call',
-  primaryHref: services.bookingUrl,
-  secondaryLabel: 'Start a project',
-  secondaryHref: '/contact',
-} as const;
+// No separate nav or call-to-action config: the site is a single-page
+// experience per design (hard rules: written contact only, no booking;
+// no project portfolio). Each design carries its own section anchors.

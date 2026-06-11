@@ -1,99 +1,80 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import VitrinePage from '../components/designs/vitrine/VitrinePage.astro';
 import { contactEmail, site } from '../config/site';
 ---
 
-<BaseLayout
+<SiteLayout
+  design="vitrine"
   title="Privacy"
-  description="What data taranity.com collects, how it's handled, and your rights — in plain language."
+  description="What taranity.com collects, how it is handled, and your rights, in plain language."
+  themeLight="#f4f0e8"
+  themeDark="#110f0c"
+  preloadFonts={['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2']}
 >
-  <article class="legal">
-    <p class="band-label mono-label">/ privacy</p>
-    <h1>Privacy</h1>
-    <p class="legal-lead">
-      Plain language, no dark patterns. This site belongs to {site.name}, a digital studio
-      ({site.url}). It sets <strong>no cookies</strong> and shows no consent banner because it
-      doesn't need one. Here's exactly what happens with your data.
-    </p>
-
-    <section>
-      <h2>What we collect, and when</h2>
-      <ul>
-        <li>
-          <strong>The contact form.</strong> Only if you submit it: your name, email, and message.
-          It's delivered to us through <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer">Web3Forms</a>
-          (a form-to-email service acting as a processor) and used <em>solely</em> to reply. It is
-          never sold, shared for marketing, or added to any list.
-        </li>
-        <li>
-          <strong>Analytics.</strong> If analytics are enabled, the site uses
-          <a href="https://plausible.io/data-policy" target="_blank" rel="noopener noreferrer">Plausible</a>
-          — privacy-first, cookieless, fully aggregated, with no personal data and no cross-site
-          tracking. Nothing identifies you.
-        </li>
-        <li>
-          <strong>Hosting.</strong> The site is served by Cloudflare Pages. Like any web host, it
-          processes connection data (such as your IP) in transient server logs to deliver the site
-          and protect against abuse.
-        </li>
-        <li>
-          <strong>Booking link.</strong> If you choose to book a call, you're taken to an external
-          scheduling service; its own privacy policy applies once you're there.
-        </li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Cookies &amp; local storage</h2>
-      <p>
-        No cookies, and nothing stored for tracking or advertising. The only thing kept on your
-        device is your <strong>theme preference</strong> — the light/dark mode and design you pick
-        with the switcher — saved in your browser's local storage so the site remembers how you
-        like it. It never leaves your device, isn't used to identify you, and clearing your site
-        data removes it.
+  <VitrinePage>
+    <section class="v-page" tabindex="-1">
+      <p class="v-label">Privacy</p>
+      <h1 class="v-page-title v-serif">Plain language, no dark patterns.</h1>
+      <p class="v-page-lead">
+        This site belongs to {site.name} ({site.url}). It sets <strong>no cookies</strong> and
+        shows no consent banner because it does not need one. Here is exactly what happens with
+        your data.
       </p>
+
+      <section>
+        <h2>What we collect, and when</h2>
+        <ul>
+          <li>
+            <strong>The contact form.</strong> Only if you submit it: your name, email, and message.
+            It is delivered to us through <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer">Web3Forms</a>
+            (a form-to-email service acting as a processor) and used <em>solely</em> to reply. It is
+            never sold, shared for marketing, or added to any list.
+          </li>
+          <li>
+            <strong>Analytics.</strong> If analytics are enabled, the site uses
+            <a href="https://plausible.io/data-policy" target="_blank" rel="noopener noreferrer">Plausible</a>:
+            privacy-first, cookieless, fully aggregated, with no personal data and no cross-site
+            tracking. Nothing identifies you.
+          </li>
+          <li>
+            <strong>Hosting.</strong> The site is served by Cloudflare Pages. Like any web host, it
+            processes connection data (such as your IP) in transient server logs to deliver the site
+            and protect against abuse.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Cookies and local storage</h2>
+        <p>
+          No cookies, and nothing stored for tracking or advertising. The only thing kept on your
+          device is your <strong>theme preference</strong> (the light or dark mode and the design
+          you pick with the switcher), saved in your browser's local storage so the site remembers
+          how you like it. It never leaves your device, is not used to identify you, and clearing
+          your site data removes it.
+        </p>
+      </section>
+
+      <section>
+        <h2>Your rights</h2>
+        <p>
+          Under the GDPR you can ask to access, correct, or delete the personal data we hold about
+          you, or object to its processing. In practice the only data we ever hold is the message
+          you chose to send us, so a deletion request simply means we delete that email. Write to
+          <a href={`mailto:${contactEmail}`}>{contactEmail}</a> and we will handle it promptly.
+        </p>
+      </section>
+
+      <section>
+        <h2>Retention</h2>
+        <p>
+          Contact messages are kept only as long as needed to deal with your enquiry, then deleted.
+          Analytics data (if enabled) is aggregated and never tied to an individual.
+        </p>
+      </section>
+
+      <p class="v-page-meta">Last reviewed: June 2026 · Questions? {contactEmail}</p>
     </section>
-
-    <section>
-      <h2>Your rights</h2>
-      <p>
-        Under the GDPR you can ask to access, correct, or delete the personal data we hold about you,
-        or object to its processing. In practice the only data we ever hold is the message you chose
-        to send us — so a deletion request simply means we delete that email. Email
-        <a href={`mailto:${contactEmail}`}>{contactEmail}</a> and we'll handle it promptly.
-      </p>
-    </section>
-
-    <section>
-      <h2>Retention</h2>
-      <p>
-        Contact messages are kept only as long as needed to deal with your enquiry, then deleted.
-        Analytics data (if enabled) is aggregated and never tied to an individual.
-      </p>
-    </section>
-
-    <p class="legal-meta mono-label">Last reviewed: June 2026 · Questions? {contactEmail}</p>
-  </article>
-</BaseLayout>
-
-<style>
-  .legal {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 8rem var(--spacing-gutter) var(--spacing-section);
-    position: relative;
-    z-index: 1;
-  }
-  .band-label { color: var(--color-cyan); margin-bottom: 1rem; }
-  .legal h1 { font-size: var(--text-h1); margin-bottom: 1.4rem; }
-  .legal-lead { font-size: var(--text-lead); color: var(--color-ink); line-height: 1.6; margin-bottom: 2.5rem; }
-  .legal section { margin-bottom: 2.2rem; }
-  .legal h2 { font-size: var(--text-h3); margin-bottom: 0.9rem; }
-  .legal p { color: var(--color-ink-dim); line-height: 1.7; margin-bottom: 0.8rem; }
-  .legal ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
-  .legal li { color: var(--color-ink-dim); line-height: 1.65; padding-left: 1.1rem; position: relative; }
-  .legal li::before { content: ''; position: absolute; left: 0; top: 0.65em; width: 6px; height: 6px; border-radius: 999px; background: var(--color-cyan); }
-  .legal strong { color: var(--color-ink); }
-  .legal a { color: var(--color-cyan); text-decoration: underline; text-underline-offset: 2px; }
-  .legal-meta { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-line); color: var(--color-ink-faint); }
-</style>
+  </VitrinePage>
+</SiteLayout>

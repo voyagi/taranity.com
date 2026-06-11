@@ -1,0 +1,21 @@
+---
+/**
+ * Vitrine shell for subpages (privacy, 404): the same tokens, atmospheres,
+ * masthead, and footer as the home experience, without the motion runtime.
+ * Subpage content must NOT use the reveal attributes (data-v-fade, .v-mask,
+ * data-v-rule): nothing animates them here, and the CSS gates would hide
+ * them forever for motion-enabled visitors. Article styling lives in
+ * vitrine.css under .v-page.
+ */
+import './vitrine.css';
+import VitrineHeader from './VitrineHeader.astro';
+import VitrineFooter from './VitrineFooter.astro';
+---
+
+<div class="vitrine">
+  <div class="v-stars" aria-hidden="true"><i></i><i></i></div>
+  <div class="v-paper" aria-hidden="true"><i></i><i></i></div>
+  <VitrineHeader subpage />
+  <slot />
+  <VitrineFooter />
+</div>

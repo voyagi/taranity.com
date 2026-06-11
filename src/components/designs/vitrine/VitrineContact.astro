@@ -8,7 +8,6 @@
 import { services, socials, contactEmail } from '../../../config/site';
 
 const hasKey = Boolean(services.web3formsKey);
-const year = new Date().getFullYear();
 ---
 
 <section class="v-contact" id="contact" tabindex="-1">
@@ -98,12 +97,6 @@ const year = new Date().getFullYear();
     </div>
   </div>
 </section>
-
-<footer class="v-footer">
-  <p>© {year} Taranity</p>
-  <p class="v-footer-note" aria-hidden="true">Vitrine · a Taranity design language</p>
-  <a href="/privacy" data-astro-reload>Privacy</a>
-</footer>
 
 <style>
   .v-contact {
@@ -295,26 +288,6 @@ const year = new Date().getFullYear();
   }
   .v-form-success[hidden] {
     display: none;
-  }
-
-  .v-footer {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem 2rem;
-    flex-wrap: wrap;
-    margin-inline: var(--v-pad);
-    padding-block: 1.8rem 2.4rem;
-    border-top: 1px solid var(--v-line);
-    font-size: 0.78rem;
-    color: var(--v-muted);
-  }
-  .v-footer a {
-    color: inherit;
-    text-underline-offset: 4px;
-  }
-  .v-footer a:hover {
-    color: var(--v-ink);
   }
 
   @media (max-width: 860px) {
