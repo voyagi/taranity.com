@@ -146,6 +146,8 @@ function setup() {
     gsap.utils.toArray<HTMLElement>('[data-v-plate-art]').forEach((art) => {
       gsap.fromTo(
         art,
+        // Must match the `html.js .vitrine [data-v-plate-art]` gate in
+        // vitrine.css, or the first tween tick snaps to a different pose.
         { clipPath: 'inset(0% 0% 100% 0%)' },
         {
           clipPath: 'inset(0% 0% 0% 0%)',
