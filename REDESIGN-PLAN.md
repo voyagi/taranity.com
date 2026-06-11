@@ -7,20 +7,50 @@ The previous build (Aurora / Operator Console / World, Phases A to F, PRs #2 to 
 main but the user REJECTED those designs as too similar (just different backgrounds). We are
 rebuilding the front end from scratch as a showcase of several genuinely different designs.
 
-- DONE Phase 1 (Vitrine, PRs #8 to #12 + no-projects): SiteLayout.astro (head/meta + constant
-  pre-paint theme script reading data-theme-light/dark attrs + data-smooth scrollbar handling,
-  one CSP hash for all designs), src/styles/site.css (shared reset), Fraunces variable font
-  self-hosted, src/components/designs/vitrine/* (hero, manifesto + method, CRAFTS plates
-  [full-bleed cinema, wipes, no projects per rule 7], studio, marquee, night-sky stars,
-  contact and footer), src/lib/vitrine-motion.ts (Lenis + GSAP, gated on [data-vitrine], full teardown
-  before VT swaps, v-lenis scrollbar class, progress hairline), `/` renders Vitrine,
-  registry ready=true. Old-design links to `/` carry data-astro-reload (old motion.ts never
-  destroys its Lenis). Legacy /work + /projects pages DELETED (rule 7); e2e legacy
-  theme/palette checks live on /about, Vitrine checks on /, suite 58/58 green.
-- NEXT Phase 2 (Atlas): immersive dark 3D journey at /atlas under
-  src/components/designs/atlas/, three@0.184.0 already a dep, lazy-load the GL after first paint,
-  reuse SiteLayout (pass design="atlas", themeLight/themeDark). Flip atlas ready=true in
-  designs.ts in the same PR; the switcher list appears automatically at 2+ ready designs.
+- PHASE 1 (Vitrine) COMPLETE, PRs #8 to #18, all squash-merged to main (last: b1345d1).
+  USER-ACCEPTED final state:
+  - Foundation: SiteLayout.astro (head/meta/JSON-LD + ONE constant pre-paint inline script for
+    every design: reads data-theme-light/dark attrs, sets data-mode, adds v-lenis pre-paint when
+    the page passes `smooth` [data-smooth attr] so the scrollbar hides without reflow);
+    src/styles/site.css shared reset; design-theme.ts syncs theme-color on toggle.
+  - Vitrine at `/`: hero, manifesto + method (Listen/Distill/Craft/Stay), SIX craft plates
+    (Websites, Commerce, Applications, Automation, Advisory, Intelligent systems LAST), studio,
+    marquee, contact + footer. Plates = full-bleed cinema: layered gradient fields (--pa..--pe +
+    conic), dense engraved SVG etchings per craft, cropped numerals, light sheen, grain, wipe
+    reveals. Atmospheres: dark = stars (twinkle+drift); light = DAY (blue sky wash, white cloud
+    banks, golden sun glow behind an engraved sun, gold shafts, birds), 7 .v-paper layers pinned
+    by tests/unit/vitrine-css.test.ts (wiring + dark-token sync + containment invariant).
+  - Subpages on the same system: /privacy + 404 via VitrinePage.astro (header subpage variant,
+    shared VitrineFooter, NO motion runtime, NO reveal attrs). og-preview = Vitrine OG card;
+    public/og.png regenerated from it (1200x630). public/_redirects 301s old routes to /.
+  - Voice: worldwide, every client size/kind, no NL/Eindhoven in copy (JSON-LD address kept).
+  - vitrine-motion.ts: Lenis 1.35 + GSAP; gated on [data-vitrine]; FULL teardown before VT swaps
+    (Lenis destroyed, v-lenis class removed, lagSmoothing restored to 500/33); mask reveals own
+    BOTH y and yPercent (GSAP cannot recover yPercent from a computed matrix) and use 120% to
+    clear the descender padding on .v-mask; anchor glide moves focus.
+  - e2e (scripts/e2e.devbrowser.js, 38/38): pages / + /privacy; audits under emulated reduced
+    motion; motion-ON guards assert hero/statement reveal offsets and plate wipes (6 plates);
+    form checks on the home form (#v-name etc.); BASE pinned to http://127.0.0.1:4321.
+- NEXT Phase 2 (Atlas): immersive dark 3D journey at /atlas under src/components/designs/atlas/,
+  three@0.184.0 already a dep, lazy-load the GL after first paint (rule 6), reuse SiteLayout
+  (design="atlas", themeLight/themeDark, smooth if it runs Lenis, preloadFonts). Copy the
+  vitrine-motion teardown pattern EXACTLY (gate on a [data-atlas] root, destroy everything on
+  astro:before-swap) so designs never double-drive scroll. Content = crafts + method, rule 7.
+  Flip atlas ready=true in designs.ts in the same PR; the switcher list appears automatically
+  at 2+ ready designs. Add Atlas e2e blocks mirroring the Vitrine ones (motion-on guards!).
+
+## Session gotchas (cost real time; read before working)
+- scripts/serve-headers.mjs caches dist/_headers AT STARTUP: restart it after any rebuild that
+  changes _headers, or e2e reports phantom CSP violations. Background servers get reaped: start
+  via PowerShell Start-Process (detached) and verify with an HTTP HEAD before each e2e run.
+- Astro INLINES small component scripts: editing them rotates CSP hashes (rebuild +
+  scripts/csp-hash.mjs + public/_headers in the same commit).
+- Review gate: after the reviewer passes, run review-mark set-result for EACH commit in its OWN
+  Bash invocation right before the push (chained set-result && push does not stick).
+- Verify reveal-gated UI with motion ON (assert computed offsets), never only under reduced
+  motion: reduce disables the CSS hidden states and everything looks fine while broken.
+- Production deploy is MANUAL (npm run deploy, human-gated): taranity.com still runs the OLD
+  site until the user deploys.
 
 ## Hard rules (apply to EVERY design and to replies to the user)
 1. No booking or calls anywhere. Written contact only (form + email).
@@ -82,5 +112,5 @@ vitest + build + dev-browser screenshot each design; trivy if deps change. Never
 `npm run preview -- --port 4340` then open http://localhost:4340. serve-headers.mjs honors a PORT env.
 
 ## To resume in a new session
-Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on branch feat/multi-design-showcase,
-build Vitrine (Phase 1) next." Then it has everything it needs.
+Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Atlas
+(Phase 2) next." Then it has everything it needs.
