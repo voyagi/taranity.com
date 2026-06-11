@@ -15,6 +15,9 @@ const css = readFileSync(
   'utf8',
 );
 
+/* NOTE: these regexes assume the matched blocks stay FLAT (no nested rules):
+   [^}]* stops at the first closing brace. If the token blocks ever gain
+   nesting, switch to a real CSS parser instead of widening the regex. */
 const declarations = (block: string | undefined): string[] =>
   (block ?? '')
     .split(';')
@@ -37,5 +40,24 @@ describe('vitrine dark palette', () => {
 
   it('actually contains tokens (guards against a regex/refactor silently matching nothing)', () => {
     expect(declarations(attrBlock).length).toBeGreaterThanOrEqual(5);
+  });
+});
+
+describe('vitrine fixed-layer containment invariant', () => {
+  /* .v-stars and .v-progress are position: fixed inside .vitrine. Any of
+     these properties on the base .vitrine block would turn it into a
+     containing block and silently re-pin both layers inside the page flow
+     instead of the viewport. */
+  const baseBlock = css.match(/^\.vitrine \{([^}]*)\}/m)?.[1];
+
+  it('finds the base .vitrine block', () => {
+    expect(baseBlock, 'base .vitrine block missing').toBeTruthy();
+  });
+
+  it('never declares containing-block-forming properties on .vitrine', () => {
+    const offenders = declarations(baseBlock).filter((d) =>
+      /^(transform|filter|backdrop-filter|perspective|contain|isolation|will-change)\s*:/.test(d),
+    );
+    expect(offenders).toEqual([]);
   });
 });
