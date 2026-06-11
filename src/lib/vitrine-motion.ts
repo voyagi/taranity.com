@@ -100,7 +100,8 @@ function setup() {
       .timeline({ defaults: { ease: 'power3.out' } })
       .fromTo(
         '.v-hero .v-mask-inner',
-        { yPercent: 112, y: 0 },
+        // 120 matches the html.js gate in vitrine.css (line + descender pad).
+        { yPercent: 120, y: 0 },
         { yPercent: 0, y: 0, duration: 1.15, stagger: 0.14 },
         0.15,
       )
@@ -121,7 +122,8 @@ function setup() {
     gsap.utils.toArray<HTMLElement>('[data-v-lines]').forEach((group) => {
       gsap.fromTo(
         group.querySelectorAll('.v-mask-inner'),
-        { yPercent: 112, y: 0 },
+        // 120 matches the html.js gate in vitrine.css (line + descender pad).
+        { yPercent: 120, y: 0 },
         {
           yPercent: 0,
           y: 0,
