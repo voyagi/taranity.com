@@ -55,17 +55,21 @@ The design lives in the structure and interaction, not the backdrop.
 ## Architecture
 - `src/config/designs.ts` registry (id, name, audience, route, modes, ready flag). Only `ready`
   designs appear in the switcher. Flip ready to true as each ships, one per PR.
-- Each design = a self-contained single-page experience (hero, what, work, about, contact as sections
-  on one page; these styles are usually one scroll). Flagship (Vitrine) renders at `/`; others at
-  `/atlas`, `/signal`, etc. Switcher links navigate between them and remember the choice.
+- Each design = a self-contained single-page experience (hero, what/method, crafts, studio, contact
+  as sections on one page; rule 7: never a work/portfolio section). Flagship (Vitrine) renders at `/`;
+  others at `/atlas`, `/signal`, etc. Switcher links navigate between them and remember the choice.
 - `src/lib/design-theme.ts` = system light/dark + stored override + after-swap re-apply + delegated
   controls. `src/components/DesignSwitcher.astro` = the fixed control (design list appears at 2+ ready).
-- TODO next (Phase 1): a new `SiteLayout.astro` (head/meta from src/config/site.ts, pre-paint inline
-  theme-init that reads prefers-color-scheme + stored mode, imports DesignSwitcher, calls
-  initDesignTheme), build the Vitrine components under `src/components/designs/vitrine/`, point
-  `src/pages/index.astro` at it, apply the content rules. Leave the old BaseLayout + old pages in place
-  for now; remove them in a later cleanup once designs replace them. Regen CSP hash (scripts/csp-hash.mjs
-  to public/_headers) in the same commit as any new inline script. three@0.184.0 already a dep (for Atlas).
+- LEGACY CLEANUP DONE (design-everywhere PR, 2026-06-11): BaseLayout, Nav, Footer, Chrome,
+  CommandPalette, ThemeSwitcher, Icon, old theme/motion/GL libs, global.css, config/themes.ts and
+  config/about.ts are all DELETED. Every page (/, /privacy, /404, /og-preview) is on
+  SiteLayout/Vitrine; subpages use `VitrinePage.astro` (header subpage variant + shared
+  VitrineFooter, no motion runtime, no reveal attrs). Old routes redirect via public/_redirects
+  (/about → /#studio, /contact → /#contact, /work and /projects/* → /). public/og.png is the
+  Vitrine OG card (regen: screenshot /og-preview at 1200x630).
+- Regen CSP hash (scripts/csp-hash.mjs to public/_headers) in the same commit as any inline-script
+  change; RESTART scripts/serve-headers.mjs after _headers changes (it caches them at startup).
+  three@0.184.0 already a dep (for Atlas).
 
 ## Process (worked well before)
 Each design = its own reviewed PR. post-task-reviewer + CodeRabbit + GitGuardian; fix all findings;

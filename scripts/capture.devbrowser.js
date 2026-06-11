@@ -4,14 +4,12 @@
 //   dev-browser --headless run scripts/capture.devbrowser.js
 // Then copy the PNGs from ~/.dev-browser/tmp into design/ and public/og.png.
 
-const BASE = 'http://localhost:4321';
+// IPv4-explicit for the same reason as e2e: a stray `astro preview` binds ::1.
+const BASE = 'http://127.0.0.1:4321';
 const routes = [
   ['home', '/'],
-  ['work', '/work'],
-  ['about', '/about'],
-  ['contact', '/contact'],
-  ['case-study', '/projects/claude-code-ecosystem'],
-  ['notfound', '/404'],
+  ['privacy', '/privacy'],
+  ['notfound', '/this-route-does-not-exist'],
 ];
 const viewports = [
   ['desktop', 1440, 900],

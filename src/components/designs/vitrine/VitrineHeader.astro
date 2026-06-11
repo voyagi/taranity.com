@@ -2,16 +2,23 @@
 /**
  * Editorial masthead: wordmark left, section anchors right. Sits over the
  * hero and scrolls away with it (single-page experience; the floating
- * DesignSwitcher carries the persistent controls).
+ * DesignSwitcher carries the persistent controls). On subpages (privacy,
+ * 404) the anchors point back into the home experience.
  */
+interface Props {
+  /** Subpages link to the home sections instead of in-page anchors. */
+  subpage?: boolean;
+}
+const { subpage = false } = Astro.props;
+const prefix = subpage ? '/' : '';
 ---
 
 <header class="v-header">
   <a class="v-wordmark" href="/" aria-label="Taranity home">Taranity</a>
   <nav class="v-nav" aria-label="Page sections">
-    <a href="#crafts">Crafts</a>
-    <a href="#studio">Studio</a>
-    <a href="#contact">Contact</a>
+    <a href={`${prefix}#crafts`}>Crafts</a>
+    <a href={`${prefix}#studio`}>Studio</a>
+    <a href={`${prefix}#contact`}>Contact</a>
   </nav>
 </header>
 

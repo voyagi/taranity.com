@@ -1,0 +1,9 @@
+# Cloudflare Pages redirects. Old routes from before the single-page redesign:
+# everything lives on the home experience now (the studio and contact are
+# sections there), and project pages no longer exist (no portfolio on the
+# site). Plain "/" targets on purpose: fragment destinations are unreliable in
+# server-side redirects (the Location header fragment is dropped or mangled).
+/about / 301
+/contact / 301
+/work / 301
+/projects/* / 301
