@@ -1,6 +1,5 @@
 ---
 import { nav, socials, cta, contactEmail } from '../config/site';
-import { orderedProjects } from '../content/projects';
 
 const bookingExternal = /^https?:\/\//.test(cta.primaryHref);
 ---
@@ -20,7 +19,7 @@ const bookingExternal = /^https?:\/\//.test(cta.primaryHref);
       <input
         type="text"
         data-palette-input
-        placeholder="Jump to a page, project, or action…"
+        placeholder="Jump to a page or action…"
         aria-label="Search commands"
         autocomplete="off"
         spellcheck="false"
@@ -39,23 +38,6 @@ const bookingExternal = /^https?:\/\//.test(cta.primaryHref);
             <a class="cmd" data-cmd href={item.href} data-keywords={`${item.label} page ${item.href}`}>
               <span data-cmd-label>{item.label}</span>
               <span class="cmd-meta">{item.href}</span>
-            </a>
-          ))
-        }
-      </section>
-
-      <section data-cmd-group>
-        <p class="palette-group mono-label">Projects</p>
-        {
-          orderedProjects.map((p) => (
-            <a
-              class="cmd"
-              data-cmd
-              href={`/projects/${p.slug}`}
-              data-keywords={`${p.title} ${p.tags.join(' ')} ${p.category} case study project`}
-            >
-              <span data-cmd-label>{p.title}</span>
-              <span class="cmd-meta">{p.category}</span>
             </a>
           ))
         }

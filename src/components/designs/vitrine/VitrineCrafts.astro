@@ -1,20 +1,20 @@
 ---
 /**
- * Selected work as cinematic full-bleed plates: edge-to-edge generative
- * artwork (gradient field + engraved SVG motif + cropped roman numeral +
- * grain) with the project title set directly on the piece. Each plate wipes
- * open as it enters (vitrine-motion.ts). The artwork layers are decorative
- * (aria-hidden); the overlaid text is the real content and stays outside.
- * Copy is bespoke to Vitrine; canonical case-study data lives in
- * src/content/projects.ts.
+ * What the studio makes, as cinematic full-bleed plates: edge-to-edge
+ * generative artwork (gradient field + engraved SVG motif + cropped roman
+ * numeral + grain) with each craft set directly on the piece. No project
+ * portfolio anywhere on the site (owner decision): these plates present the
+ * four crafts, AI last per the content rules. The artwork layers are
+ * decorative (aria-hidden); the overlaid text is the real content. Each
+ * plate wipes open as it enters (vitrine-motion.ts).
  */
 interface Plate {
   numeral: string;
   title: string;
-  category: string;
+  kicker: string;
   line: string;
-  metricValue: string;
-  metricLabel: string;
+  /** What an engagement includes, as a short stack. */
+  includes: string[];
   /** Engraved line motif drawn over the gradient field. */
   motif: 'lines' | 'rings' | 'arcs' | 'grid';
   /** Gradient stops: a/b radial highlights over a c→d base. Dark in both modes. */
@@ -24,43 +24,39 @@ interface Plate {
 const plates: Plate[] = [
   {
     numeral: 'I',
-    title: 'Cortex',
-    category: 'Product',
-    line: 'Twelve terminals became one quiet screen.',
-    metricValue: '20+',
-    metricLabel: 'projects in one view',
+    title: 'Websites',
+    kicker: 'Digital flagships',
+    line: 'Editorial, fast, and made to be looked at twice.',
+    includes: ['Design direction', 'Build and launch', 'Speed and accessibility'],
     motif: 'lines',
     art: { a: '#4a3a80', b: '#2d2452', c: '#1a1430', d: '#2a2046' },
   },
   {
     numeral: 'II',
-    title: 'CallCatch',
-    category: 'Service platform',
-    line: 'The phone rings for real customers again.',
-    metricValue: '~95%',
-    metricLabel: 'of spam stopped at the door',
-    motif: 'rings',
-    art: { a: '#2a6a5e', b: '#1c443c', c: '#102420', d: '#1d4038' },
+    title: 'Applications',
+    kicker: 'Products and tools',
+    line: 'Designed and engineered end to end, then run in production.',
+    includes: ['Product design', 'Full-stack build', 'Care after launch'],
+    motif: 'grid',
+    art: { a: '#3c5a7a', b: '#243447', c: '#131c26', d: '#27384c' },
   },
   {
     numeral: 'III',
-    title: 'Overnight Engineering',
-    category: 'Automation system',
-    line: 'Finished work ships while everyone sleeps.',
-    metricValue: '300+',
-    metricLabel: 'working sessions carried',
+    title: 'Automation',
+    kicker: 'Quiet systems',
+    line: 'The repetitive work, rebuilt to run itself.',
+    includes: ['Process mapping', 'Integrations', 'Monitoring and alerts'],
     motif: 'arcs',
     art: { a: '#7a5a2c', b: '#473522', c: '#241b12', d: '#42301a' },
   },
   {
     numeral: 'IV',
-    title: 'Fontys Schedule',
-    category: 'Consumer app',
-    line: 'A timetable students stopped dreading.',
-    metricValue: '1 tap',
-    metricLabel: 'from pocket to today',
-    motif: 'grid',
-    art: { a: '#3c5a7a', b: '#243447', c: '#131c26', d: '#27384c' },
+    title: 'Intelligent systems',
+    kicker: 'Applied with restraint',
+    line: 'AI only where it earns its place, with guardrails to match.',
+    includes: ['Use-case selection', 'Implementation', 'Evaluation and guardrails'],
+    motif: 'rings',
+    art: { a: '#2a6a5e', b: '#1c443c', c: '#102420', d: '#1d4038' },
   },
 ];
 
@@ -80,11 +76,11 @@ const ringRadii = [90, 190, 300, 420, 550, 690];
 const arcRadii = [620, 780, 950, 1130, 1320];
 ---
 
-<section class="v-work" id="work" tabindex="-1">
-  <h2 class="v-sr">Selected work</h2>
+<section class="v-work" id="crafts" tabindex="-1">
+  <h2 class="v-sr">What we make</h2>
   <div class="v-work-head">
-    <p class="v-label" data-v-fade>02 · Selected work</p>
-    <p class="v-work-note" data-v-fade>Four pieces, four problems put to rest.</p>
+    <p class="v-label" data-v-fade>02 · What we make</p>
+    <p class="v-work-note" data-v-fade>Four crafts, one standard.</p>
   </div>
 
   {
@@ -137,16 +133,15 @@ const arcRadii = [620, 780, 950, 1130, 1320];
         </div>
 
         <div class="v-plate-overlay">
-          <p class="v-plate-index" data-v-fade>{String(i + 1).padStart(2, '0')} · {p.category}</p>
+          <p class="v-plate-index" data-v-fade>{String(i + 1).padStart(2, '0')} · {p.kicker}</p>
           <div class="v-plate-foot">
             <div>
               <h3 class="v-plate-title v-serif" data-v-fade>{p.title}</h3>
               <p class="v-plate-line" data-v-fade>{p.line}</p>
             </div>
-            <p class="v-plate-metric" data-v-fade>
-              <span class="v-plate-metric-value v-serif">{p.metricValue}</span>
-              <span class="v-plate-metric-label">{p.metricLabel}</span>
-            </p>
+            <ul class="v-plate-includes" data-v-fade>
+              {p.includes.map((item) => <li>{item}</li>)}
+            </ul>
           </div>
         </div>
       </article>
@@ -280,21 +275,20 @@ const arcRadii = [620, 780, 950, 1130, 1320];
     line-height: 1.55;
     color: color-mix(in srgb, var(--v-plate-ink) 88%, transparent);
   }
-  .v-plate-metric {
+  .v-plate-includes {
     flex: 0 0 auto;
-    padding-top: 1rem;
+    margin: 0;
+    padding: 1rem 0 0;
     border-top: 1px solid color-mix(in srgb, var(--v-plate-ink) 35%, transparent);
+    list-style: none;
     text-align: right;
   }
-  .v-plate-metric-value {
-    display: block;
-    font-size: clamp(2.2rem, 3.4vw, 3.8rem);
-    font-weight: 330;
-    line-height: 1.1;
-  }
-  .v-plate-metric-label {
+  .v-plate-includes li {
+    padding-block: 0.3rem;
     font-size: 0.78rem;
-    color: color-mix(in srgb, var(--v-plate-ink) 88%, transparent);
+    font-weight: 540;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
 
   @media (max-width: 700px) {
@@ -306,7 +300,7 @@ const arcRadii = [620, 780, 950, 1130, 1320];
       align-items: flex-start;
       gap: 1.4rem;
     }
-    .v-plate-metric {
+    .v-plate-includes {
       text-align: left;
     }
     .v-plate-numeral {

@@ -34,8 +34,6 @@ export const services = {
   plausibleDomain: env.PUBLIC_PLAUSIBLE_DOMAIN || '',
   /** Booking link; falls back to /contact. */
   bookingUrl: env.PUBLIC_BOOKING_URL || '/contact',
-  /** GitHub username for the "Currently" widget (public events). */
-  githubUser: env.PUBLIC_GITHUB_USERNAME || 'voyagi',
 } as const;
 
 export interface SocialLink {
@@ -61,10 +59,11 @@ export interface NavItem {
   index: string;
 }
 
+// No project portfolio anywhere on the site (owner decision, 2026-06-11):
+// the navigation carries no Work entry and no case-study routes exist.
 export const nav: NavItem[] = [
-  { label: 'Work', href: '/work', index: '01' },
-  { label: 'About', href: '/about', index: '02' },
-  { label: 'Contact', href: '/contact', index: '03' },
+  { label: 'About', href: '/about', index: '01' },
+  { label: 'Contact', href: '/contact', index: '02' },
 ];
 
 export const cta = {

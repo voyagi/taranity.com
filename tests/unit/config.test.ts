@@ -12,17 +12,17 @@ describe('site config', () => {
     expect(site.url).toMatch(/^https?:\/\//);
   });
 
-  it('has a 3-item primary nav with hrefs and indices', () => {
-    expect(nav.length).toBe(3);
+  it('has a primary nav with hrefs and indices, and no Work entry (no portfolio)', () => {
+    expect(nav.length).toBe(2);
     for (const item of nav) {
       expect(item.href.startsWith('/')).toBe(true);
       expect(item.index).toMatch(/^\d{2}$/);
     }
+    expect(nav.some((item) => item.href === '/work')).toBe(false);
   });
 
   it('provides safe service fallbacks (runs with zero secrets)', () => {
     expect(services.bookingUrl).toBeTruthy();
-    expect(services.githubUser).toBeTruthy();
     // demo mode: empty key is allowed and must not throw
     expect(typeof services.web3formsKey).toBe('string');
   });
