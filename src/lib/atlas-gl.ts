@@ -309,6 +309,14 @@ export function createAtlasScene(root: HTMLElement): AtlasScene | null {
 
   // ---- listeners ----
   const onResize = () => {
+    // DPR can change mid-session (window moved between displays, device
+    // rotation): refresh the renderer ratio and the point-size uniforms,
+    // not just the canvas size, or the scene stays blurry until reload.
+    const nextNarrow = window.matchMedia('(max-width: 768px)').matches;
+    const nextPixelRatio = Math.min(window.devicePixelRatio || 1, nextNarrow ? 1.5 : 2);
+    renderer.setPixelRatio(nextPixelRatio);
+    globeMaterial.uniforms.uPixelRatio.value = nextPixelRatio;
+    starsMaterial.uniforms.uPixelRatio.value = nextPixelRatio;
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);

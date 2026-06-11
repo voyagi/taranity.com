@@ -367,11 +367,16 @@ const hasKey = Boolean(services.web3formsKey);
         return;
       }
 
+      // Abort a stalled request: without this a hung endpoint leaves the
+      // form stuck on the sending label with no way to retry.
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12000);
       try {
         const res = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
           body: new FormData(form),
           headers: { Accept: 'application/json' },
+          signal: controller.signal,
         });
         const json = await res.json().catch(() => ({}));
         if (res.ok && json.success) {
@@ -385,6 +390,8 @@ const hasKey = Boolean(services.web3formsKey);
         status.classList.add('is-error');
         submitBtn.disabled = false;
         submitLabel.textContent = 'Try again';
+      } finally {
+        clearTimeout(timeout);
       }
     });
 

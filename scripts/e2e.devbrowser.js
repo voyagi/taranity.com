@@ -432,10 +432,15 @@ const atlasFirstParty = [
   ...failedResponses.filter((f) => !isBenign(f.url)),
   ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
 ];
+// Same benign-noise filter as the page-level checks: the browser's generic
+// "Failed to load resource" line is ignored when no first-party request failed.
+const atlasRealConsole = consoleErrors.filter(
+  (t) => !(/Failed to load resource/i.test(t) && atlasFirstParty.length === 0),
+);
 rec(
   'atlas motion: no first-party console/page errors across the journey',
-  consoleErrors.length === 0 && pageErrors.length === 0 && atlasFirstParty.length === 0,
-  [...consoleErrors, ...pageErrors].join(' | ').slice(0, 240) || 'clean',
+  atlasRealConsole.length === 0 && pageErrors.length === 0 && atlasFirstParty.length === 0,
+  [...atlasRealConsole, ...pageErrors].join(' | ').slice(0, 240) || 'clean',
 );
 
 // evidence: the atlas opening (desktop, motion on; fresh load rather than a
