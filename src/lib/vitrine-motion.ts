@@ -89,11 +89,11 @@ function setup() {
   removeAnchorHandler = () => root.removeEventListener('click', onAnchorClick);
 
   ctx = gsap.context(() => {
-    // NOTE on { y: 0 }: vitrine.css hides mask lines with translateY(112%).
+    // NOTE on { y: 0 }: vitrine.css hides mask lines with translateY(120%).
     // GSAP parses that computed style as a pixel matrix (yPercent is not
     // recoverable from a matrix), so without owning `y` the parsed pixel
     // offset survives the yPercent tween and the line stays hidden. The
-    // from-pose (yPercent 112 + y 0) is pixel-identical to the CSS pose.
+    // from-pose (yPercent 120 + y 0) is pixel-identical to the CSS pose.
 
     // Hero entrance: lines rise out of their masks, then the details settle in.
     gsap
