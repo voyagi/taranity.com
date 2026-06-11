@@ -52,17 +52,17 @@ describe('vitrine atmosphere layer wiring', () => {
     source: readFileSync(resolve(__dirname, '../../src/components/designs/vitrine', name), 'utf8'),
   }));
 
-  it('both shells carry five paper layers', () => {
+  it('both shells carry seven paper layers', () => {
     for (const shell of shells) {
       const paperLine = shell.source.match(/class="v-paper"[^>]*>((?:<i><\/i>)+)/)?.[1] ?? '';
       const count = (paperLine.match(/<i><\/i>/g) ?? []).length;
-      expect(count, `${shell.name} .v-paper <i> count`).toBe(5);
+      expect(count, `${shell.name} .v-paper <i> count`).toBe(7);
     }
   });
 
   it('the CSS addresses every paper layer it expects', () => {
     expect(css.includes('.v-paper i:first-child'), 'first-child rule missing').toBe(true);
-    for (const n of [2, 3, 4, 5]) {
+    for (const n of [2, 3, 4, 5, 6, 7]) {
       expect(css.includes(`.v-paper i:nth-child(${n})`), `nth-child(${n}) rule missing`).toBe(true);
     }
   });
