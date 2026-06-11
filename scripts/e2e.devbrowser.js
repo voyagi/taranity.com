@@ -349,7 +349,7 @@ rec('vitrine motion: hero title lines rise fully into view', revealed(heroOffset
 
 // The contact statement reveals after the in-page anchor glide (goes through
 // the design's own Lenis scroll, like a real visitor). The glide passes every
-// work plate, so their wipe reveals must have fired by the time we arrive.
+// craft plate, so their wipe reveals must have fired by the time we arrive.
 await page.click('.v-nav a[href="#contact"]');
 const stmtCount = await page.evaluate(() => document.querySelectorAll('.v-contact [data-v-lines] .v-mask-inner').length);
 rec('vitrine motion: contact statement has its two masked lines', stmtCount === 2, 'count=' + stmtCount);
@@ -365,7 +365,7 @@ for (const start = Date.now(); !platesOpen(plateClips) && Date.now() - start < 4
   await settle(250);
   plateClips = await readPlateClips();
 }
-rec('vitrine motion: work plates wiped fully open', platesOpen(plateClips), JSON.stringify(plateClips));
+rec('vitrine motion: craft plates wiped fully open', platesOpen(plateClips), JSON.stringify(plateClips));
 
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);

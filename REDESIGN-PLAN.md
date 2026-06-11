@@ -7,14 +7,16 @@ The previous build (Aurora / Operator Console / World, Phases A to F, PRs #2 to 
 main but the user REJECTED those designs as too similar (just different backgrounds). We are
 rebuilding the front end from scratch as a showcase of several genuinely different designs.
 
-- Branch: `feat/multi-design-showcase` (off main), PR'd as the Vitrine PR.
-- DONE Phase 1 (Vitrine): SiteLayout.astro (head/meta + constant pre-paint theme script reading
-  data-theme-light/dark attrs, one CSP hash for all designs), src/styles/site.css (shared reset),
-  Fraunces variable font self-hosted, src/components/designs/vitrine/* (hero, manifesto,
-  work plates, studio, contact + footer), src/lib/vitrine-motion.ts (Lenis + GSAP, gated on
-  [data-vitrine], full teardown before VT swaps), `/` renders Vitrine, registry ready=true.
-  Old-design links to `/` carry data-astro-reload (old motion.ts never destroys its Lenis).
-  e2e suite retargeted (legacy theme/palette checks on /work, Vitrine checks on /), 71/71 green.
+- DONE Phase 1 (Vitrine, PRs #8 to #12 + no-projects): SiteLayout.astro (head/meta + constant
+  pre-paint theme script reading data-theme-light/dark attrs + data-smooth scrollbar handling,
+  one CSP hash for all designs), src/styles/site.css (shared reset), Fraunces variable font
+  self-hosted, src/components/designs/vitrine/* (hero, manifesto + method, CRAFTS plates
+  [full-bleed cinema, wipes, no projects per rule 7], studio, marquee, night-sky stars,
+  contact and footer), src/lib/vitrine-motion.ts (Lenis + GSAP, gated on [data-vitrine], full teardown
+  before VT swaps, v-lenis scrollbar class, progress hairline), `/` renders Vitrine,
+  registry ready=true. Old-design links to `/` carry data-astro-reload (old motion.ts never
+  destroys its Lenis). Legacy /work + /projects pages DELETED (rule 7); e2e legacy
+  theme/palette checks live on /about, Vitrine checks on /, suite 58/58 green.
 - NEXT Phase 2 (Atlas): immersive dark 3D journey at /atlas under
   src/components/designs/atlas/, three@0.184.0 already a dep, lazy-load the GL after first paint,
   reuse SiteLayout (pass design="atlas", themeLight/themeDark). Flip atlas ready=true in

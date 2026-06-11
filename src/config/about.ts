@@ -15,7 +15,7 @@ export const story: string[] = [
 export const principles: { title: string; body: string }[] = [
   {
     title: 'Outcomes over output',
-    body: 'A feature nobody measures is a guess. Every project here carries a number, because that is the only honest way to know it worked.',
+    body: 'A feature nobody measures is a guess. Every engagement carries a number, because that is the only honest way to know it worked.',
   },
   {
     title: 'Deterministic where it matters',
