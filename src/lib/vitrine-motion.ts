@@ -70,13 +70,19 @@ function setup() {
   removeAnchorHandler = () => root.removeEventListener('click', onAnchorClick);
 
   ctx = gsap.context(() => {
+    // NOTE on { y: 0 }: vitrine.css hides mask lines with translateY(112%).
+    // GSAP parses that computed style as a pixel matrix (yPercent is not
+    // recoverable from a matrix), so without owning `y` the parsed pixel
+    // offset survives the yPercent tween and the line stays hidden. The
+    // from-pose (yPercent 112 + y 0) is pixel-identical to the CSS pose.
+
     // Hero entrance: lines rise out of their masks, then the details settle in.
     gsap
       .timeline({ defaults: { ease: 'power3.out' } })
       .fromTo(
         '.v-hero .v-mask-inner',
-        { yPercent: 112 },
-        { yPercent: 0, duration: 1.15, stagger: 0.14 },
+        { yPercent: 112, y: 0 },
+        { yPercent: 0, y: 0, duration: 1.15, stagger: 0.14 },
         0.15,
       )
       .fromTo(
@@ -96,9 +102,10 @@ function setup() {
     gsap.utils.toArray<HTMLElement>('[data-v-lines]').forEach((group) => {
       gsap.fromTo(
         group.querySelectorAll('.v-mask-inner'),
-        { yPercent: 112 },
+        { yPercent: 112, y: 0 },
         {
           yPercent: 0,
+          y: 0,
           duration: 1.05,
           stagger: 0.12,
           ease: 'power3.out',
