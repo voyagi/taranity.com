@@ -30,6 +30,14 @@ interface Props {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   /** LCP-critical font files to preload. */
   preloadFonts?: string[];
+  /**
+   * The design runs a smooth-scroll runtime (Lenis). The pre-paint script then
+   * hides the native scrollbar (html.v-lenis) BEFORE first paint for visitors
+   * without reduced motion, so the page never reflows by the scrollbar width
+   * when the runtime boots; the design's motion module owns the class after
+   * that (and removes it when Lenis is not driving).
+   */
+  smooth?: boolean;
 }
 
 const {
@@ -42,6 +50,7 @@ const {
   noindex = false,
   jsonLd,
   preloadFonts = ['/fonts/inter-latin-var.woff2'],
+  smooth = false,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, site.url);
@@ -73,7 +82,13 @@ const orgLd = {
 ---
 
 <!doctype html>
-<html lang="en" data-design={design} data-theme-light={themeLight} data-theme-dark={themeDark}>
+<html
+  lang="en"
+  data-design={design}
+  data-theme-light={themeLight}
+  data-theme-dark={themeDark}
+  data-smooth={smooth ? '' : undefined}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -143,6 +158,9 @@ const orgLd = {
         const color = el.getAttribute('data-theme-' + mode);
         const meta = document.querySelector('meta[name="theme-color"]');
         if (meta && color) meta.setAttribute('content', color);
+        if (el.hasAttribute('data-smooth') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          el.classList.add('v-lenis');
+        }
       })();
     </script>
 
