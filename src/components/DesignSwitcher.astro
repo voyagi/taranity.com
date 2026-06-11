@@ -4,16 +4,31 @@
  * appear (registry flag), so the design list shows up once a second design ships.
  * Neutral and unobtrusive so it sits over any design. Behaviour is in
  * src/lib/design-theme.ts (delegated, View-Transition safe).
+ *
+ * Single-mode designs (Atlas is dark-only) hide the mode toggle: a control
+ * that visibly does nothing reads as broken. The stored preference still
+ * applies the moment the visitor switches to a design with both modes.
  */
-import { readyDesigns } from '../config/designs';
+import { readyDesigns, getDesign } from '../config/designs';
+
+interface Props {
+  /** Active design id; decides whether the mode toggle is offered. */
+  design: string;
+}
+const { design } = Astro.props;
 const items = readyDesigns();
 const multi = items.length > 1;
+const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
 ---
 
 <div class="design-switcher" data-design-switcher>
-  <button type="button" class="ds-mode" data-mode-toggle aria-label="Toggle light or dark">
-    <span class="ds-mode-dot" aria-hidden="true"></span>
-  </button>
+  {
+    hasModes && (
+      <button type="button" class="ds-mode" data-mode-toggle aria-label="Toggle light or dark">
+        <span class="ds-mode-dot" aria-hidden="true" />
+      </button>
+    )
+  }
   {
     multi && (
       <nav class="ds-designs" aria-label="Choose a design">
