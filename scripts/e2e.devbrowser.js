@@ -42,8 +42,7 @@ page.on('response', (r) => {
 page.on('requestfailed', (req) => failedRequests.push(req.url()));
 
 // Endpoints called best-effort and handled gracefully; a failure here is not a
-// site defect. plausible.io = analytics, only loaded when configured. (The GitHub
-// "last push" now resolves at build time, so there is no client GitHub request.)
+// site defect. plausible.io = analytics, only loaded when configured.
 const isBenign = (u) => /plausible\.io/.test(u);
 
 // Deterministic checks: entrance animations caught mid-fade make axe's
@@ -58,10 +57,8 @@ try {
 
 const pages200 = [
   ['/', 'home'],
-  ['/work', 'work'],
   ['/about', 'about'],
   ['/contact', 'contact'],
-  ['/projects/cortex', 'case-study'],
 ];
 
 async function runAxe(label) {
@@ -86,7 +83,7 @@ for (const [route, label] of pages200) {
   failedResponses = [];
   failedRequests = [];
   const resp = await page.goto(BASE + route, { waitUntil: 'load' });
-  await settle(700); // let the Currently widget's GitHub fetch settle
+  await settle(700); // let deferred scripts and first-frame motion settle
   rec(`${label}: HTTP 200`, resp && resp.status() === 200, 'status=' + (resp ? resp.status() : 'none'));
 
   const h1 = await page.$$eval('h1', (els) => els.map((e) => e.textContent.trim()).filter(Boolean));
@@ -178,7 +175,7 @@ rec('404: shows custom "route not found" copy', /route not found/i.test(body404)
 
 // ---- command palette (legacy chrome — lives on the BaseLayout pages) ----
 await page.setViewportSize({ width: 1440, height: 900 });
-await page.goto(BASE + '/work', { waitUntil: 'load' });
+await page.goto(BASE + '/about', { waitUntil: 'load' });
 await settle(400);
 await page.keyboard.press('Control+k');
 await settle(350);
@@ -219,7 +216,7 @@ const viewports = [
 ];
 for (const [w, h, name] of viewports) {
   await page.setViewportSize({ width: w, height: h });
-  for (const route of ['/', '/work', '/about', '/contact']) {
+  for (const route of ['/', '/about', '/contact']) {
     await page.goto(BASE + route, { waitUntil: 'load' });
     await settle(250);
     const o = await page.evaluate(() => ({
@@ -239,7 +236,7 @@ failedRequests = [];
 await page.setViewportSize({ width: 1440, height: 900 });
 // The legacy theme system lives on the BaseLayout pages (the showcase home has
 // its own design system, checked separately below).
-await page.goto(BASE + '/work', { waitUntil: 'load' });
+await page.goto(BASE + '/about', { waitUntil: 'load' });
 await page.evaluate(() => { try { localStorage.clear(); } catch {} });
 await page.reload({ waitUntil: 'load' });
 await settle(400);
@@ -255,17 +252,17 @@ await page.reload({ waitUntil: 'load' });
 await settle(250);
 rec('theme: mode persists across reload', (await dattr('data-mode')) === 'dark', await dattr('data-mode'));
 
-await page.click('.nav-links a[href="/about"]');
-for (let i = 0; i < 25 && !/\/about/.test(page.url()); i++) await settle(200); // await the VT swap
+await page.click('.nav-links a[href="/contact"]');
+for (let i = 0; i < 25 && !/\/contact/.test(page.url()); i++) await settle(200); // await the VT swap
 await settle(300);
 rec(
   'theme: persists across View-Transition navigation',
-  (await dattr('data-mode')) === 'dark' && /\/about/.test(page.url()),
+  (await dattr('data-mode')) === 'dark' && /\/contact/.test(page.url()),
   (await dattr('data-mode')) + ' @ ' + page.url(),
 );
 
 // every ready design is selectable from the picker
-await page.goto(BASE + '/work', { waitUntil: 'load' });
+await page.goto(BASE + '/about', { waitUntil: 'load' });
 await settle(300);
 for (const d of ['console', 'world', 'aurora']) {
   await page.click(`[data-theme-design="${d}"]`);
@@ -296,16 +293,16 @@ await settle(250);
 rec('vitrine: mode persists across reload', (await dattr('data-mode')) === modeAfter, await dattr('data-mode'));
 await page.evaluate(() => { try { localStorage.clear(); } catch {} });
 
-// evidence: work gallery (desktop, motion on) + a mobile home
+// evidence: a legacy page (desktop, motion on) + a mobile home
 try {
   await page.emulateMedia({ reducedMotion: null });
 } catch {
   /* see above */
 }
 await page.setViewportSize({ width: 1440, height: 900 });
-await page.goto(BASE + '/work', { waitUntil: 'load' });
+await page.goto(BASE + '/about', { waitUntil: 'load' });
 await settle(600);
-const workPath = await saveScreenshot(await page.screenshot(), 'e2e-work-desktop-motion.png');
+const workPath = await saveScreenshot(await page.screenshot(), 'e2e-about-desktop-motion.png');
 await page.setViewportSize({ width: 390, height: 844 });
 await page.goto(BASE + '/', { waitUntil: 'load' });
 await settle(400);

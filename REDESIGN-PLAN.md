@@ -30,6 +30,10 @@ rebuilding the front end from scratch as a showcase of several genuinely differe
 6. Wild but fast: server-rendered content paints first, WebGL loads lazily after, one shared renderer,
    capped DPR, instancing, strong mobile and reduced-motion fallbacks. (Aristide ships these effects in
    about 67KB of JS, that is the bar.)
+7. NO PROJECT PORTFOLIO anywhere on the site (user decision 2026-06-11): never present
+   projects or case studies. "Work" sections are replaced by offerings (crafts) and method
+   content. The legacy /work and /projects pages, projects.ts, ProjectCard, MetricTile,
+   Currently, and gh.ts were deleted in the no-projects PR; do not reintroduce them.
 
 ## Reference DNA (the user's picks: Igloo, Samsy, Aristide Benoist, Unseen Studio, Lando Norris,
 ## Hubtown, augen.pro)

@@ -1,14 +1,15 @@
 ---
 /**
- * The point of the studio, stated as an editorial spread, then the four
- * capabilities as a numbered index. AI is one capability and listed last,
- * per the content rules.
+ * The point of the studio, stated as an editorial spread, then the way an
+ * engagement runs as a numbered index. The crafts themselves live in the
+ * plates section; these rows carry the method (copy deliberately does not
+ * overlap the studio principles).
  */
-const capabilities = [
-  { index: '01', name: 'Websites', line: 'Editorial, fast, and made to be looked at twice.' },
-  { index: '02', name: 'Applications', line: 'Products and tools, designed and built end to end.' },
-  { index: '03', name: 'Automation', line: 'The repetitive work, rebuilt to run itself.' },
-  { index: '04', name: 'Intelligent systems', line: 'AI applied with restraint, where it earns its place.' },
+const method = [
+  { index: '01', name: 'Listen', line: 'Every engagement starts with the problem, not the brief.' },
+  { index: '02', name: 'Distill', line: 'We cut until what remains is the point.' },
+  { index: '03', name: 'Craft', line: 'Designed and engineered under one roof, no handoffs.' },
+  { index: '04', name: 'Stay', line: 'Launch is the midpoint. We keep it running and improving.' },
 ];
 ---
 
@@ -30,11 +31,11 @@ const capabilities = [
 
   <ol class="v-capabilities">
     {
-      capabilities.map((cap) => (
+      method.map((step) => (
         <li class="v-cap" data-v-fade>
-          <span class="v-cap-index v-serif" aria-hidden="true">{cap.index}</span>
-          <h3 class="v-cap-name v-serif">{cap.name}</h3>
-          <p class="v-cap-line">{cap.line}</p>
+          <span class="v-cap-index v-serif" aria-hidden="true">{step.index}</span>
+          <h3 class="v-cap-name v-serif">{step.name}</h3>
+          <p class="v-cap-line">{step.line}</p>
         </li>
       ))
     }
