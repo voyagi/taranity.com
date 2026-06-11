@@ -43,6 +43,31 @@ describe('vitrine dark palette', () => {
   });
 });
 
+describe('vitrine atmosphere layer wiring', () => {
+  /* The .v-paper layers are addressed by nth-child, so the CSS and the <i>
+     count in BOTH shells must move together: a dropped <i> silently kills
+     layers with no other failure. */
+  const shells = ['Vitrine.astro', 'VitrinePage.astro'].map((name) => ({
+    name,
+    source: readFileSync(resolve(__dirname, '../../src/components/designs/vitrine', name), 'utf8'),
+  }));
+
+  it('both shells carry five paper layers', () => {
+    for (const shell of shells) {
+      const paperLine = shell.source.match(/class="v-paper"[^>]*>((?:<i><\/i>)+)/)?.[1] ?? '';
+      const count = (paperLine.match(/<i><\/i>/g) ?? []).length;
+      expect(count, `${shell.name} .v-paper <i> count`).toBe(5);
+    }
+  });
+
+  it('the CSS addresses every paper layer it expects', () => {
+    expect(css.includes('.v-paper i:first-child'), 'first-child rule missing').toBe(true);
+    for (const n of [2, 3, 4, 5]) {
+      expect(css.includes(`.v-paper i:nth-child(${n})`), `nth-child(${n}) rule missing`).toBe(true);
+    }
+  });
+});
+
 describe('vitrine fixed-layer containment invariant', () => {
   /* .v-stars and .v-progress are position: fixed inside .vitrine. Any of
      these properties on the base .vitrine block would turn it into a

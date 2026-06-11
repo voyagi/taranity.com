@@ -129,14 +129,38 @@
     radial-gradient(46% 38% at 22% 22%, rgba(166, 124, 72, 0.13), transparent 70%),
     radial-gradient(40% 34% at 76% 62%, rgba(190, 142, 92, 0.1), transparent 72%);
 }
-/* Engraved arc field sweeping in from the top corner: the same etching
-   language as the plates, at paper scale. */
+/* An engraved sun in the top corner: radiant core with ray ticks inside the
+   arc field, the same etching language as the plates, at paper scale. */
 .v-paper i:nth-child(3) {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1500' height='1500'%3E%3Cg fill='none' stroke='%236a5c42' stroke-opacity='.55'%3E%3Ccircle cx='1500' cy='0' r='320'/%3E%3Ccircle cx='1500' cy='0' r='520'/%3E%3Ccircle cx='1500' cy='0' r='720'/%3E%3Ccircle cx='1500' cy='0' r='930'/%3E%3Ccircle cx='1500' cy='0' r='1150'/%3E%3Ccircle cx='1500' cy='0' r='1380'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1500' height='1500'%3E%3Cg fill='none' stroke='%236a5c42' stroke-opacity='.55'%3E%3Ccircle cx='1500' cy='0' r='200'/%3E%3Ccircle cx='1500' cy='0' r='320'/%3E%3Ccircle cx='1500' cy='0' r='520'/%3E%3Ccircle cx='1500' cy='0' r='720'/%3E%3Ccircle cx='1500' cy='0' r='930'/%3E%3Ccircle cx='1500' cy='0' r='1150'/%3E%3Ccircle cx='1500' cy='0' r='1380'/%3E%3C/g%3E%3Cg stroke='%236a5c42' stroke-opacity='.7'%3E%3Cline x1='1500' y1='240' x2='1500' y2='290'/%3E%3Cline x1='1404' y1='222' x2='1385' y2='268'/%3E%3Cline x1='1318' y1='182' x2='1283' y2='218'/%3E%3Cline x1='1278' y1='96' x2='1232' y2='115'/%3E%3Cline x1='1260' y1='0' x2='1210' y2='0'/%3E%3C/g%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right -180px top -180px;
   background-size: 1500px 1500px;
-  opacity: 0.12;
+  opacity: 0.2;
+}
+/* Shafts of afternoon light pouring in diagonally, fading out mid-page. */
+.v-paper i:nth-child(4) {
+  background-image: repeating-linear-gradient(
+    113deg,
+    transparent 0px,
+    transparent 220px,
+    rgba(186, 140, 86, 0.13) 320px,
+    rgba(186, 140, 86, 0.13) 420px,
+    transparent 540px,
+    transparent 760px
+  );
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 72%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 72%);
+  /* Matches the v-breathe midpoint, so reduced motion sees the same weight. */
+  opacity: 0.82;
+}
+/* Distant birds: the daytime counterpart of the night sky's stars. */
+.v-paper i:nth-child(5) {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cg fill='none' stroke='%235d5645' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M 120 180 Q 132 168 144 180 M 144 180 Q 156 168 168 180' stroke-opacity='.7'/%3E%3Cpath d='M 540 120 Q 549 111 558 120 M 558 120 Q 567 111 576 120' stroke-opacity='.5'/%3E%3Cpath d='M 760 340 Q 770 330 780 340 M 780 340 Q 790 330 800 340' stroke-opacity='.6'/%3E%3Cpath d='M 300 480 Q 308 472 316 480 M 316 480 Q 324 472 332 480' stroke-opacity='.45'/%3E%3Cpath d='M 640 660 Q 651 649 662 660 M 662 660 Q 673 649 684 660' stroke-opacity='.6'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1240' height='1240'%3E%3Cg fill='none' stroke='%235d5645' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M 220 260 Q 230 250 240 260 M 240 260 Q 250 250 260 260' stroke-opacity='.55'/%3E%3Cpath d='M 880 180 Q 892 168 904 180 M 904 180 Q 916 168 928 180' stroke-opacity='.65'/%3E%3Cpath d='M 1040 560 Q 1049 551 1058 560 M 1058 560 Q 1067 551 1076 560' stroke-opacity='.45'/%3E%3Cpath d='M 480 880 Q 490 870 500 880 M 500 880 Q 510 870 520 880' stroke-opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 900px 900px, 1240px 1240px;
+  opacity: 0.65;
 }
 
 /* The content rides above the fixed atmospheres. The header is already
@@ -352,12 +376,28 @@ html:not(.v-lenis) .v-progress {
       v-twinkle 17s ease-in-out 4s infinite alternate-reverse,
       v-drift-b 180s ease-in-out infinite alternate;
   }
-  /* The light pools and arcs wander; the fibre grain holds still like paper. */
+  /* The light pools, sun, shafts, and birds wander on their own slow clocks;
+     the fibre grain holds still like paper. */
   .v-paper i:nth-child(2) {
     animation: v-drift-b 160s ease-in-out infinite alternate;
   }
   .v-paper i:nth-child(3) {
     animation: v-drift-a 190s ease-in-out infinite alternate;
+  }
+  .v-paper i:nth-child(4) {
+    animation: v-breathe 16s ease-in-out infinite alternate;
+  }
+  .v-paper i:nth-child(5) {
+    animation: v-drift-b 200s ease-in-out infinite alternate-reverse;
+  }
+}
+
+@keyframes v-breathe {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
   }
 }
 
