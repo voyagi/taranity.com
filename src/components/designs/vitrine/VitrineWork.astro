@@ -272,6 +272,22 @@ const arcRadii = [620, 780, 950, 1130, 1320];
     color: var(--v-muted);
   }
 
+  /* Narrow desktops/portrait tablets: 3 text columns get too tight before the
+     stack point, so hold the art at 8 columns and give the text 4. */
+  @media (max-width: 1100px) and (min-width: 901px) {
+    .v-plate-art {
+      grid-column: 1 / span 8;
+    }
+    .v-plate.is-flip .v-plate-art {
+      grid-column: 5 / span 8;
+    }
+    .v-plate-text {
+      grid-column: 9 / span 4;
+    }
+    .v-plate.is-flip .v-plate-text {
+      grid-column: 1 / span 4;
+    }
+  }
   @media (max-width: 900px) {
     .v-plate,
     .v-plate.is-flip {
