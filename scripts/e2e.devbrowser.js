@@ -315,6 +315,14 @@ const mobilePath = await saveScreenshot(await page.screenshot(), 'e2e-home-mobil
 // (The audits above run under reduced motion, where nothing is ever hidden;
 // this guards the real reveal path. A mask line that stays translated by its
 // own height reads as a blank page to visitors.)
+// Force no-preference explicitly: the earlier reset restores the HOST default,
+// and a host with OS-level reduced motion would pass these checks trivially
+// without ever exercising the reveal path.
+try {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+} catch {
+  /* harness without emulateMedia: best effort, matches the rest of the suite */
+}
 const maskOffsets = (sel) =>
   page.evaluate(
     (s) =>
