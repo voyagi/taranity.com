@@ -315,31 +315,40 @@ const mobilePath = await saveScreenshot(await page.screenshot(), 'e2e-home-mobil
 // (The audits above run under reduced motion, where nothing is ever hidden;
 // this guards the real reveal path. A mask line that stays translated by its
 // own height reads as a blank page to visitors.)
+const maskOffsets = (sel) =>
+  page.evaluate(
+    (s) =>
+      [...document.querySelectorAll(s)].map((el) =>
+        Math.round(el.getBoundingClientRect().top - el.parentElement.getBoundingClientRect().top)),
+    sel,
+  );
+const revealed = (offs) => offs.length > 0 && offs.every((o) => Math.abs(o) < 8);
+// Poll instead of a flat sleep: the reveal sits behind animation time plus
+// (for scrolled sections) ScrollTrigger firing, both of which stretch under load.
+const awaitReveal = async (sel, deadlineMs) => {
+  const start = Date.now();
+  let offs = await maskOffsets(sel);
+  while (!revealed(offs) && Date.now() - start < deadlineMs) {
+    await settle(250);
+    offs = await maskOffsets(sel);
+  }
+  return offs;
+};
+
 await page.setViewportSize({ width: 1440, height: 900 });
 await page.goto(BASE + '/', { waitUntil: 'load' });
-await settle(3500); // entrance timeline is ~2.2s
-const heroOffsets = await page.evaluate(() =>
-  [...document.querySelectorAll('.v-hero .v-mask-inner')].map((el) =>
-    Math.round(el.getBoundingClientRect().top - el.parentElement.getBoundingClientRect().top)),
-);
-rec(
-  'vitrine motion: hero title lines rise fully into view',
-  heroOffsets.length === 2 && heroOffsets.every((o) => Math.abs(o) < 8),
-  'offsets=' + JSON.stringify(heroOffsets),
-);
+const heroCount = await page.evaluate(() => document.querySelectorAll('.v-hero .v-mask-inner').length);
+rec('vitrine motion: hero has its two masked lines', heroCount === 2, 'count=' + heroCount);
+const heroOffsets = await awaitReveal('.v-hero .v-mask-inner', 6000); // entrance is ~2.2s
+rec('vitrine motion: hero title lines rise fully into view', revealed(heroOffsets), 'offsets=' + JSON.stringify(heroOffsets));
+
 // The contact statement reveals after the in-page anchor glide (goes through
 // the design's own Lenis scroll, like a real visitor).
 await page.click('.v-nav a[href="#contact"]');
-await settle(4500); // 1.6s glide + 1.05s reveal + margin
-const stmtOffsets = await page.evaluate(() =>
-  [...document.querySelectorAll('.v-contact [data-v-lines] .v-mask-inner')].map((el) =>
-    Math.round(el.getBoundingClientRect().top - el.parentElement.getBoundingClientRect().top)),
-);
-rec(
-  'vitrine motion: contact statement lines rise fully into view',
-  stmtOffsets.length === 2 && stmtOffsets.every((o) => Math.abs(o) < 8),
-  'offsets=' + JSON.stringify(stmtOffsets),
-);
+const stmtCount = await page.evaluate(() => document.querySelectorAll('.v-contact [data-v-lines] .v-mask-inner').length);
+rec('vitrine motion: contact statement has its two masked lines', stmtCount === 2, 'count=' + stmtCount);
+const stmtOffsets = await awaitReveal('.v-contact [data-v-lines] .v-mask-inner', 8000); // 1.6s glide + 1.05s reveal
+rec('vitrine motion: contact statement lines rise fully into view', revealed(stmtOffsets), 'offsets=' + JSON.stringify(stmtOffsets));
 
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
