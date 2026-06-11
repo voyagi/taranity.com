@@ -1,10 +1,11 @@
 ---
 /**
- * Open Graph image source (1200×630). Rendered with the real fonts, then
- * screenshotted to public/og.png. Disallowed in robots, excluded from sitemap.
- * Regenerate: `npm run dev`, screenshot /og-preview at 1200×630 → public/og.png.
+ * Open Graph image source (1200×630), in the Vitrine design language.
+ * Rendered with the real fonts, then screenshotted to public/og.png.
+ * Disallowed in robots, excluded from sitemap. Regenerate: serve the build,
+ * screenshot /og-preview at 1200×630 → public/og.png.
  */
-import '../styles/global.css';
+import '../styles/fonts.css';
 ---
 
 <!doctype html>
@@ -16,81 +17,117 @@ import '../styles/global.css';
   </head>
   <body class="og-body">
     <div class="og">
-      <div class="og-grid dot-grid" aria-hidden="true"></div>
-      <div class="og-glow" aria-hidden="true"></div>
-      <span class="og-c tl"></span>
-      <span class="og-c tr"></span>
-      <span class="og-c bl"></span>
-      <span class="og-c br"></span>
+      <span class="og-star s1"></span>
+      <span class="og-star s2"></span>
+      <span class="og-star s3"></span>
+      <span class="og-star s4"></span>
+      <span class="og-star s5"></span>
+      <span class="og-star s6"></span>
+      <span class="og-star s7"></span>
 
       <header class="og-top">
-        <span class="og-mark"><span class="p">~/</span>taranity<span class="d"></span></span>
-        <span class="og-tag">digital studio · 2026</span>
+        <span class="og-mark">Taranity</span>
+        <span class="og-tag">Digital studio · Working worldwide</span>
       </header>
 
       <div class="og-main">
-        <h1 class="og-h1">If you can describe it,<br /><span class="gradient-text">we build it.</span></h1>
-        <p class="og-role">AI systems · Apps · Websites · Automation</p>
+        <h1 class="og-h1">Made to be<br /><span class="og-em">remembered.</span></h1>
       </div>
 
       <footer class="og-foot">
-        <span>AI · apps · websites</span>
-        <span class="dotsep">·</span>
-        <span>8 products shipped</span>
-        <span class="dotsep">·</span>
+        <span>Websites · Commerce · Applications · Automation · Advisory · Intelligent systems</span>
         <span class="og-url">taranity.com</span>
       </footer>
     </div>
-
-    <style>
-      .og-body { margin: 0; background: #050507; }
-      .og {
-        position: relative;
-        width: 1200px;
-        height: 630px;
-        overflow: hidden;
-        background:
-          radial-gradient(120% 90% at 88% -15%, rgba(139, 92, 246, 0.28), transparent 55%),
-          radial-gradient(90% 80% at -5% 110%, rgba(34, 211, 238, 0.2), transparent 55%),
-          var(--color-void);
-        padding: 64px 72px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        font-family: var(--font-sans);
-      }
-      .og-grid { position: absolute; inset: 0; opacity: 0.5; }
-      .og-glow {
-        position: absolute; top: -120px; right: -120px; width: 560px; height: 560px;
-        background: radial-gradient(circle, rgba(34, 211, 238, 0.16), transparent 60%);
-        filter: blur(10px);
-      }
-      .og-c { position: absolute; width: 40px; height: 40px; border: solid rgba(34, 211, 238, 0.55); border-width: 0; }
-      .og-c.tl { top: 30px; left: 30px; border-top-width: 2px; border-left-width: 2px; }
-      .og-c.tr { top: 30px; right: 30px; border-top-width: 2px; border-right-width: 2px; }
-      .og-c.bl { bottom: 30px; left: 30px; border-bottom-width: 2px; border-left-width: 2px; }
-      .og-c.br { bottom: 30px; right: 30px; border-bottom-width: 2px; border-right-width: 2px; }
-
-      .og-top { position: relative; display: flex; justify-content: space-between; align-items: center; z-index: 1; }
-      .og-mark {
-        font-family: var(--font-display); font-weight: 700; font-size: 30px;
-        letter-spacing: -0.03em; color: var(--color-ink); display: inline-flex; align-items: center;
-      }
-      .og-mark .p { font-family: var(--font-mono); font-weight: 400; color: var(--color-ink-faint); margin-right: 4px; font-size: 24px; }
-      .og-mark .d { width: 10px; height: 10px; border-radius: 999px; background: var(--color-cyan); box-shadow: 0 0 14px 2px rgba(34, 211, 238, 0.8); margin-left: 4px; margin-bottom: -2px; }
-      .og-tag { font-family: var(--font-mono); font-size: 16px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-ink-faint); }
-
-      .og-main { position: relative; z-index: 1; }
-      .og-h1 { font-family: var(--font-display); font-weight: 700; font-size: 96px; line-height: 0.98; letter-spacing: -0.03em; margin: 0 0 24px; color: var(--color-ink); }
-      .og-role { font-family: var(--font-mono); font-size: 24px; letter-spacing: 0.04em; color: var(--color-ink-dim); margin: 0; }
-
-      .og-foot {
-        position: relative; z-index: 1; display: flex; align-items: center; gap: 16px;
-        font-family: var(--font-mono); font-size: 18px; letter-spacing: 0.05em;
-        text-transform: uppercase; color: var(--color-ink-faint);
-      }
-      .dotsep { color: var(--color-cyan); }
-      .og-url { color: var(--color-cyan); }
-    </style>
   </body>
 </html>
+
+<style>
+  .og-body {
+    margin: 0;
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+  }
+  .og {
+    position: relative;
+    box-sizing: border-box;
+    width: 1200px;
+    height: 630px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 56px 72px 48px;
+    background:
+      radial-gradient(46% 58% at 78% 18%, rgba(198, 160, 105, 0.12), transparent 72%),
+      #110f0c;
+    color: #ece5d8;
+    border: 1px solid rgba(236, 229, 216, 0.18);
+    outline: 1px solid rgba(236, 229, 216, 0.07);
+    outline-offset: -12px;
+  }
+  .og-star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(236, 229, 216, 0.8);
+  }
+  .s1 { top: 84px; left: 540px; }
+  .s2 { top: 150px; left: 880px; opacity: 0.6; }
+  .s3 { top: 70px; left: 1080px; }
+  .s4 { top: 250px; left: 1130px; opacity: 0.5; }
+  .s5 { top: 420px; left: 980px; opacity: 0.7; }
+  .s6 { top: 330px; left: 700px; opacity: 0.45; }
+  .s7 { top: 520px; left: 460px; opacity: 0.5; }
+
+  .og-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .og-mark {
+    font-family: 'Inter Variable', sans-serif;
+    font-size: 21px;
+    font-weight: 640;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+  }
+  .og-tag {
+    font-family: 'Inter Variable', sans-serif;
+    font-size: 15px;
+    font-weight: 560;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #c9a36a;
+  }
+  .og-h1 {
+    margin: 0;
+    font-family: 'Fraunces Variable', Georgia, serif;
+    font-optical-sizing: auto;
+    font-size: 124px;
+    font-weight: 360;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+  }
+  .og-em {
+    font-weight: 250;
+  }
+  .og-foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    border-top: 1px solid rgba(236, 229, 216, 0.18);
+    padding-top: 22px;
+    font-family: 'Inter Variable', sans-serif;
+    font-size: 14.5px;
+    font-weight: 540;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: rgba(236, 229, 216, 0.78);
+  }
+  .og-url {
+    color: #c9a36a;
+  }
+</style>

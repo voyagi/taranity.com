@@ -1,0 +1,7 @@
+# Cloudflare Pages redirects. Old routes from before the single-page redesign:
+# the studio and contact live as sections on the home experience, and project
+# pages no longer exist (no portfolio on the site).
+/about /#studio 301
+/contact /#contact 301
+/work / 301
+/projects/* / 301

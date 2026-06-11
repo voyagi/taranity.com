@@ -1,83 +1,38 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Icon from '../components/Icon.astro';
-import { nav } from '../config/site';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import VitrinePage from '../components/designs/vitrine/VitrinePage.astro';
 ---
 
-<BaseLayout title="404 — route not found" noindex>
-  <section class="nf">
-    <p class="mono-label nf-eyebrow">/ error · 404</p>
-    <h1 class="nf-code gradient-text">404</h1>
-    <p class="nf-title">route not found.</p>
-    <p class="nf-body">
-      That path isn't on the map — but the console is still online. Try one of these, or hit
-      <button type="button" class="nf-kbd" data-open-palette aria-label="Open command palette">
-        <kbd>⌘K</kbd>
-      </button>
-      to jump anywhere.
-    </p>
-
-    <div class="nf-actions">
-      <a href="/" class="btn btn-primary" data-cursor="hover" data-astro-reload>
-        <Icon name="terminal" size={15} />
-        cd ~
-        <Icon name="arrow-right" size={15} class="arrow" />
-      </a>
-      {nav.map((item) => <a href={item.href} class="btn btn-ghost" data-cursor="hover">{item.label}</a>)}
-    </div>
-  </section>
-</BaseLayout>
+<SiteLayout
+  design="vitrine"
+  title="404"
+  description="This route was not found."
+  themeLight="#f4f0e8"
+  themeDark="#110f0c"
+  preloadFonts={['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2']}
+  noindex
+>
+  <VitrinePage>
+    <section class="v-page v-nf" tabindex="-1">
+      <p class="v-label">404</p>
+      <h1 class="v-page-title v-serif">This route was not found.</h1>
+      <p class="v-page-lead">
+        The page you are after does not exist or has moved. The studio, the
+        crafts, and the contact form are all one page away.
+      </p>
+      <a class="v-nf-back" href="/">Back to the studio</a>
+    </section>
+  </VitrinePage>
+</SiteLayout>
 
 <style>
-  .nf {
-    max-width: 720px;
-    margin: 0 auto;
-    min-height: 78vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    padding: var(--spacing-section) var(--spacing-gutter);
+  .v-nf {
+    min-height: 72svh;
   }
-  .nf-eyebrow { color: var(--color-danger); margin-bottom: 1rem; }
-  .nf-code {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: clamp(5rem, 22vw, 12rem);
-    line-height: 0.9;
-  }
-  .nf-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: var(--text-h2);
-    margin: 0.5rem 0 1rem;
-  }
-  .nf-body {
-    color: var(--color-ink-dim);
-    font-size: var(--text-lead);
-    line-height: 1.6;
-    max-width: 48ch;
-    margin: 0 auto 2.2rem;
-  }
-  .nf-kbd {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    vertical-align: baseline;
-  }
-  .nf-kbd kbd {
-    font-family: var(--font-mono);
-    font-size: 0.85em;
-    color: var(--color-cyan);
-    border: 1px solid var(--color-line-strong);
-    border-radius: 5px;
-    padding: 0.1rem 0.4rem;
-  }
-  .nf-actions {
-    display: flex;
-    gap: 0.7rem;
-    justify-content: center;
-    flex-wrap: wrap;
+  .v-nf-back {
+    font-family: var(--v-serif);
+    font-optical-sizing: auto;
+    font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+    font-weight: 420;
   }
 </style>

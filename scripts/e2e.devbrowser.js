@@ -6,8 +6,9 @@
 //
 // Covers: page status, single non-empty <h1>, <title>, console/page errors,
 // image loading, internal-link resolution, axe-core WCAG2A/AA per page,
-// command palette (Ctrl+K / Esc), contact form validation + success (demo mode),
-// custom 404, and no horizontal overflow at mobile/tablet/desktop.
+// contact form validation + success (demo mode), custom 404, no horizontal
+// overflow at mobile/tablet/desktop, theme persistence, and the Vitrine
+// motion reveals (hero masks, statements, plate wipes).
 
 // IPv4-explicit on purpose: serve-headers.mjs binds 127.0.0.1, while a stray
 // `astro preview` (no _headers applied) binds ::1 — and `localhost` resolves
@@ -57,8 +58,7 @@ try {
 
 const pages200 = [
   ['/', 'home'],
-  ['/about', 'about'],
-  ['/contact', 'contact'],
+  ['/privacy', 'privacy'],
 ];
 
 async function runAxe(label) {
@@ -171,37 +171,24 @@ const r404 = await page.goto(BASE + '/this-route-does-not-exist-xyz', { waitUnti
 await settle(300);
 rec('404: returns HTTP 404', r404 && r404.status() === 404, 'status=' + (r404 ? r404.status() : 'none'));
 const body404 = await page.evaluate(() => document.body.innerText);
-rec('404: shows custom "route not found" copy', /route not found/i.test(body404));
+rec('404: shows custom not-found copy', /route was not found/i.test(body404));
 
-// ---- command palette (legacy chrome — lives on the BaseLayout pages) ----
+// ---- contact form (on the home experience): validation + success (demo mode) ----
 await page.setViewportSize({ width: 1440, height: 900 });
-await page.goto(BASE + '/about', { waitUntil: 'load' });
+await page.goto(BASE + '/', { waitUntil: 'load' });
 await settle(400);
-await page.keyboard.press('Control+k');
-await settle(350);
-const openState = await page.evaluate(() => document.querySelector('[data-palette]')?.getAttribute('data-open'));
-rec('command palette: opens on Ctrl+K', openState === 'true', 'data-open=' + openState);
-const palettePath = await saveScreenshot(await page.screenshot(), 'e2e-palette-open.png');
-await page.keyboard.press('Escape');
-await settle(350);
-const closeState = await page.evaluate(() => document.querySelector('[data-palette]')?.getAttribute('data-open'));
-rec('command palette: closes on Escape', closeState === 'false', 'data-open=' + closeState);
-
-// ---- contact form: validation + success (demo mode) ----
-await page.goto(BASE + '/contact', { waitUntil: 'load' });
-await settle(400);
-await page.click('.contact-submit');
+await page.click('.v-submit'); // Playwright scrolls it into view
 await settle(300);
-const emptyErrs = await page.$$eval('.field-err', (es) => es.map((e) => e.textContent.trim()).filter(Boolean));
+const emptyErrs = await page.$$eval('[data-v-err]', (es) => es.map((e) => e.textContent.trim()).filter(Boolean));
 rec('contact: empty submit shows inline errors', emptyErrs.length >= 2, JSON.stringify(emptyErrs));
 
-await page.fill('#name', 'Jane Tester');
-await page.fill('#email', 'jane@example.com');
-await page.fill('#message', 'I would like to automate my client onboarding flow. Can we talk?');
-await page.click('.contact-submit');
+await page.fill('#v-name', 'Jane Tester');
+await page.fill('#v-email', 'jane@example.com');
+await page.fill('#v-message', 'I would like to automate my client onboarding flow. Can we talk?');
+await page.click('.v-submit');
 await settle(1300); // demo-mode success has a ~700ms simulated delay
 const successVisible = await page.evaluate(() => {
-  const el = document.querySelector('[data-form-success]');
+  const el = document.querySelector('[data-v-form-success]');
   return el ? !el.hidden : false;
 });
 rec('contact: valid submit shows success panel (demo mode)', successVisible);
@@ -216,7 +203,7 @@ const viewports = [
 ];
 for (const [w, h, name] of viewports) {
   await page.setViewportSize({ width: w, height: h });
-  for (const route of ['/', '/about', '/contact']) {
+  for (const route of ['/', '/privacy']) {
     await page.goto(BASE + route, { waitUntil: 'load' });
     await settle(250);
     const o = await page.evaluate(() => ({
@@ -227,52 +214,14 @@ for (const [w, h, name] of viewports) {
   }
 }
 
-// ---- theme switcher: default, mode toggle, persistence, after-swap, designs ----
+// ---- Vitrine (showcase home): design attr, system-default mode, toggle, persistence ----
 // Reset the error trackers so this block is isolated from the prior navigations.
 consoleErrors = [];
 pageErrors = [];
 failedResponses = [];
 failedRequests = [];
 await page.setViewportSize({ width: 1440, height: 900 });
-// The legacy theme system lives on the BaseLayout pages (the showcase home has
-// its own design system, checked separately below).
-await page.goto(BASE + '/about', { waitUntil: 'load' });
-await page.evaluate(() => { try { localStorage.clear(); } catch {} });
-await page.reload({ waitUntil: 'load' });
-await settle(400);
 const dattr = (k) => page.evaluate((x) => document.documentElement.getAttribute(x), k);
-rec('theme: default design=aurora', (await dattr('data-design')) === 'aurora', await dattr('data-design'));
-rec('theme: default mode=light', (await dattr('data-mode')) === 'light', await dattr('data-mode'));
-
-await page.click('[data-theme-mode-toggle]');
-await settle(250);
-rec('theme: toggle flips mode to dark', (await dattr('data-mode')) === 'dark', await dattr('data-mode'));
-
-await page.reload({ waitUntil: 'load' });
-await settle(250);
-rec('theme: mode persists across reload', (await dattr('data-mode')) === 'dark', await dattr('data-mode'));
-
-await page.click('.nav-links a[href="/contact"]');
-for (let i = 0; i < 25 && !/\/contact/.test(page.url()); i++) await settle(200); // await the VT swap
-await settle(300);
-rec(
-  'theme: persists across View-Transition navigation',
-  (await dattr('data-mode')) === 'dark' && /\/contact/.test(page.url()),
-  (await dattr('data-mode')) + ' @ ' + page.url(),
-);
-
-// every ready design is selectable from the picker
-await page.goto(BASE + '/about', { waitUntil: 'load' });
-await settle(300);
-for (const d of ['console', 'world', 'aurora']) {
-  await page.click(`[data-theme-design="${d}"]`);
-  await settle(450);
-  rec(`theme: design picker selects "${d}"`, (await dattr('data-design')) === d, await dattr('data-design'));
-}
-// reset to the default theme for the evidence screenshots below
-await page.evaluate(() => { try { localStorage.clear(); } catch {} });
-
-// ---- Vitrine (showcase home): design attr, system-default mode, toggle, persistence ----
 await page.goto(BASE + '/', { waitUntil: 'load' });
 await page.evaluate(() => { try { localStorage.clear(); } catch {} });
 await page.reload({ waitUntil: 'load' });
@@ -291,18 +240,29 @@ rec(
 await page.reload({ waitUntil: 'load' });
 await settle(250);
 rec('vitrine: mode persists across reload', (await dattr('data-mode')) === modeAfter, await dattr('data-mode'));
+
+// The mode survives a View-Transition navigation to a subpage, which renders
+// the same design system (privacy is on the Vitrine shell).
+await page.click('.v-footer a[href="/privacy"]');
+for (let i = 0; i < 25 && !/\/privacy/.test(page.url()); i++) await settle(200); // await the VT swap
+await settle(300);
+rec(
+  'vitrine: mode and design persist onto the privacy subpage',
+  (await dattr('data-mode')) === modeAfter && (await dattr('data-design')) === 'vitrine' && /\/privacy/.test(page.url()),
+  `${await dattr('data-mode')} / ${await dattr('data-design')} @ ${page.url()}`,
+);
 await page.evaluate(() => { try { localStorage.clear(); } catch {} });
 
-// evidence: a legacy page (desktop, motion on) + a mobile home
+// evidence: the privacy subpage (desktop, motion on) + a mobile home
 try {
   await page.emulateMedia({ reducedMotion: null });
 } catch {
   /* see above */
 }
 await page.setViewportSize({ width: 1440, height: 900 });
-await page.goto(BASE + '/about', { waitUntil: 'load' });
+await page.goto(BASE + '/privacy', { waitUntil: 'load' });
 await settle(600);
-const workPath = await saveScreenshot(await page.screenshot(), 'e2e-about-desktop-motion.png');
+const workPath = await saveScreenshot(await page.screenshot(), 'e2e-privacy-desktop.png');
 await page.setViewportSize({ width: 390, height: 844 });
 await page.goto(BASE + '/', { waitUntil: 'load' });
 await settle(400);
@@ -369,7 +329,7 @@ rec('vitrine motion: craft plates wiped fully open', platesOpen(plateClips), JSO
 
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
-console.log(JSON.stringify({ screenshots: [palettePath, contactPath, workPath, mobilePath] }));
+console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath] }));
 if (failed.length) {
   console.log('FAILURES:');
   failed.forEach((f) => console.log('  - ' + f.name + ' :: ' + f.detail));
