@@ -9,7 +9,10 @@
 // command palette (Ctrl+K / Esc), contact form validation + success (demo mode),
 // custom 404, and no horizontal overflow at mobile/tablet/desktop.
 
-const BASE = 'http://localhost:4321';
+// IPv4-explicit on purpose: serve-headers.mjs binds 127.0.0.1, while a stray
+// `astro preview` (no _headers applied) binds ::1 — and `localhost` resolves
+// to ::1 first, silently swapping the server under the suite.
+const BASE = 'http://127.0.0.1:4321';
 // axe-core served from the site's own origin (copied into dist by prep-e2e.mjs)
 // so the production CSP can stay strict (no CDN in script-src).
 const AXE = BASE + '/axe-test.js';
@@ -307,6 +310,36 @@ await page.setViewportSize({ width: 390, height: 844 });
 await page.goto(BASE + '/', { waitUntil: 'load' });
 await settle(400);
 const mobilePath = await saveScreenshot(await page.screenshot(), 'e2e-home-mobile-motion.png');
+
+// ---- motion ON: reveal-gated content actually becomes visible ----
+// (The audits above run under reduced motion, where nothing is ever hidden;
+// this guards the real reveal path. A mask line that stays translated by its
+// own height reads as a blank page to visitors.)
+await page.setViewportSize({ width: 1440, height: 900 });
+await page.goto(BASE + '/', { waitUntil: 'load' });
+await settle(3500); // entrance timeline is ~2.2s
+const heroOffsets = await page.evaluate(() =>
+  [...document.querySelectorAll('.v-hero .v-mask-inner')].map((el) =>
+    Math.round(el.getBoundingClientRect().top - el.parentElement.getBoundingClientRect().top)),
+);
+rec(
+  'vitrine motion: hero title lines rise fully into view',
+  heroOffsets.length === 2 && heroOffsets.every((o) => Math.abs(o) < 8),
+  'offsets=' + JSON.stringify(heroOffsets),
+);
+// The contact statement reveals after the in-page anchor glide (goes through
+// the design's own Lenis scroll, like a real visitor).
+await page.click('.v-nav a[href="#contact"]');
+await settle(4500); // 1.6s glide + 1.05s reveal + margin
+const stmtOffsets = await page.evaluate(() =>
+  [...document.querySelectorAll('.v-contact [data-v-lines] .v-mask-inner')].map((el) =>
+    Math.round(el.getBoundingClientRect().top - el.parentElement.getBoundingClientRect().top)),
+);
+rec(
+  'vitrine motion: contact statement lines rise fully into view',
+  stmtOffsets.length === 2 && stmtOffsets.every((o) => Math.abs(o) < 8),
+  'offsets=' + JSON.stringify(stmtOffsets),
+);
 
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
