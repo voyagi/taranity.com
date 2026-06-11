@@ -5,7 +5,7 @@
  * with the same hardened pattern as the original contact page (hardcoded
  * endpoint, honeypot, demo mode without a key, inline validation).
  */
-import { services, socials, contactEmail, site } from '../../../config/site';
+import { services, socials, contactEmail } from '../../../config/site';
 
 const hasKey = Boolean(services.web3formsKey);
 const year = new Date().getFullYear();
@@ -26,7 +26,7 @@ const year = new Date().getFullYear();
         day, in writing.
       </p>
       <a class="v-contact-email v-serif" href={`mailto:${contactEmail}`}>{contactEmail}</a>
-      <p class="v-contact-loc">{site.location}</p>
+      <p class="v-contact-loc">Working with clients worldwide</p>
       <ul class="v-contact-socials">
         {
           socials.map((s) => (

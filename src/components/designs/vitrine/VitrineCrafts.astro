@@ -1,11 +1,11 @@
 ---
 /**
  * What the studio makes, as cinematic full-bleed plates: edge-to-edge
- * generative artwork (gradient field + engraved SVG motif + cropped roman
- * numeral + grain) with each craft set directly on the piece. No project
- * portfolio anywhere on the site (owner decision): these plates present the
- * four crafts, AI last per the content rules. The artwork layers are
- * decorative (aria-hidden); the overlaid text is the real content. Each
+ * generative artwork (gradient field + an engraved motif depicting the craft
+ * + cropped roman numeral + grain) with each craft set directly on the piece.
+ * No project portfolio anywhere on the site (hard rule 7): these plates
+ * present the six crafts, AI last per the content rules. The artwork layers
+ * are decorative (aria-hidden); the overlaid text is the real content. Each
  * plate wipes open as it enters (vitrine-motion.ts).
  */
 interface Plate {
@@ -15,8 +15,8 @@ interface Plate {
   line: string;
   /** What an engagement includes, as a short stack. */
   includes: string[];
-  /** Engraved line motif drawn over the gradient field. */
-  motif: 'lines' | 'rings' | 'arcs' | 'grid';
+  /** Engraved motif depicting the craft, drawn over the gradient field. */
+  motif: 'page' | 'tag' | 'panels' | 'orbits' | 'compass' | 'constellation';
   /** Gradient stops: a/b radial highlights over a c→d base. Dark in both modes. */
   art: { a: string; b: string; c: string; d: string };
 }
@@ -27,52 +27,88 @@ const plates: Plate[] = [
     title: 'Websites',
     kicker: 'Digital flagships',
     line: 'Editorial, fast, and made to be looked at twice.',
-    includes: ['Design direction', 'Build and launch', 'Speed and accessibility'],
-    motif: 'lines',
+    includes: ['Design direction', 'Build and launch', 'Speed, SEO, accessibility'],
+    motif: 'page',
     art: { a: '#4a3a80', b: '#2d2452', c: '#1a1430', d: '#2a2046' },
   },
   {
     numeral: 'II',
-    title: 'Applications',
-    kicker: 'Products and tools',
-    line: 'Designed and engineered end to end, then run in production.',
-    includes: ['Product design', 'Full-stack build', 'Care after launch'],
-    motif: 'grid',
-    art: { a: '#3c5a7a', b: '#243447', c: '#131c26', d: '#27384c' },
+    title: 'Commerce',
+    kicker: 'Stores that sell',
+    line: 'Storefronts where the craft carries through to checkout.',
+    includes: ['Store design', 'Build and payments', 'Conversion care'],
+    motif: 'tag',
+    art: { a: '#84304e', b: '#4e1f30', c: '#271018', d: '#46202e' },
   },
   {
     numeral: 'III',
+    title: 'Applications',
+    kicker: 'Products and tools',
+    line: 'Web and mobile, designed and engineered end to end.',
+    includes: ['Product design', 'Full-stack build', 'Care after launch'],
+    motif: 'panels',
+    art: { a: '#3c5a7a', b: '#243447', c: '#131c26', d: '#27384c' },
+  },
+  {
+    numeral: 'IV',
     title: 'Automation',
     kicker: 'Quiet systems',
     line: 'The repetitive work, rebuilt to run itself.',
     includes: ['Process mapping', 'Integrations', 'Monitoring and alerts'],
-    motif: 'arcs',
+    motif: 'orbits',
     art: { a: '#7a5a2c', b: '#473522', c: '#241b12', d: '#42301a' },
   },
   {
-    numeral: 'IV',
+    numeral: 'V',
+    title: 'Advisory',
+    kicker: 'A second pair of eyes',
+    line: 'Clarity before you build: honest answers, clear direction.',
+    includes: ['Audits and reviews', 'Technical direction', 'Roadmaps and estimates'],
+    motif: 'compass',
+    art: { a: '#5a6474', b: '#393f4c', c: '#1b1f26', d: '#333a46' },
+  },
+  {
+    numeral: 'VI',
     title: 'Intelligent systems',
     kicker: 'Applied with restraint',
     line: 'AI only where it earns its place, with guardrails to match.',
     includes: ['Use-case selection', 'Implementation', 'Evaluation and guardrails'],
-    motif: 'rings',
+    motif: 'constellation',
     art: { a: '#2a6a5e', b: '#1c443c', c: '#102420', d: '#1d4038' },
   },
 ];
 
-const gridVerticals = [220, 440, 660, 880, 1100, 1320];
-const gridHorizontals = [200, 420, 640, 860];
-const lineRows = [
-  { y: 210, x1: 120, x2: 1140 },
-  { y: 300, x1: 120, x2: 1480 },
-  { y: 390, x1: 120, x2: 880 },
-  { y: 480, x1: 120, x2: 1320 },
-  { y: 570, x1: 120, x2: 1480 },
-  { y: 660, x1: 120, x2: 1040 },
-  { y: 750, x1: 120, x2: 1480 },
-  { y: 840, x1: 120, x2: 760 },
+/* Motif geometry (viewBox 0 0 1600 1100, 1px engraved strokes). */
+const pageTextRows = [
+  { y: 340, x1: 250, x2: 850 },
+  { y: 400, x1: 250, x2: 880 },
+  { y: 460, x1: 250, x2: 780 },
+  { y: 520, x1: 250, x2: 860 },
+  { y: 580, x1: 250, x2: 700 },
+  { y: 680, x1: 250, x2: 870 },
+  { y: 740, x1: 250, x2: 820 },
+  { y: 800, x1: 250, x2: 600 },
 ];
-const ringRadii = [90, 190, 300, 420, 550, 690];
+const orbitDots = [
+  { x: 800, y: 1130 },
+  { x: 1067, y: 1017 },
+  { x: 470, y: 1043 },
+  { x: 305, y: 734 },
+];
+const constellationNodes = [
+  { x: 560, y: 370 },
+  { x: 706, y: 338 },
+  { x: 295, y: 319 },
+  { x: 974, y: 533 },
+  { x: 150, y: 640 },
+];
+const constellationChords = [
+  [0, 1],
+  [1, 3],
+  [0, 2],
+  [2, 4],
+];
+const ringRadii = [90, 190, 300, 420, 550];
 const arcRadii = [620, 780, 950, 1130, 1320];
 ---
 
@@ -80,7 +116,7 @@ const arcRadii = [620, 780, 950, 1130, 1320];
   <h2 class="v-sr">What we make</h2>
   <div class="v-work-head">
     <p class="v-label" data-v-fade>02 · What we make</p>
-    <p class="v-work-note" data-v-fade>Four crafts, one standard.</p>
+    <p class="v-work-note" data-v-fade>Six crafts, one standard.</p>
   </div>
 
   {
@@ -94,37 +130,77 @@ const arcRadii = [620, 780, 950, 1130, 1320];
         >
           <div class="v-plate-art-inner" data-v-art-inner>
             <svg class="v-plate-motif" viewBox="0 0 1600 1100" preserveAspectRatio="xMidYMid slice">
-              {p.motif === 'lines' && (
+              {p.motif === 'page' && (
                 <g>
-                  {lineRows.map((r) => (
+                  <rect x="180" y="160" width="780" height="780" />
+                  <line x1={250} y1={250} x2={620} y2={250} />
+                  {pageTextRows.map((r) => (
                     <line x1={r.x1} y1={r.y} x2={r.x2} y2={r.y} />
                   ))}
-                  <circle cx="1180" cy="520" r="280" />
+                  <rect x="1080" y="300" width="340" height="250" />
+                  <line x1={1080} y1={620} x2={1420} y2={620} />
+                  <line x1={1080} y1={680} x2={1320} y2={680} />
                 </g>
               )}
-              {p.motif === 'rings' && (
+              {p.motif === 'tag' && (
                 <g>
-                  {ringRadii.map((r) => (
-                    <circle cx="560" cy="460" r={r} />
-                  ))}
+                  <line x1={120} y1={980} x2={620} y2={480} />
+                  <line x1={240} y1={1060} x2={780} y2={520} />
+                  <g transform="rotate(32 1020 470)">
+                    <rect x="820" y="350" width="440" height="240" rx="26" />
+                    <circle cx="900" cy="470" r="26" />
+                  </g>
+                  <path d="M 880 560 C 700 700, 560 740, 380 700" fill="none" />
                 </g>
               )}
-              {p.motif === 'arcs' && (
+              {p.motif === 'panels' && (
+                <g>
+                  <rect x="240" y="210" width="880" height="620" />
+                  <line x1={240} y1={310} x2={1120} y2={310} />
+                  <line x1={450} y1={310} x2={450} y2={830} />
+                  <rect x="520" y="390" width="240" height="160" />
+                  <rect x="810" y="390" width="240" height="160" />
+                  <rect x="520" y="620" width="530" height="140" />
+                  <rect x="1200" y="430" width="220" height="400" rx="28" />
+                  <line x1={1270} y1={500} x2={1350} y2={500} />
+                </g>
+              )}
+              {p.motif === 'orbits' && (
                 <g>
                   {arcRadii.map((r) => (
                     <circle cx="800" cy="1750" r={r} />
                   ))}
+                  {orbitDots.map((d) => (
+                    <circle cx={d.x} cy={d.y} r="9" />
+                  ))}
                 </g>
               )}
-              {p.motif === 'grid' && (
+              {p.motif === 'compass' && (
                 <g>
-                  {gridVerticals.map((x) => (
-                    <line x1={x} y1={80} x2={x} y2={1020} />
+                  <circle cx="800" cy="550" r="330" />
+                  <circle cx="800" cy="550" r="38" />
+                  <line x1={360} y1={550} x2={1240} y2={550} />
+                  <line x1={800} y1={120} x2={800} y2={980} />
+                  <line x1={800} y1={550} x2={1028} y2={332} />
+                  <line x1={800} y1={550} x2={692} y2={654} />
+                </g>
+              )}
+              {p.motif === 'constellation' && (
+                <g>
+                  {ringRadii.map((r) => (
+                    <circle cx="560" cy="460" r={r} />
                   ))}
-                  {gridHorizontals.map((y) => (
-                    <line x1={120} y1={y} x2={1480} y2={y} />
+                  {constellationChords.map(([from, to]) => (
+                    <line
+                      x1={constellationNodes[from].x}
+                      y1={constellationNodes[from].y}
+                      x2={constellationNodes[to].x}
+                      y2={constellationNodes[to].y}
+                    />
                   ))}
-                  <circle cx="880" cy="420" r="110" />
+                  {constellationNodes.map((n) => (
+                    <circle cx={n.x} cy={n.y} r="8" />
+                  ))}
                 </g>
               )}
             </svg>
@@ -201,7 +277,7 @@ const arcRadii = [620, 780, 950, 1130, 1320];
       linear-gradient(160deg, var(--pc) 0%, var(--pd) 100%);
     will-change: transform;
   }
-  /* Engraved line motif over the gradient field. */
+  /* Engraved craft motif over the gradient field. */
   .v-plate-motif {
     position: absolute;
     inset: 0;
@@ -211,7 +287,9 @@ const arcRadii = [620, 780, 950, 1130, 1320];
     opacity: 0.2;
   }
   .v-plate-motif line,
-  .v-plate-motif circle {
+  .v-plate-motif circle,
+  .v-plate-motif rect,
+  .v-plate-motif path {
     fill: none;
     stroke: currentColor;
     stroke-width: 1;

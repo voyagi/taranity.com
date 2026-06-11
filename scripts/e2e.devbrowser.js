@@ -359,7 +359,7 @@ const readPlateClips = () =>
   page.evaluate(() =>
     [...document.querySelectorAll('[data-v-plate-art]')].map((el) => getComputedStyle(el).clipPath),
   );
-const platesOpen = (clips) => clips.length === 4 && clips.every((c) => !c.includes('100%'));
+const platesOpen = (clips) => clips.length === 6 && clips.every((c) => !c.includes('100%'));
 let plateClips = await readPlateClips();
 for (const start = Date.now(); !platesOpen(plateClips) && Date.now() - start < 4000; ) {
   await settle(250);
