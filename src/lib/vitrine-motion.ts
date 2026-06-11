@@ -40,6 +40,9 @@ function teardown() {
     // no getter for it, so restore the documented defaults.
     gsap.ticker.lagSmoothing(500, 33);
   }
+  // Native scrollbar comes back the moment Lenis stops driving.
+  document.documentElement.classList.remove('v-lenis');
+  document.querySelector<HTMLElement>('[data-v-progress]')?.style.removeProperty('transform');
 }
 
 function setup() {
@@ -48,9 +51,16 @@ function setup() {
   // Reduced motion: vitrine.css never hides anything, so there is nothing to do.
   if (!root || reduceMotion()) return;
 
-  // Slow, cinematic scroll.
+  // Slow, cinematic scroll. While Lenis drives, the native scrollbar is
+  // hidden (dragging it fights the smoothing loop) and the top hairline
+  // takes over as the position indicator.
   lenis = new Lenis({ duration: 1.35, smoothWheel: true, touchMultiplier: 1.4 });
-  lenis.on('scroll', ScrollTrigger.update);
+  document.documentElement.classList.add('v-lenis');
+  const progress = document.querySelector<HTMLElement>('[data-v-progress]');
+  lenis.on('scroll', (l: Lenis) => {
+    ScrollTrigger.update();
+    if (progress && l.limit > 0) progress.style.transform = `scaleX(${l.scroll / l.limit})`;
+  });
   rafCb = (time: number) => lenis?.raf(time * 1000);
   gsap.ticker.add(rafCb);
   gsap.ticker.lagSmoothing(0);
