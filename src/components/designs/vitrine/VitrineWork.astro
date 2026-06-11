@@ -1,9 +1,10 @@
 ---
 /**
- * Selected work as full-bleed editorial plates. The imagery is generative
- * (layered gradients + film grain, one palette per piece), so it ships in CSS
- * instead of megabytes of photography. Copy is bespoke to Vitrine; the
- * canonical case-study data stays in src/content/projects.ts.
+ * Selected work as full-bleed editorial plates. The imagery is generative and
+ * ships in CSS/SVG instead of megabytes of photography: a layered gradient
+ * field, an engraved line motif unique to each piece, an oversized roman
+ * numeral, and film grain. Copy is bespoke to Vitrine; the canonical
+ * case-study data stays in src/content/projects.ts.
  */
 interface Plate {
   numeral: string;
@@ -12,6 +13,8 @@ interface Plate {
   line: string;
   metricValue: string;
   metricLabel: string;
+  /** Engraved line motif drawn over the gradient field. */
+  motif: 'lines' | 'rings' | 'arcs' | 'grid';
   /** Gradient stops: a/b radial highlights over a c→d base. Dark in both modes. */
   art: { a: string; b: string; c: string; d: string };
 }
@@ -24,7 +27,8 @@ const plates: Plate[] = [
     line: 'Twelve terminals became one quiet screen.',
     metricValue: '20+',
     metricLabel: 'projects in one view',
-    art: { a: '#3a2d63', b: '#241d3f', c: '#15101f', d: '#221a38' },
+    motif: 'lines',
+    art: { a: '#4a3a80', b: '#2d2452', c: '#1a1430', d: '#2a2046' },
   },
   {
     numeral: 'II',
@@ -33,7 +37,8 @@ const plates: Plate[] = [
     line: 'The phone rings for real customers again.',
     metricValue: '~95%',
     metricLabel: 'of spam stopped at the door',
-    art: { a: '#1f4c44', b: '#15302c', c: '#0d1b19', d: '#163029' },
+    motif: 'rings',
+    art: { a: '#2a6a5e', b: '#1c443c', c: '#102420', d: '#1d4038' },
   },
   {
     numeral: 'III',
@@ -42,7 +47,8 @@ const plates: Plate[] = [
     line: 'An engineering system that ships finished work while everyone sleeps.',
     metricValue: '300+',
     metricLabel: 'working sessions carried',
-    art: { a: '#57401f', b: '#33271a', c: '#1c1510', d: '#302314' },
+    motif: 'arcs',
+    art: { a: '#7a5a2c', b: '#473522', c: '#241b12', d: '#42301a' },
   },
   {
     numeral: 'IV',
@@ -51,9 +57,25 @@ const plates: Plate[] = [
     line: 'A timetable students stopped dreading.',
     metricValue: '1 tap',
     metricLabel: 'from pocket to today',
-    art: { a: '#2c4259', b: '#1a2532', c: '#0f151d', d: '#1c2837' },
+    motif: 'grid',
+    art: { a: '#3c5a7a', b: '#243447', c: '#131c26', d: '#27384c' },
   },
 ];
+
+const gridVerticals = [220, 440, 660, 880, 1100, 1320];
+const gridHorizontals = [200, 420, 640, 860];
+const lineRows = [
+  { y: 210, x1: 120, x2: 1140 },
+  { y: 300, x1: 120, x2: 1480 },
+  { y: 390, x1: 120, x2: 880 },
+  { y: 480, x1: 120, x2: 1320 },
+  { y: 570, x1: 120, x2: 1480 },
+  { y: 660, x1: 120, x2: 1040 },
+  { y: 750, x1: 120, x2: 1480 },
+  { y: 840, x1: 120, x2: 760 },
+];
+const ringRadii = [90, 190, 300, 420, 550, 690];
+const arcRadii = [620, 780, 950, 1130, 1320];
 ---
 
 <section class="v-work" id="work" tabindex="-1">
@@ -73,6 +95,41 @@ const plates: Plate[] = [
           style={`--pa:${p.art.a};--pb:${p.art.b};--pc:${p.art.c};--pd:${p.art.d}`}
         >
           <div class="v-plate-art-inner" data-v-art-inner>
+            <svg class="v-plate-motif" viewBox="0 0 1600 1100" preserveAspectRatio="xMidYMid slice">
+              {p.motif === 'lines' && (
+                <g>
+                  {lineRows.map((r) => (
+                    <line x1={r.x1} y1={r.y} x2={r.x2} y2={r.y} />
+                  ))}
+                  <circle cx="1180" cy="520" r="280" />
+                </g>
+              )}
+              {p.motif === 'rings' && (
+                <g>
+                  {ringRadii.map((r) => (
+                    <circle cx="560" cy="460" r={r} />
+                  ))}
+                </g>
+              )}
+              {p.motif === 'arcs' && (
+                <g>
+                  {arcRadii.map((r) => (
+                    <circle cx="800" cy="1750" r={r} />
+                  ))}
+                </g>
+              )}
+              {p.motif === 'grid' && (
+                <g>
+                  {gridVerticals.map((x) => (
+                    <line x1={x} y1={80} x2={x} y2={1020} />
+                  ))}
+                  {gridHorizontals.map((y) => (
+                    <line x1={120} y1={y} x2={1480} y2={y} />
+                  ))}
+                  <circle cx="880" cy="420" r="110" />
+                </g>
+              )}
+            </svg>
             <span class="v-plate-numeral v-serif">{p.numeral}</span>
           </div>
         </div>
@@ -92,7 +149,7 @@ const plates: Plate[] = [
 
 <style>
   .v-work {
-    padding: var(--v-section) var(--v-gutter);
+    padding: var(--v-section) var(--v-pad);
   }
   .v-work:focus {
     outline: none;
@@ -117,29 +174,27 @@ const plates: Plate[] = [
     align-items: end;
   }
   .v-plate + .v-plate {
-    margin-top: clamp(4.5rem, 14vh, 9rem);
+    margin-top: clamp(4.5rem, 12vh, 8rem);
   }
   .v-plate-art {
     position: relative;
-    grid-column: 1 / span 8;
+    grid-column: 1 / span 9;
     aspect-ratio: 16 / 11;
     overflow: hidden;
     border-radius: 2px;
+    border: 1px solid color-mix(in srgb, var(--v-plate-ink) 10%, transparent);
     background: var(--v-bg-deep);
   }
   .v-plate.is-flip .v-plate-art {
-    grid-column: 5 / span 8;
+    grid-column: 4 / span 9;
   }
   .v-plate-text {
-    grid-column: 9 / span 4;
+    grid-column: 10 / span 3;
     grid-row: 1;
     padding-bottom: 0.4rem;
   }
-  .v-plate:not(.is-flip) .v-plate-text {
-    grid-column: 9 / span 4;
-  }
   .v-plate.is-flip .v-plate-text {
-    grid-column: 1 / span 4;
+    grid-column: 1 / span 3;
   }
 
   /* Oversized inner layer: the parallax travels within it, so edges never show. */
@@ -152,35 +207,51 @@ const plates: Plate[] = [
       linear-gradient(160deg, var(--pc) 0%, var(--pd) 100%);
     will-change: transform;
   }
+  /* Engraved line motif over the gradient field. */
+  .v-plate-motif {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--v-plate-ink);
+    opacity: 0.16;
+  }
+  .v-plate-motif line,
+  .v-plate-motif circle {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
   /* Film grain stays static over the moving art. */
   .v-plate-art::after {
     content: '';
     position: absolute;
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
-    opacity: 0.35;
+    opacity: 0.45;
     mix-blend-mode: overlay;
     pointer-events: none;
   }
   .v-plate-numeral {
     position: absolute;
-    right: 6%;
-    bottom: 2%;
-    font-size: clamp(7rem, 17vw, 15rem);
-    font-weight: 300;
+    right: 10%;
+    bottom: 4%;
+    font-size: clamp(8rem, 18vw, 19rem);
+    font-weight: 320;
     line-height: 1;
     color: var(--v-plate-ink);
-    opacity: 0.16;
+    opacity: 0.3;
   }
 
   .v-plate-title {
     margin-block: 0.7rem 0.6rem;
-    font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+    font-size: clamp(1.9rem, 2.6vw, 3rem);
     font-weight: 420;
     line-height: 1.05;
   }
   .v-plate-line {
-    max-width: 34ch;
+    max-width: 30ch;
     font-size: 0.98rem;
     line-height: 1.6;
     color: var(--v-muted);
@@ -192,7 +263,7 @@ const plates: Plate[] = [
   }
   .v-plate-metric-value {
     display: block;
-    font-size: clamp(2.2rem, 3.6vw, 3.2rem);
+    font-size: clamp(2.4rem, 3.2vw, 3.6rem);
     font-weight: 330;
     line-height: 1.1;
   }
