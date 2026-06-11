@@ -140,9 +140,20 @@ function setup() {
       );
     });
 
-    // Plate parallax: the oversized art layer drifts as the plate crosses the
-    // viewport (its -10% inset means edges never show).
+    // Plates wipe open bottom-up as they enter (initial clip in vitrine.css),
+    // then the oversized art layer drifts as the plate crosses the viewport
+    // (its -10% inset means edges never show).
     gsap.utils.toArray<HTMLElement>('[data-v-plate-art]').forEach((art) => {
+      gsap.fromTo(
+        art,
+        { clipPath: 'inset(0% 0% 100% 0%)' },
+        {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          duration: 1.25,
+          ease: 'power4.inOut',
+          scrollTrigger: { trigger: art, start: 'top 74%', once: true },
+        },
+      );
       const inner = art.querySelector<HTMLElement>('[data-v-art-inner]');
       if (!inner) return;
       gsap.fromTo(

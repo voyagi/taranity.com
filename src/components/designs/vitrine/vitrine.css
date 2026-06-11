@@ -127,6 +127,10 @@
   html.js .vitrine [data-v-hero-rule] {
     transform: scaleX(0);
   }
+  /* Work plates wipe open bottom-up as they enter (vitrine-motion.ts). */
+  html.js .vitrine [data-v-plate-art] {
+    clip-path: inset(0% 0% 100% 0%);
+  }
 
   /* The mode toggle cross-fades the canvas instead of snapping. */
   .vitrine,
