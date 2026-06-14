@@ -39,6 +39,14 @@
   font-family: var(--a-sans);
   overflow-x: clip;
   color-scheme: dark;
+  /* Legibility halo: the content rides over a live particle field, so every
+     glyph carries a soft dark glow of the page colour. It hugs the letter
+     shapes (no visible box), so small muted text stays readable wherever a
+     bright cluster passes behind it, while the globe shows through untouched.
+     Negligible on the large display type, decisive on the mono captions. */
+  text-shadow:
+    0 0 8px rgba(5, 7, 13, 0.72),
+    0 1px 2px rgba(5, 7, 13, 0.85);
 }
 
 .atlas ::selection {
@@ -202,6 +210,11 @@ html:not(.v-lenis) .a-track {
 }
 .a-mask-inner {
   display: block;
+  /* The masked display lines are large enough to read without the wide halo,
+     and .a-mask's overflow:hidden would clip that glow along the top edge
+     during the rise. Give them a tight depth shadow instead; the small
+     captions that actually need the halo are never masked. */
+  text-shadow: 0 1px 2px rgba(5, 7, 13, 0.7);
 }
 
 /* Section headers share one shape: mono index label, then a masked display
@@ -211,6 +224,27 @@ html:not(.v-lenis) .a-track {
 }
 .a-section:focus {
   outline: none;
+}
+/* Reading scrim: a soft wash that calms the particle field behind the
+   content so the smaller captions read, while the globe still shows through
+   (it is only semi-opaque) and peeks vividly at the feathered seams between
+   sections. Scoped to .a-section, so the hero stays a full-strength showcase.
+   The section is a z-index:1 stacking context sitting above the fixed scene
+   (z 0); within it this z-index:-1 child paints over the section's
+   transparent background (so over the scene) but beneath the section text. */
+.a-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(5, 7, 13, 0.58) 12%,
+    rgba(5, 7, 13, 0.58) 88%,
+    transparent 100%
+  );
 }
 .a-statement {
   margin-block: clamp(1.4rem, 3.5vh, 2.2rem) clamp(2.2rem, 6vh, 3.6rem);
