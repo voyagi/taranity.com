@@ -1,0 +1,433 @@
+/* ==========================================================================
+   Raw — brutalist, monospace, raw-grid design for art, music, fashion-forward
+   labels, design studios, and dev tools. JetBrains Mono for EVERYTHING (the
+   signature: no serif, no sans), hard 0-radius edges, exposed structure, and a
+   chromatic-aberration glitch on the display type. Content sits in hard-bordered
+   boxes over a CSS atmosphere of a visible graph-paper grid, CRT scanlines, and
+   faint cyan/magenta corner blooms. Motion is snappy (Lenis scroll + GSAP
+   reveals, src/lib/raw-motion.ts; no WebGL); the "wild but fast" richness is the
+   pure-CSS grid/scanline field plus the glitch, all behind server-rendered
+   content.
+
+   Raw is dual-mode (designs.ts modes: ['dark', 'light']): tokens follow
+   data-mode on <html> (set pre-paint by SiteLayout); the no-JS
+   prefers-color-scheme duplicate below follows the system directly. The two dark
+   token sets are pinned identical by tests/unit/raw-css.test.ts. Type is
+   ink-monochrome on purpose so it always clears AA; the electric cyan/magenta is
+   reserved for non-text structure (the field, glitch ghosts, the progress bar,
+   accent bars, decorative ticks) where contrast rules do not apply.
+   ========================================================================== */
+
+/* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
+   contain, isolation, or will-change on .raw (or its ancestors) — any of them
+   would turn it into a containing block and re-pin the fixed .r-field /
+   .r-progress layers inside it instead of the viewport. Pinned by
+   tests/unit/raw-css.test.ts. */
+.raw {
+  /* light: a concrete-paper canvas, ink-monochrome type */
+  --r-bg: #efeee8;
+  --r-bg-raise: #fbfbf8;
+  --r-ink: #121210;
+  --r-muted: #56564e;
+  --r-line: rgba(18, 18, 16, 0.16);
+  --r-line-strong: rgba(18, 18, 16, 0.34);
+  --r-line-hard: #121210; /* full-ink hairlines for the brutalist frame */
+  /* the glitch duo: decorative only (never carries essential text) */
+  --r-cy: #00bcd0; /* cyan channel */
+  --r-mg: #e0117a; /* magenta channel */
+  --r-error: #c0241a;
+  /* fixed-atmosphere strengths, tuned per mode so the toggle crossfades */
+  --r-grid-op: 0.5;
+  --r-scan-op: 0.4;
+  --r-glow-op: 0.55;
+
+  --r-display: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  --r-sans: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  --r-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  --r-gutter: clamp(1.25rem, 5vw, 5.5rem);
+  /* Composition frame: content capped and centred, symmetric margins on
+     ultrawide. Sections use padding-inline: var(--r-pad). */
+  --r-max: 1280px;
+  --r-pad: max(var(--r-gutter), calc((100% - var(--r-max)) / 2));
+  --r-section: clamp(5rem, 13vh, 9rem);
+  /* brutalist: no rounding anywhere */
+  --r-radius: 0;
+
+  background: var(--r-bg);
+  color: var(--r-ink);
+  font-family: var(--r-sans);
+  overflow-x: clip;
+}
+
+/* Dark: a true-black terminal canvas. Keep in sync with the no-JS duplicate
+   below — pinned by the unit test. */
+:root[data-mode='dark'] .raw {
+  --r-bg: #0a0a0b;
+  --r-bg-raise: #141416;
+  --r-ink: #ededeb;
+  --r-muted: #8f8f87;
+  --r-line: rgba(237, 237, 235, 0.16);
+  --r-line-strong: rgba(237, 237, 235, 0.3);
+  --r-line-hard: #ededeb;
+  --r-cy: #2ff5e4;
+  --r-mg: #ff3d9a;
+  --r-error: #ff6a5a;
+  --r-grid-op: 0.45;
+  --r-scan-op: 0.5;
+  --r-glow-op: 0.7;
+}
+/* No-JS fallback: no data-mode attribute, follow the system. Must stay byte-
+   identical to the data-mode='dark' block above (unit test pins it). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode]) .raw {
+    --r-bg: #0a0a0b;
+    --r-bg-raise: #141416;
+    --r-ink: #ededeb;
+    --r-muted: #8f8f87;
+    --r-line: rgba(237, 237, 235, 0.16);
+    --r-line-strong: rgba(237, 237, 235, 0.3);
+    --r-line-hard: #ededeb;
+    --r-cy: #2ff5e4;
+    --r-mg: #ff3d9a;
+    --r-error: #ff6a5a;
+    --r-grid-op: 0.45;
+    --r-scan-op: 0.5;
+    --r-glow-op: 0.7;
+  }
+}
+
+.raw ::selection {
+  background: var(--r-cy);
+  color: #07181a; /* fixed dark ink: cyan selection stays legible in both modes */
+}
+
+/* ---- the field (CSS atmosphere: always present, behind everything) ---- */
+
+/* Three fixed sheets: a visible graph-paper grid (the brutalist backbone), fine
+   CRT scanlines, and faint cyan/magenta corner blooms with a top sheen. Always
+   present, so reduced motion and no-JS visitors get the full atmosphere.
+   Token-driven opacities so the mode toggle crossfades them with the canvas. */
+.r-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.r-field i {
+  position: absolute;
+  /* Oversized on purpose: the drift/roll animations must never expose an edge. */
+  inset: -8%;
+  background-repeat: repeat;
+}
+/* Graph-paper grid: a fine inner lattice plus a heavier major line every five
+   cells, masked to a soft vignette so it reads as a drafting surface, not
+   wallpaper. The signature of the design. */
+.r-field i:first-child {
+  background-image:
+    linear-gradient(var(--r-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--r-line) 1px, transparent 1px),
+    linear-gradient(var(--r-line-strong) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, var(--r-line-strong) 1.5px, transparent 1.5px);
+  background-size: 28px 28px, 28px 28px, 140px 140px, 140px 140px;
+  mask-image: radial-gradient(82% 78% at 50% 32%, rgba(0, 0, 0, 0.92), transparent 94%);
+  -webkit-mask-image: radial-gradient(82% 78% at 50% 32%, rgba(0, 0, 0, 0.92), transparent 94%);
+  opacity: var(--r-grid-op);
+}
+/* CRT scanlines: hairline horizontal banding, very fine, rolling slowly under
+   motion. Reads as a screen/print texture over the grid. */
+.r-field i:nth-child(2) {
+  background-image: repeating-linear-gradient(
+    0deg,
+    color-mix(in srgb, var(--r-ink) 22%, transparent) 0 1px,
+    transparent 1px 4px
+  );
+  opacity: var(--r-scan-op);
+}
+/* Corner blooms + sheen: a cyan glow top-left, a magenta glow bottom-right, and
+   a wide highlight up top — the only colour on the page, kept low and diffuse. */
+.r-field i:nth-child(3) {
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(40% 36% at 6% 4%, color-mix(in srgb, var(--r-cy) 24%, transparent), transparent 72%),
+    radial-gradient(42% 38% at 96% 96%, color-mix(in srgb, var(--r-mg) 22%, transparent), transparent 72%),
+    radial-gradient(72% 46% at 50% -10%, color-mix(in srgb, var(--r-ink) 6%, transparent), transparent 70%);
+  opacity: var(--r-glow-op);
+}
+
+/* The content rides above the fixed field. The header is sticky/positioned
+   already, so it needs no help. */
+.raw > section,
+.raw > footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- scroll affordance ---- */
+
+/* While Lenis drives the scroll, dragging the native scrollbar fights the
+   smoothing loop, so it is hidden for exactly that case (raw-motion.ts toggles
+   html.v-lenis; the class is shared across designs and set pre-paint by
+   SiteLayout). Reduced-motion and no-JS visitors keep their scrollbar.
+   Duplicated from the other designs' css because each ships its stylesheet
+   alone. */
+html.v-lenis {
+  scrollbar-width: none;
+}
+html.v-lenis::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* The progress bar that replaces it: a hard cyan-to-magenta sweep across the
+   top, scaleX driven from the Lenis scroll handler in raw-motion.ts. */
+.r-progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 60;
+  height: 3px;
+  background: linear-gradient(90deg, var(--r-cy), var(--r-mg));
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+html:not(.v-lenis) .r-progress {
+  display: none;
+}
+
+/* ---- primitives ---- */
+
+.r-display {
+  font-family: var(--r-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* Glitch: a static chromatic-aberration split (cyan left, magenta right) behind
+   ink display type. Always on, so the identity survives reduced motion; the
+   .r-mask inline padding gives the coloured ghosts room before overflow:hidden
+   clips them. raw-motion has no part in this — it is pure CSS. */
+.r-glitch {
+  text-shadow:
+    -0.02em 0 0 color-mix(in srgb, var(--r-cy) 78%, transparent),
+    0.02em 0 0 color-mix(in srgb, var(--r-mg) 78%, transparent);
+}
+
+/* Section eyebrow, written like a source comment: // NN — LABEL. Mono, boxed,
+   hard edges. Ink text (clears AA); the leading slashes carry the cyan. */
+.r-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.32rem 0.7rem;
+  border: 1px solid var(--r-line-strong);
+  background: var(--r-bg-raise);
+  font-family: var(--r-mono);
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--r-ink);
+}
+.r-label::before {
+  content: '//';
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--r-cy);
+}
+
+.r-rule {
+  display: block;
+  height: 2px;
+  background: var(--r-line-strong);
+  transform-origin: left;
+}
+
+/* A blinking terminal cursor block. Decorative; blinks only under motion. */
+.r-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 0.12em;
+  background: var(--r-cy);
+  vertical-align: text-bottom;
+  translate: 0 -0.06em;
+}
+
+/* Shared call-to-action buttons. Brutalist blocks: hard borders, no radius,
+   uppercase mono. Primary inverts ink/background; ghost is an outline that
+   inverts on hover. The hard offset shadow on hover is the signature tactility. */
+.r-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.4rem;
+  border: 1.5px solid var(--r-ink);
+  border-radius: var(--r-radius);
+  font-family: var(--r-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.r-cta-primary {
+  background: var(--r-ink);
+  color: var(--r-bg);
+}
+.r-cta-ghost {
+  background: transparent;
+  color: var(--r-ink);
+}
+.r-cta-ghost:hover {
+  background: var(--r-ink);
+  color: var(--r-bg);
+}
+.r-cta-arrow {
+  font-weight: 700;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .r-cta {
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.18s, color 0.18s;
+  }
+  .r-cta-primary:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 0 var(--r-cy);
+  }
+  .r-cta-ghost:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 0 var(--r-mg);
+  }
+  .r-cta:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
+  .r-cta:hover .r-cta-arrow {
+    transform: translateX(3px);
+  }
+  .r-cta-arrow {
+    transition: transform 0.2s ease;
+  }
+}
+
+/* Masked line reveals: the wrapper clips, the inner line rises. The bottom
+   padding gives descenders room to paint; the inline padding gives the glitch
+   ghosts room before the clip; the negative margins keep the layout rhythm
+   unchanged. The hidden state must clear line + bottom padding, hence 120%
+   (must match the yPercent in raw-motion.ts). */
+.r-mask {
+  display: block;
+  overflow: hidden;
+  padding: 0 0.1em 0.14em;
+  margin: 0 -0.1em -0.14em;
+}
+.r-mask-inner {
+  display: block;
+}
+
+/* Section frame: a comment-style label, then a masked display statement.
+   Sections own their layout below that. */
+.r-section {
+  padding: var(--r-section) var(--r-pad) 0;
+}
+.r-section:focus {
+  outline: none;
+}
+.r-statement {
+  margin-block: clamp(1rem, 2.6vh, 1.6rem) clamp(1.8rem, 5vh, 3rem);
+  font-size: clamp(1.9rem, 5vw, 3.9rem);
+  line-height: 1.04;
+  max-width: 20ch;
+}
+
+/* Card surface: a hard-bordered box with no rounding. A thin accent bar runs
+   along the top (per-card colour via --r-card-accent). Keeps text on a solid,
+   high-contrast ground over the field. */
+.r-card-surface {
+  --r-card-accent: var(--r-cy);
+  position: relative;
+  background: var(--r-bg-raise);
+  border: 1.5px solid var(--r-line-strong);
+  border-radius: var(--r-radius);
+}
+.r-card-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--r-card-accent);
+}
+
+/* ---- motion gates ---- */
+
+/* Initial hidden states for the choreography. Gated on html.js (set pre-paint)
+   AND motion-ok, so no-JS clients, crawlers, and reduced-motion visitors always
+   see complete content. raw-motion.ts animates these in. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .raw .r-mask-inner {
+    transform: translateY(120%);
+  }
+  html.js .raw [data-r-fade],
+  html.js .raw [data-r-hero-fade] {
+    opacity: 0;
+  }
+  html.js .raw [data-r-rule],
+  html.js .raw [data-r-hero-rule] {
+    transform: scaleX(0);
+  }
+  /* Cards wipe open left-to-right as they enter (raw-motion.ts). */
+  html.js .raw [data-r-card] {
+    clip-path: inset(0% 100% 0% 0%);
+  }
+
+  /* The mode toggle cross-fades the canvas instead of snapping. */
+  .raw,
+  .raw .r-card-surface {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  }
+  .r-field i {
+    transition: opacity 0.45s ease;
+  }
+
+  /* The grid drifts, the scanlines roll, and the cursor blinks on slow clocks. */
+  .r-field i:first-child {
+    animation: r-drift 64s ease-in-out infinite alternate;
+  }
+  .r-field i:nth-child(2) {
+    animation: r-roll 8s linear infinite;
+  }
+  .r-cursor {
+    animation: r-blink 1.1s steps(1) infinite;
+  }
+}
+
+@keyframes r-drift {
+  from {
+    transform: translate3d(-1%, -0.8%, 0);
+  }
+  to {
+    transform: translate3d(1%, 0.6%, 0);
+  }
+}
+/* Roll exactly one minor cell (28px) so the loop is seamless. */
+@keyframes r-roll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(28px);
+  }
+}
+@keyframes r-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}

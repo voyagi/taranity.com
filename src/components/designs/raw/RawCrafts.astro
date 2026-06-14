@@ -1,0 +1,176 @@
+---
+/**
+ * The six crafts presented as services, each on a hard-bordered brutalist card
+ * with a bracketed index, a title, one line, and what an engagement includes.
+ * No project portfolio anywhere on the site (hard rule 7): these cards present
+ * the offerings, not past work. Websites lead for this audience (a creative
+ * studio's first need is an expressive site); intelligent systems is last per
+ * the content rules (AI never leads). Each card wipes open as it enters
+ * (raw-motion.ts).
+ */
+interface Craft {
+  index: string;
+  title: string;
+  line: string;
+  includes: string[];
+  /** CSS custom-property name for this card's accent bar + markers. */
+  color: string;
+}
+
+const crafts: Craft[] = [
+  {
+    index: '01',
+    title: 'Websites',
+    line: 'An expressive, fast site with a point of view, that loads quick and makes people stop and look.',
+    includes: ['Art direction and build', 'Speed, SEO, accessibility', 'Motion with intent'],
+    color: '--r-cy',
+  },
+  {
+    index: '02',
+    title: 'Applications',
+    line: 'Products, tools, and dev tooling, designed and engineered as one continuous piece of work.',
+    includes: ['Product design', 'Full-stack build', 'Care after launch'],
+    color: '--r-mg',
+  },
+  {
+    index: '03',
+    title: 'Commerce',
+    line: 'Drops, merch, and limited releases, with a checkout that is quick, sharp, and built to convert.',
+    includes: ['Store design', 'Payments and checkout', 'Launch and drop tooling'],
+    color: '--r-cy',
+  },
+  {
+    index: '04',
+    title: 'Automation',
+    line: 'Release pipelines, publishing, and busywork rebuilt to run themselves, with alerts when needed.',
+    includes: ['Process mapping', 'Integrations', 'Monitoring and alerts'],
+    color: '--r-mg',
+  },
+  {
+    index: '05',
+    title: 'Advisory',
+    line: 'A blunt read on scope, cost, and risk before you commit a budget, in plain language.',
+    includes: ['Audits and reviews', 'Technical direction', 'Roadmaps and estimates'],
+    color: '--r-cy',
+  },
+  {
+    index: '06',
+    title: 'Intelligent systems',
+    line: 'AI applied only where it earns its place, with evaluation and guardrails to match.',
+    includes: ['Use-case selection', 'Implementation', 'Evaluation and guardrails'],
+    color: '--r-line-hard',
+  },
+];
+---
+
+<section class="r-section r-crafts" id="crafts" tabindex="-1">
+  <div class="r-crafts-head">
+    <p class="r-label" data-r-fade>02 / Services</p>
+    <h2 class="r-statement r-display r-glitch" data-r-lines>
+      <span class="r-mask"><span class="r-mask-inner">Everything you</span></span>
+      <span class="r-mask"><span class="r-mask-inner">can throw at us.</span></span>
+    </h2>
+    <p class="r-crafts-intro" data-r-fade>
+      One studio, end to end. Take a single craft or the whole stack. One team,
+      one point of contact, no handoffs.
+    </p>
+  </div>
+
+  <ul class="r-craft-grid">
+    {
+      crafts.map((c) => (
+        <li class="r-craft r-card-surface" data-r-card style={`--r-card-accent: var(${c.color})`}>
+          <div class="r-craft-top">
+            <span class="r-craft-index" aria-hidden="true">[{c.index}]</span>
+          </div>
+          <h3 class="r-craft-title r-display">{c.title}</h3>
+          <p class="r-craft-line">{c.line}</p>
+          <ul class="r-craft-includes">
+            {c.includes.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .r-crafts-head {
+    max-width: 46ch;
+  }
+  .r-crafts-intro {
+    margin-bottom: clamp(2.2rem, 5vh, 3.2rem);
+    font-size: 1rem;
+    line-height: 1.66;
+    color: var(--r-muted);
+  }
+  .r-craft-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(0.9rem, 1.6vw, 1.4rem);
+    margin: 0 0 clamp(2.6rem, 7vh, 4rem);
+    padding: 0;
+    list-style: none;
+  }
+  .r-craft {
+    padding: clamp(1.4rem, 2.4vw, 2rem);
+    /* the clip wipe (data-r-card gate) reveals each card on entry */
+  }
+  .r-craft-top {
+    margin-bottom: 1rem;
+  }
+  .r-craft-index {
+    font-family: var(--r-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--r-card-accent);
+  }
+  .r-craft-title {
+    font-size: clamp(1.3rem, 2vw, 1.65rem);
+    line-height: 1.05;
+  }
+  .r-craft-line {
+    margin-top: 0.7rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--r-muted);
+  }
+  .r-craft-includes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1.3rem 0 0;
+    padding: 1.3rem 0 0;
+    border-top: 1px solid var(--r-line);
+    list-style: none;
+  }
+  .r-craft-includes li {
+    position: relative;
+    padding-left: 1.5rem;
+    font-family: var(--r-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--r-ink);
+  }
+  /* a brutalist plus marker in the card's accent colour */
+  .r-craft-includes li::before {
+    content: '+';
+    position: absolute;
+    left: 0.1rem;
+    top: 0;
+    font-weight: 700;
+    color: var(--r-card-accent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .r-craft {
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .r-craft:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 6px 6px 0 0 var(--r-card-accent);
+    }
+  }
+</style>
