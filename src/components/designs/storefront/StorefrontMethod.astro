@@ -1,0 +1,113 @@
+---
+/**
+ * How an engagement runs: four steps from first conversation to long after the
+ * launch-day rush. A linear, legible process with concrete promises. The
+ * visitor can see exactly what working with us looks like before they commit.
+ * Step names are commerce-flavoured and deliberately distinct from the other
+ * designs' methods.
+ */
+const steps = [
+  {
+    index: '01',
+    name: 'Plan',
+    copy: 'We pin the outcome and the metric that proves it, then agree scope in writing. No drawing until the goal is clear.',
+    color: '--f-c1',
+  },
+  {
+    index: '02',
+    name: 'Craft',
+    copy: 'Design and engineering in one motion: real screens you can click, vivid where it sells and quiet where it should.',
+    color: '--f-c2',
+  },
+  {
+    index: '03',
+    name: 'Launch',
+    copy: 'Shipped in working increments, tuned for speed and checkout, and watched closely through the first rush.',
+    color: '--f-c4',
+  },
+  {
+    index: '04',
+    name: 'Grow',
+    copy: 'Launch starts the loop. We measure what real buyers do and tune for the number that matters, and we stay for it.',
+    color: '--f-c3',
+  },
+];
+---
+
+<section class="f-section f-method" id="method" tabindex="-1">
+  <p class="f-label" data-f-fade>03 · Method</p>
+
+  <h2 class="f-statement f-display" data-f-lines>
+    <span class="f-mask"><span class="f-mask-inner">A process you</span></span>
+    <span class="f-mask"><span class="f-mask-inner">can plan around.</span></span>
+  </h2>
+
+  <ol class="f-steps">
+    {
+      steps.map((step) => (
+        <li class="f-step" data-f-fade>
+          <span class="f-step-num f-display" style={`--f-step-color: var(${step.color})`} aria-hidden="true">
+            {step.index}
+          </span>
+          <h3 class="f-step-name f-display">{step.name}</h3>
+          <p class="f-step-copy">{step.copy}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <span class="f-rule" data-f-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .f-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(1.2rem, 2.4vw, 1.8rem);
+    margin: 0 0 clamp(2.6rem, 7vh, 4rem);
+    padding: 0;
+    list-style: none;
+  }
+  .f-step {
+    padding: clamp(1.3rem, 2.2vw, 1.7rem);
+    background: var(--f-bg-raise);
+    border: 1px solid var(--f-line);
+    border-radius: var(--f-radius);
+    box-shadow: var(--f-shadow-soft);
+  }
+  .f-step-num {
+    display: inline-grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--f-step-color) 16%, var(--f-bg-raise));
+    border: 2px solid var(--f-step-color);
+    color: var(--f-ink);
+    font-size: 1.05rem;
+    font-weight: 700;
+    transform: rotate(-4deg);
+    box-shadow: 0 4px 0 color-mix(in srgb, var(--f-step-color) 32%, transparent);
+  }
+  .f-step-name {
+    display: block;
+    margin-top: 1rem;
+    font-size: clamp(1.3rem, 2vw, 1.7rem);
+  }
+  .f-step-copy {
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--f-muted);
+  }
+  @media (max-width: 900px) {
+    .f-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 520px) {
+    .f-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

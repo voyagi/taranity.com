@@ -95,13 +95,44 @@ rebuilding the front end from scratch as a showcase of several genuinely differe
     atlas->signal, hero masks, contact statement after anchor glide, 6 card wipes, zero
     console errors). Light + dark verified by screenshot.
 
-- NEXT: PHASE 4 (Storefront). Vivid, product-forward, tactile e-commerce/DTC design for
-  beauty, food, fashion retail. Route /storefront, light-only (modes: ['light'] in designs.ts).
-  Reuse SiteLayout. Same motion teardown contract (gate on a [data-storefront] root). Content =
-  crafts + method (rule 7: NO portfolio), AI never leads, no em dashes. Flip storefront
-  ready=true in designs.ts same PR. Add unit invariants + e2e blocks mirroring Atlas/Signal
-  (motion-on guards!). New inline scripts rotate CSP hashes (csp-hash.mjs + public/_headers
-  same commit).
+- PHASE 4 (Storefront) COMPLETE, merged to main: vivid, product-forward, tactile commerce
+  design for e-commerce and DTC brands at /storefront, light-only.
+  - src/components/designs/storefront/: Storefront.astro shell ([data-storefront] root, fixed
+    CSS .f-field of warm gradient blobs + a halftone dot texture + sheen, top .f-progress scroll
+    bar) + Header (DTC promo marquee bar + sticky nav, "Start a project" CTA with a bag mark) /
+    Hero (outcome-led "Build a brand people buy into.", dual CTA, a tactile abstract "product
+    card" panel that packages the studio, NOT a portfolio) / Manifesto ("Make it worth coming
+    back for.") / Crafts (six offerings as a vivid "shelf" of product cards, Commerce first,
+    intelligent systems LAST) / Method (Plan/Craft/Launch/Grow tinted step chips) / Studio /
+    Contact (hardened Web3Forms clone, f-* ids) / Footer. Space Grotesk display, Inter body,
+    JetBrains Mono price-tag labels, deep-coral CTAs over a warm cream canvas with
+    coral/amber/mint/berry/blue/plum swatches.
+  - Light-only: color-scheme pinned light (mirrors Atlas's pinned dark); themeLight = themeDark
+    = #fff5ea so the browser chrome matches even on a dark system. No three.js (Lenis+GSAP only).
+  - src/lib/storefront-motion.ts: signal-motion teardown contract copied exactly (Lenis 1.0,
+    v-lenis, lagSmoothing restore, astro:before-swap teardown, anchor glide); f-* data-attr
+    vocabulary (data-f-fade/-hero-fade/-rule/-hero-rule/-lines/-card/-progress). Masked line
+    reveals, hairline draws, left-to-right card wipes.
+  - storefront ready=true in designs.ts; switcher live at 4 designs. CSP: StorefrontContact's
+    inline form script added hash 'sha256-PUQsfJGmJab6Vw3g7PVYTwCOIH0W2H/Jzox9T3SeQp8=' to
+    public/_headers (6 total).
+  - A11y note: vivid mid-tone fills cannot carry light/dark text at AA, so filled CTAs use a
+    deep coral (--f-accent-strong #c8300d) with cream text, the step badges + "New in" sticker
+    use tinted/amber chips with ink, and the promo bar uses ink over the coral-to-amber gradient.
+  - Tests: tests/unit/storefront-css.test.ts (containment invariant, color-scheme light pin,
+    CSS<->motion gate sync incl. card clip string, field layer count, registry wiring; light-only,
+    no dual-mode block). e2e 110/110: /storefront audits + axe, overflow at 4 viewports, switcher
+    lists all 4, NO mode toggle (light-only), form validation+success, motion-ON guards (switcher
+    swap signal->storefront, hero masks, contact statement after anchor glide, 6 card wipes, zero
+    console errors).
+
+- NEXT: PHASE 5 (Practice). Warm, trust-first, credibility-led design for medical, dental, med
+  spa, law, home services and trades. Route /practice, light-only (modes: ['light']). Reuse
+  SiteLayout + the same motion teardown contract (gate on a [data-practice] root). Content =
+  crafts + method (rule 7: NO portfolio), AI never leads, no em dashes, dead-simple written
+  contact. Flip practice ready=true in designs.ts same PR. Add unit invariants + e2e blocks
+  mirroring the prior designs (motion-on guards!). New inline scripts rotate CSP hashes
+  (csp-hash.mjs + public/_headers same commit).
 
 ## Session gotchas (cost real time; read before working)
 - scripts/serve-headers.mjs caches dist/_headers AT STARTUP: restart it after any rebuild that
@@ -176,8 +207,8 @@ vitest + build + dev-browser screenshot each design; trivy if deps change. Never
 `npm run preview -- --port 4340` then open http://localhost:4340. serve-headers.mjs honors a PORT env.
 
 ## To resume in a new session
-Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Storefront
-(Phase 4) next." Then it has everything it needs.
+Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Practice
+(Phase 5) next." Then it has everything it needs.
 
-Ready designs so far: Vitrine (`/`), Atlas (`/atlas`), Signal (`/signal`). Build order remaining:
-Storefront, then Practice, Raw.
+Ready designs so far: Vitrine (`/`), Atlas (`/atlas`), Signal (`/signal`), Storefront (`/storefront`).
+Build order remaining: Practice, then Raw.

@@ -1,0 +1,44 @@
+---
+/**
+ * Storefront — vivid, product-forward, tactile commerce design for e-commerce
+ * and DTC brands (beauty, food, fashion retail). Space Grotesk over a warm
+ * cream canvas lit with coral, amber, mint, and berry; content sits on chunky
+ * rounded product cards above a CSS atmosphere of drifting blobs and a halftone
+ * dot texture. One self-contained page experience; SiteLayout provides head/meta
+ * and the floating switcher.
+ *
+ * The server HTML is complete and visible without JS: the atmosphere is pure
+ * CSS, and motion (Lenis scroll + GSAP reveals, src/lib/storefront-motion.ts)
+ * is strictly additive. Light-only (designs.ts modes: ['light']).
+ */
+import './storefront.css';
+import StorefrontHeader from './StorefrontHeader.astro';
+import StorefrontHero from './StorefrontHero.astro';
+import StorefrontManifesto from './StorefrontManifesto.astro';
+import StorefrontCrafts from './StorefrontCrafts.astro';
+import StorefrontMethod from './StorefrontMethod.astro';
+import StorefrontStudio from './StorefrontStudio.astro';
+import StorefrontContact from './StorefrontContact.astro';
+import StorefrontFooter from './StorefrontFooter.astro';
+---
+
+<div class="storefront" data-storefront>
+  <!-- Fixed CSS atmosphere (warm blobs, halftone dots, sheen): always present,
+       and the complete backdrop for reduced motion or no JS. -->
+  <div class="f-field" aria-hidden="true"><i></i><i></i><i></i></div>
+  <!-- Scroll progress: replaces the native scrollbar while Lenis drives. -->
+  <span class="f-progress" data-f-progress aria-hidden="true"></span>
+
+  <StorefrontHeader />
+  <StorefrontHero />
+  <StorefrontManifesto />
+  <StorefrontCrafts />
+  <StorefrontMethod />
+  <StorefrontStudio />
+  <StorefrontContact />
+  <StorefrontFooter />
+</div>
+
+<script>
+  import '../../../lib/storefront-motion';
+</script>

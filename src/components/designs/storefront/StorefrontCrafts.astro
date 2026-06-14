@@ -1,0 +1,189 @@
+---
+/**
+ * The six crafts laid out as products on a shelf: each a vivid card with a
+ * colour chip, an index tag, a title, one line, and what an engagement
+ * includes. No project portfolio anywhere on the site (hard rule 7): these
+ * cards present the offerings, not past work. Commerce leads for this audience;
+ * intelligent systems is last per the content rules (AI never leads). Each card
+ * wipes open as it enters (storefront-motion.ts).
+ */
+interface Craft {
+  index: string;
+  title: string;
+  line: string;
+  includes: string[];
+  /** CSS custom-property name for this card's vivid accent. */
+  color: string;
+}
+
+const crafts: Craft[] = [
+  {
+    index: '01',
+    title: 'Commerce',
+    line: 'Storefronts engineered from first glance through checkout, built to convert without friction.',
+    includes: ['Store design', 'Payments and checkout', 'Conversion care'],
+    color: '--f-c1',
+  },
+  {
+    index: '02',
+    title: 'Websites',
+    line: 'Marketing sites that load fast and point every visitor at the one action that matters.',
+    includes: ['Design and build', 'Speed, SEO, accessibility', 'Conversion-first layout'],
+    color: '--f-c2',
+  },
+  {
+    index: '03',
+    title: 'Applications',
+    line: 'Web and mobile products, designed and engineered as one continuous piece.',
+    includes: ['Product design', 'Full-stack build', 'Care after launch'],
+    color: '--f-c3',
+  },
+  {
+    index: '04',
+    title: 'Automation',
+    line: 'The repetitive work, mapped and rebuilt to run itself, with alerts when something needs you.',
+    includes: ['Process mapping', 'Integrations', 'Monitoring and alerts'],
+    color: '--f-c4',
+  },
+  {
+    index: '05',
+    title: 'Advisory',
+    line: 'A clear read on scope, cost, and risk before you commit a build budget.',
+    includes: ['Audits and reviews', 'Technical direction', 'Roadmaps and estimates'],
+    color: '--f-c5',
+  },
+  {
+    index: '06',
+    title: 'Intelligent systems',
+    line: 'AI applied only where it earns its place, with evaluation and guardrails to match.',
+    includes: ['Use-case selection', 'Implementation', 'Evaluation and guardrails'],
+    color: '--f-c6',
+  },
+];
+---
+
+<section class="f-section f-crafts" id="crafts" tabindex="-1">
+  <div class="f-crafts-head">
+    <p class="f-label" data-f-fade>02 · The shelf</p>
+    <h2 class="f-statement f-display" data-f-lines>
+      <span class="f-mask"><span class="f-mask-inner">Everything a</span></span>
+      <span class="f-mask"><span class="f-mask-inner">brand needs.</span></span>
+    </h2>
+    <p class="f-crafts-intro" data-f-fade>
+      One studio, taken end to end. Pick a single craft or stock the whole shelf.
+    </p>
+  </div>
+
+  <ul class="f-craft-grid">
+    {
+      crafts.map((c) => (
+        <li class="f-craft f-card-surface" data-f-card style={`--f-card-accent: var(${c.color})`}>
+          <div class="f-craft-top">
+            <span class="f-craft-chip" style={`background: var(${c.color})`} aria-hidden="true" />
+            <span class="f-craft-index" aria-hidden="true">
+              {c.index}
+            </span>
+          </div>
+          <h3 class="f-craft-title f-display">{c.title}</h3>
+          <p class="f-craft-line">{c.line}</p>
+          <ul class="f-craft-includes">
+            {c.includes.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .f-crafts-head {
+    max-width: 40ch;
+  }
+  .f-crafts-intro {
+    margin-bottom: clamp(2.2rem, 5vh, 3.2rem);
+    font-size: 1.06rem;
+    line-height: 1.62;
+    color: var(--f-muted);
+  }
+  .f-craft-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(1rem, 1.8vw, 1.6rem);
+    margin: 0 0 clamp(2.6rem, 7vh, 4rem);
+    padding: 0;
+    list-style: none;
+  }
+  .f-craft {
+    padding: clamp(1.4rem, 2.4vw, 2rem);
+    /* the clip wipe (data-f-card gate) reveals each card on entry */
+  }
+  .f-craft-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.1rem;
+  }
+  .f-craft-chip {
+    width: 26px;
+    height: 26px;
+    border-radius: 9px;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+    transform: rotate(-6deg);
+  }
+  .f-craft-index {
+    font-family: var(--f-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    color: var(--f-muted);
+  }
+  .f-craft-title {
+    font-size: clamp(1.35rem, 2vw, 1.7rem);
+    line-height: 1.05;
+  }
+  .f-craft-line {
+    margin-top: 0.7rem;
+    font-size: 0.99rem;
+    line-height: 1.58;
+    color: var(--f-muted);
+  }
+  .f-craft-includes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin: 1.3rem 0 0;
+    padding: 1.3rem 0 0;
+    border-top: 1px solid var(--f-line);
+    list-style: none;
+  }
+  .f-craft-includes li {
+    position: relative;
+    padding-left: 1.6rem;
+    font-size: 0.9rem;
+    color: var(--f-ink);
+  }
+  .f-craft-includes li::before {
+    content: '';
+    position: absolute;
+    left: 0.1rem;
+    top: 0.32em;
+    width: 14px;
+    height: 9px;
+    /* a small check mark in the card's accent colour */
+    border-left: 2.5px solid var(--f-card-accent);
+    border-bottom: 2.5px solid var(--f-card-accent);
+    transform: rotate(-45deg) scale(0.78);
+    transform-origin: center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .f-craft {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .f-craft:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 0 var(--f-card-accent), var(--f-shadow);
+    }
+  }
+</style>
