@@ -1,0 +1,52 @@
+---
+/**
+ * The idea behind the studio, stated plainly. Leads with the outcome (being
+ * trusted), never the tooling. The credibility motif carries the section: for
+ * a practice, the website is the first handshake, and trust is what converts.
+ */
+---
+
+<section class="p-section p-manifesto">
+  <p class="p-label" data-p-fade>01 · The idea</p>
+
+  <h2 class="p-statement p-display" data-p-lines>
+    <span class="p-mask"><span class="p-mask-inner">Trust is the</span></span>
+    <span class="p-mask"><span class="p-mask-inner">whole product.</span></span>
+  </h2>
+
+  <div class="p-manifesto-cols">
+    <p data-p-fade>
+      For a practice, the website is the first handshake. A visitor decides in
+      seconds whether you are careful, capable, and worth a call. We design for
+      that moment: clear, calm, and credible, agreed in plain language first.
+    </p>
+    <p data-p-fade>
+      From there it is steady and thorough. Real screens you can click, fast to
+      load and easy to read, built to hold up under scrutiny and to keep earning
+      trust long after launch day.
+    </p>
+  </div>
+
+  <span class="p-rule" data-p-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .p-manifesto-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.6rem, 4vw, 4rem);
+    max-width: 920px;
+    margin-bottom: clamp(2.6rem, 7vh, 4rem);
+  }
+  .p-manifesto-cols p {
+    max-width: 44ch;
+    font-size: clamp(1.02rem, 1.3vw, 1.14rem);
+    line-height: 1.68;
+    color: var(--p-muted);
+  }
+  @media (max-width: 720px) {
+    .p-manifesto-cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

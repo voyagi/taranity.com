@@ -1,0 +1,396 @@
+---
+/**
+ * Written contact only (hard rule 1: no booking, no calls): a short form and a
+ * direct email address, framed as the page's primary conversion. Submission
+ * posts to Web3Forms with the same hardened pattern as the other designs
+ * (hardcoded endpoint, honeypot, demo mode without a key, inline validation),
+ * restyled for Practice.
+ */
+import { services, socials, contactEmail } from '../../../config/site';
+
+const hasKey = Boolean(services.web3formsKey);
+---
+
+<section class="p-section p-contact" id="contact" tabindex="-1">
+  <div class="p-contact-grid">
+    <div class="p-contact-aside" data-p-fade>
+      <p class="p-label">05 · Contact</p>
+      <h2 class="p-statement p-display" data-p-lines>
+        <span class="p-mask"><span class="p-mask-inner">Tell us about</span></span>
+        <span class="p-mask"><span class="p-mask-inner">your practice.</span></span>
+      </h2>
+      <p class="p-contact-lead">
+        Send what you do and what you are trying to achieve. We read everything
+        and reply within a day, in writing, with a clear next step. No calls, no
+        pressure.
+      </p>
+      <a class="p-contact-email p-display" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      <p class="p-contact-loc">Working with clients worldwide</p>
+      <ul class="p-contact-socials">
+        {
+          socials.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="p-form-wrap p-card-surface" data-p-fade>
+      <form
+        class="p-form"
+        data-p-form
+        data-fallback-email={contactEmail}
+        action="https://api.web3forms.com/submit"
+        method="POST"
+        novalidate
+      >
+        <input type="hidden" name="access_key" value={services.web3formsKey} />
+        <input type="hidden" name="subject" value="New enquiry via taranity.com (Practice)" />
+        <input type="hidden" name="from_name" value="taranity.com" />
+        <!-- Honeypot -->
+        <input type="checkbox" name="botcheck" class="p-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        {
+          !hasKey && (
+            <p class="p-demo-note">Demo mode: add a Web3Forms key to send for real (see HUMAN-TODO).</p>
+          )
+        }
+
+        <div class="p-field-row">
+          <label for="p-name">Name</label>
+          <input id="p-name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="p-err-name" />
+          <span class="p-field-err" id="p-err-name" data-p-err="name" role="alert"></span>
+        </div>
+
+        <div class="p-field-row">
+          <label for="p-email">Email</label>
+          <input id="p-email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="p-err-email" />
+          <span class="p-field-err" id="p-err-email" data-p-err="email" role="alert"></span>
+        </div>
+
+        <div class="p-field-row">
+          <label for="p-message">What does your practice need?</label>
+          <textarea id="p-message" name="message" rows="5" required maxlength="3000" aria-describedby="p-err-message"></textarea>
+          <span class="p-field-err" id="p-err-message" data-p-err="message" role="alert"></span>
+        </div>
+
+        <button type="submit" class="p-cta p-cta-primary p-submit">
+          <span data-p-submit-label>Send your message</span>
+          <span class="p-cta-arrow" aria-hidden="true">→</span>
+        </button>
+
+        <p class="p-form-status" data-p-form-status role="status" aria-live="polite"></p>
+        <p class="p-form-privacy">
+          Delivered via Web3Forms and used only to reply. No cookies, nothing
+          sold. <a href="/privacy" data-astro-reload>How your data is handled</a>.
+        </p>
+      </form>
+
+      <div class="p-form-success" data-p-form-success hidden tabindex="-1">
+        <h3 class="p-display">Thank you.</h3>
+        <p>We have your message. We reply within a day, usually sooner, and always in writing.</p>
+      </div>
+    </div>
+  </div>
+
+  <span class="p-rule" data-p-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .p-contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(2.4rem, 6vw, 5rem);
+    align-items: start;
+    margin-bottom: clamp(3rem, 8vh, 4.5rem);
+  }
+  .p-contact-aside .p-statement {
+    margin-block: clamp(0.9rem, 2.4vh, 1.4rem) clamp(1.4rem, 3.5vh, 2rem);
+  }
+  .p-contact-lead {
+    max-width: 42ch;
+    margin-bottom: clamp(1.6rem, 4vh, 2.2rem);
+    font-size: 1.05rem;
+    line-height: 1.66;
+    color: var(--p-muted);
+  }
+  .p-contact-email {
+    font-size: clamp(1.3rem, 2.4vw, 1.95rem);
+    font-weight: 560;
+    color: var(--p-ink);
+    text-decoration: none;
+    border-bottom: 2px solid var(--p-accent);
+    padding-bottom: 2px;
+  }
+  .p-contact-email:hover {
+    color: var(--p-accent);
+  }
+  .p-contact-loc {
+    margin-top: 0.9rem;
+    font-family: var(--p-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--p-muted);
+  }
+  .p-contact-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .p-contact-socials a {
+    font-family: var(--p-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--p-muted);
+  }
+  .p-contact-socials a:hover {
+    color: var(--p-ink);
+  }
+
+  /* Form card: fields on warm surfaces, capped to a humane measure. */
+  .p-form-wrap {
+    --p-card-accent: var(--p-accent);
+    padding: clamp(1.5rem, 3vw, 2.4rem);
+  }
+  .p-hp {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+  .p-demo-note {
+    margin-bottom: 1.5rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--p-accent-soft);
+    border-radius: var(--p-radius-sm);
+    background: var(--p-accent-soft);
+    font-size: 0.8rem;
+    color: var(--p-accent-press);
+  }
+  .p-field-row {
+    margin-bottom: 1.4rem;
+  }
+  .p-field-row label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--p-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--p-muted);
+  }
+  .p-field-row input,
+  .p-field-row textarea {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    background: var(--p-bg);
+    border: 1.5px solid var(--p-line-strong);
+    border-radius: var(--p-radius-sm);
+    font-size: 1rem;
+    color: var(--p-ink);
+  }
+  .p-field-row textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .p-field-row input::placeholder,
+  .p-field-row textarea::placeholder {
+    color: color-mix(in srgb, var(--p-muted) 70%, transparent);
+  }
+  .p-field-row input:focus-visible,
+  .p-field-row textarea:focus-visible {
+    outline: none;
+    border-color: var(--p-accent);
+    box-shadow: 0 0 0 3px var(--p-accent-soft);
+  }
+  .p-field-row.invalid input,
+  .p-field-row.invalid textarea {
+    border-color: var(--p-error);
+  }
+  .p-field-err {
+    display: block;
+    min-height: 1rem;
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--p-error);
+  }
+
+  .p-submit {
+    margin-top: 0.4rem;
+    width: 100%;
+    justify-content: center;
+    border: 0;
+  }
+  .p-submit[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .p-form-status {
+    min-height: 1rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--p-muted);
+  }
+  .p-form-status.is-error {
+    color: var(--p-error);
+  }
+  .p-form-privacy {
+    margin-top: 1.2rem;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--p-muted);
+  }
+  .p-form-privacy a {
+    color: var(--p-ink);
+    text-underline-offset: 3px;
+  }
+
+  .p-form-success:focus {
+    outline: none;
+  }
+  .p-form-success h3 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin-bottom: 0.7rem;
+  }
+  .p-form-success p {
+    max-width: 40ch;
+    color: var(--p-muted);
+    line-height: 1.7;
+  }
+  .p-form-success[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 820px) {
+    .p-contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Same hardened submit flow as the other designs' forms: client validation,
+   * honeypot, demo mode without a key, and a hardcoded endpoint (never trust a
+   * DOM attribute for the POST target).
+   */
+  const KEY = (import.meta.env.PUBLIC_WEB3FORMS_KEY as string) || '';
+
+  function bindPracticeForm() {
+    const form = document.querySelector<HTMLFormElement>('[data-p-form]');
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = '1';
+
+    const status = form.querySelector<HTMLElement>('[data-p-form-status]')!;
+    const submitBtn = form.querySelector<HTMLButtonElement>('.p-submit')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-p-submit-label]')!;
+    // The success panel is the form's sibling inside .p-form-wrap; scope the
+    // lookup there so a second instance of this component could never grab
+    // another form's panel.
+    const successPanel = form.closest('.p-form-wrap')!.querySelector<HTMLElement>('[data-p-form-success]')!;
+
+    const setErr = (name: string, msg: string) => {
+      const field = form.querySelector(`[name="${name}"]`)?.closest('.p-field-row');
+      const errEl = form.querySelector(`[data-p-err="${name}"]`);
+      if (field) field.classList.toggle('invalid', Boolean(msg));
+      if (errEl) errEl.textContent = msg;
+    };
+
+    const validate = () => {
+      let ok = true;
+      const data = new FormData(form);
+      const name = String(data.get('name') || '').trim();
+      const email = String(data.get('email') || '').trim();
+      const message = String(data.get('message') || '').trim();
+
+      setErr('name', name ? '' : 'Tell us your name.');
+      if (!name) ok = false;
+
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      setErr('email', email ? (emailOk ? '' : 'That email looks off.') : 'We need an email to reply.');
+      if (!emailOk) ok = false;
+
+      setErr('message', message.length >= 10 ? '' : 'A sentence or two, please (10+ characters).');
+      if (message.length < 10) ok = false;
+
+      if (!ok) {
+        form.querySelector<HTMLElement>('.p-field-row.invalid input, .p-field-row.invalid textarea')?.focus();
+      }
+      return ok;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '';
+      status.classList.remove('is-error');
+      if (!validate()) return;
+
+      if ((form.querySelector('[name="botcheck"]') as HTMLInputElement)?.checked) return;
+
+      submitBtn.disabled = true;
+      submitLabel.textContent = 'Sending…';
+
+      const showSuccess = () => {
+        form.hidden = true;
+        successPanel.hidden = false;
+        successPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Keyboard/SR users were focused on the now-hidden submit button:
+        // move focus so the confirmation is announced and reachable.
+        successPanel.focus({ preventScroll: true });
+      };
+
+      // Demo mode: no key, simulate success so the flow stays reviewable.
+      if (!KEY) {
+        await new Promise((r) => setTimeout(r, 700));
+        showSuccess();
+        return;
+      }
+
+      // Abort a stalled request: without this a hung endpoint leaves the form
+      // stuck on the sending label with no way to retry.
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12000);
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+          signal: controller.signal,
+        });
+        const json = await res.json().catch(() => ({}));
+        if (res.ok && json.success) {
+          showSuccess();
+        } else {
+          throw new Error(json.message || 'Send failed');
+        }
+      } catch {
+        const fallbackEmail = form.dataset.fallbackEmail || 'hello@taranity.com';
+        status.textContent = `Could not send. Email ${fallbackEmail} directly?`;
+        status.classList.add('is-error');
+        submitBtn.disabled = false;
+        submitLabel.textContent = 'Try again';
+      } finally {
+        clearTimeout(timeout);
+      }
+    });
+
+    // Clear an error as soon as the visitor edits the field.
+    form.querySelectorAll('input, textarea').forEach((el) => {
+      el.addEventListener('input', () => {
+        const name = (el as HTMLInputElement).name;
+        if (el.closest('.p-field-row')?.classList.contains('invalid')) setErr(name, '');
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindPracticeForm);
+</script>
