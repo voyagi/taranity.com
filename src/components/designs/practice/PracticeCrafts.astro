@@ -1,0 +1,199 @@
+---
+/**
+ * The six crafts presented as services, each on a filed-document card with a
+ * wax-seal stamp, an index, a title, one line, and what an engagement includes.
+ * No project portfolio anywhere on the site (hard rule 7): these cards present
+ * the offerings, not past work. Websites lead for this audience (a practice's
+ * first need is a site people trust); intelligent systems is last per the
+ * content rules (AI never leads). Each card wipes open as it enters
+ * (practice-motion.ts).
+ */
+interface Craft {
+  index: string;
+  title: string;
+  line: string;
+  includes: string[];
+  /** CSS custom-property name for this card's accent (tab + seal). */
+  color: string;
+}
+
+const crafts: Craft[] = [
+  {
+    index: '01',
+    title: 'Websites',
+    line: 'A calm, credible site that loads fast and turns first-time visitors into booked, returning clients.',
+    includes: ['Design and build', 'Speed, SEO, accessibility', 'Clear paths to contact'],
+    color: '--p-c1',
+  },
+  {
+    index: '02',
+    title: 'Applications',
+    line: 'Patient and client tools, portals, and dashboards, designed and engineered as one continuous piece.',
+    includes: ['Product design', 'Full-stack build', 'Care after launch'],
+    color: '--p-c2',
+  },
+  {
+    index: '03',
+    title: 'Automation',
+    line: 'Intake, reminders, and follow-ups rebuilt to run themselves, with alerts when something needs you.',
+    includes: ['Process mapping', 'Integrations', 'Monitoring and alerts'],
+    color: '--p-c3',
+  },
+  {
+    index: '04',
+    title: 'Commerce',
+    line: 'Sell treatments, plans, and products online, with checkout that is simple and trustworthy.',
+    includes: ['Store design', 'Payments and checkout', 'Conversion care'],
+    color: '--p-c4',
+  },
+  {
+    index: '05',
+    title: 'Advisory',
+    line: 'A clear read on scope, cost, and risk before you commit a budget, in plain language.',
+    includes: ['Audits and reviews', 'Technical direction', 'Roadmaps and estimates'],
+    color: '--p-c5',
+  },
+  {
+    index: '06',
+    title: 'Intelligent systems',
+    line: 'AI applied only where it earns its place, with evaluation and guardrails to match.',
+    includes: ['Use-case selection', 'Implementation', 'Evaluation and guardrails'],
+    color: '--p-c6',
+  },
+];
+---
+
+<section class="p-section p-crafts" id="crafts" tabindex="-1">
+  <div class="p-crafts-head">
+    <p class="p-label" data-p-fade>02 · Services</p>
+    <h2 class="p-statement p-display" data-p-lines>
+      <span class="p-mask"><span class="p-mask-inner">Everything your</span></span>
+      <span class="p-mask"><span class="p-mask-inner">practice needs.</span></span>
+    </h2>
+    <p class="p-crafts-intro" data-p-fade>
+      One studio, taken end to end. Engage a single service or the whole stack,
+      always under one roof and one point of contact.
+    </p>
+  </div>
+
+  <ul class="p-craft-grid">
+    {
+      crafts.map((c) => (
+        <li class="p-craft p-card-surface" data-p-card style={`--p-card-accent: var(${c.color})`}>
+          <div class="p-craft-top">
+            <span class="p-craft-stamp" style={`--p-stamp: var(${c.color})`} aria-hidden="true">
+              <svg viewBox="0 0 40 40" role="presentation">
+                <circle cx="20" cy="20" r="17" fill="none" stroke="var(--p-stamp)" stroke-width="1.4" opacity="0.55" />
+                <circle cx="20" cy="20" r="12.5" fill="none" stroke="var(--p-stamp)" stroke-width="1.4" />
+              </svg>
+              <span class="p-craft-index">{c.index}</span>
+            </span>
+          </div>
+          <h3 class="p-craft-title p-display">{c.title}</h3>
+          <p class="p-craft-line">{c.line}</p>
+          <ul class="p-craft-includes">
+            {c.includes.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .p-crafts-head {
+    max-width: 42ch;
+  }
+  .p-crafts-intro {
+    margin-bottom: clamp(2.2rem, 5vh, 3.2rem);
+    font-size: 1.06rem;
+    line-height: 1.62;
+    color: var(--p-muted);
+  }
+  .p-craft-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(1rem, 1.8vw, 1.6rem);
+    margin: 0 0 clamp(2.6rem, 7vh, 4rem);
+    padding: 0;
+    list-style: none;
+  }
+  .p-craft {
+    padding: clamp(1.4rem, 2.4vw, 2rem);
+    /* the clip wipe (data-p-card gate) reveals each card on entry */
+  }
+  .p-craft-top {
+    margin-bottom: 1.1rem;
+  }
+  /* wax-seal stamp with the index pressed into it */
+  .p-craft-stamp {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+  }
+  .p-craft-stamp svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .p-craft-index {
+    position: relative;
+    font-family: var(--p-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--p-ink);
+  }
+  .p-craft-title {
+    font-size: clamp(1.4rem, 2vw, 1.75rem);
+    line-height: 1.05;
+  }
+  .p-craft-line {
+    margin-top: 0.7rem;
+    font-size: 0.99rem;
+    line-height: 1.58;
+    color: var(--p-muted);
+  }
+  .p-craft-includes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin: 1.3rem 0 0;
+    padding: 1.3rem 0 0;
+    border-top: 1px solid var(--p-line);
+    list-style: none;
+  }
+  .p-craft-includes li {
+    position: relative;
+    padding-left: 1.6rem;
+    font-size: 0.9rem;
+    color: var(--p-ink);
+  }
+  .p-craft-includes li::before {
+    content: '';
+    position: absolute;
+    left: 0.1rem;
+    top: 0.32em;
+    width: 14px;
+    height: 9px;
+    /* a small check mark in the card's accent colour */
+    border-left: 2.5px solid var(--p-card-accent);
+    border-bottom: 2.5px solid var(--p-card-accent);
+    transform: rotate(-45deg) scale(0.78);
+    transform-origin: center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .p-craft {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .p-craft:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--p-shadow);
+    }
+  }
+</style>

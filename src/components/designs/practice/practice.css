@@ -1,0 +1,357 @@
+/* ==========================================================================
+   Practice — warm, trust-first, credibility-led design for the highest-paying
+   local-service niches (medical, dental, med spa, law, home services, trades).
+   Fraunces display serif (authority, the type of an established practice),
+   Inter body, JetBrains Mono seal labels, over a warm linen canvas lit with
+   pine green, teal, clay, and brass. The signature is a CREDIBILITY motif: an
+   engraved guilloché ring texture (the security-print of certificates and
+   seals) behind the content, a wax-seal stamp on every service card, and a
+   "studio guarantee" trust panel in place of a product shot. Motion is calm
+   and measured (Lenis scroll + GSAP reveals, src/lib/practice-motion.ts; no
+   WebGL). The "wild but fast" richness is a pure-CSS atmosphere: a warm light
+   wash plus the guilloché engraving, all behind server-rendered content.
+
+   Practice is light-only (designs.ts modes: ['light']). There is no dark token
+   set: color-scheme is pinned to light so a system/stored dark preference never
+   restyles native widgets on this page (mirrors how Atlas pins dark, Storefront
+   pins light). Pinned by tests/unit/practice-css.test.ts.
+   ========================================================================== */
+
+/* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
+   contain, isolation, or will-change on .practice (or its ancestors) — any of
+   them would turn it into a containing block and re-pin the fixed .p-field /
+   .p-progress layers inside it instead of the viewport. Pinned by
+   tests/unit/practice-css.test.ts. */
+.practice {
+  /* light-only: a warm linen consulting-room canvas */
+  --p-bg: #f6f1e6;
+  --p-bg-raise: #fffdf8;
+  --p-ink: #20302a; /* deep evergreen-charcoal */
+  --p-muted: #5c6b62; /* muted sage-grey */
+  --p-line: rgba(32, 48, 42, 0.12);
+  --p-line-strong: rgba(32, 48, 42, 0.2);
+
+  /* trust palette: pine leads, warm earth tones support, brass for the seal */
+  --p-accent: #1f6f5c; /* pine green — decorative (seals, rules, chips, checks) */
+  --p-accent-ink: #f4f7f0; /* warm off-white text on a filled accent surface */
+  --p-accent-2: #2a8f8f; /* teal, for gradients and the trust strip */
+  --p-accent-strong: #14564a; /* deep pine for filled buttons (carries light text at AA) */
+  --p-accent-press: #0e3f37; /* darker tone for active/press + the demo note */
+  --p-accent-soft: rgba(31, 111, 92, 0.12);
+  --p-gold: #b08842; /* brass, the engraved seal detail */
+  --p-c1: #1f6f5c; /* pine */
+  --p-c2: #2a8f8f; /* teal */
+  --p-c3: #b6643c; /* clay */
+  --p-c4: #b08842; /* brass */
+  --p-c5: #5b6c8f; /* slate blue */
+  --p-c6: #8a5a73; /* muted plum */
+  --p-error: #b23b2e;
+
+  /* calm, premium shadows — soft drop, never a chunky offset edge */
+  --p-shadow: 0 1px 2px rgba(32, 48, 42, 0.05), 0 18px 40px -22px rgba(32, 48, 42, 0.3);
+  --p-shadow-soft: 0 12px 30px -18px rgba(32, 48, 42, 0.26);
+
+  --p-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --p-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --p-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --p-gutter: clamp(1.25rem, 5vw, 5.5rem);
+  /* Composition frame: content capped and centred, symmetric margins on
+     ultrawide. Sections use padding-inline: var(--p-pad). */
+  --p-max: 1220px;
+  --p-pad: max(var(--p-gutter), calc((100% - var(--p-max)) / 2));
+  --p-section: clamp(5rem, 13vh, 9rem);
+  --p-radius: 16px; /* measured, calm rounding — never chunky, never hard */
+  --p-radius-sm: 10px;
+
+  background: var(--p-bg);
+  color: var(--p-ink);
+  font-family: var(--p-sans);
+  /* light-only: a dark system/stored mode must not restyle native widgets */
+  color-scheme: light;
+  overflow-x: clip;
+}
+
+.practice ::selection {
+  background: var(--p-accent);
+  color: var(--p-accent-ink);
+}
+
+/* ---- the field (CSS atmosphere: always present, behind everything) ---- */
+
+/* Three fixed sheets: a warm light wash, an engraved guilloché ring texture
+   (the certificate/seal "security print" signature, distinct from Storefront's
+   halftone dots and Signal's straight lattice), and a soft top sheen. Always
+   present, so reduced motion and no-JS visitors get the full atmosphere. */
+.p-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.p-field i {
+  position: absolute;
+  /* Oversized on purpose: the drift animation must never expose an edge. */
+  inset: -8%;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+/* Warm light wash: a sand glow overhead, a pine pool low-left, a clay bloom
+   low-right. Calm and low-contrast — the page's warmth lives here. */
+.p-field i:first-child {
+  background-image:
+    radial-gradient(50% 44% at 50% -6%, rgba(255, 250, 240, 0.95), transparent 70%),
+    radial-gradient(42% 40% at 12% 86%, rgba(31, 111, 92, 0.12), transparent 72%),
+    radial-gradient(40% 38% at 90% 80%, rgba(182, 100, 60, 0.1), transparent 73%),
+    radial-gradient(34% 30% at 78% 14%, rgba(42, 143, 143, 0.08), transparent 74%);
+  opacity: 0.9;
+}
+/* Guilloché engraving: two sets of fine concentric rings (repeating-radial-
+   gradient hairlines) struck from opposite corners, like the rose-engine
+   security print on a seal or certificate. Masked to a soft vignette so it
+   reads as a watermark, not wallpaper. */
+.p-field i:nth-child(2) {
+  background-image:
+    repeating-radial-gradient(circle at 82% 14%, transparent 0 7px, rgba(32, 48, 42, 0.05) 7px 8px),
+    repeating-radial-gradient(circle at 14% 88%, transparent 0 9px, rgba(31, 111, 92, 0.045) 9px 10px);
+  mask-image: radial-gradient(82% 74% at 50% 36%, rgba(0, 0, 0, 0.85), transparent 92%);
+  -webkit-mask-image: radial-gradient(82% 74% at 50% 36%, rgba(0, 0, 0, 0.85), transparent 92%);
+  opacity: 0.7;
+}
+/* Sheen: a warm highlight up top that keeps the masthead brighter than the floor. */
+.p-field i:nth-child(3) {
+  background-image: radial-gradient(70% 48% at 50% -12%, rgba(255, 251, 243, 0.85), transparent 70%);
+  opacity: 0.6;
+}
+
+/* The content rides above the fixed field. The header is sticky/positioned
+   already, so it needs no help. */
+.practice > section,
+.practice > footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- scroll affordance ---- */
+
+/* While Lenis drives the scroll, dragging the native scrollbar fights the
+   smoothing loop, so it is hidden for exactly that case (practice-motion.ts
+   toggles html.v-lenis; the class is shared across designs and set pre-paint by
+   SiteLayout). Reduced-motion and no-JS visitors keep their scrollbar.
+   Duplicated from the other designs' css because each ships its stylesheet
+   alone. */
+html.v-lenis {
+  scrollbar-width: none;
+}
+html.v-lenis::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* The progress bar that replaces it: a slim brass-to-pine sweep across the top,
+   scaleX driven from the Lenis scroll handler in practice-motion.ts. */
+.p-progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 60;
+  height: 3px;
+  background: linear-gradient(90deg, var(--p-c4), var(--p-c1) 45%, var(--p-c2));
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+html:not(.v-lenis) .p-progress {
+  display: none;
+}
+
+/* ---- primitives ---- */
+
+.p-display {
+  font-family: var(--p-display);
+  font-weight: 540;
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+/* Seal label: a small mono eyebrow with an engraved ring stamp, like the mark
+   pressed into a certificate. */
+.p-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.34rem 0.8rem 0.34rem 0.7rem;
+  border: 1px solid var(--p-line-strong);
+  border-radius: 999px;
+  background: var(--p-bg-raise);
+  font-family: var(--p-mono);
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--p-ink);
+}
+/* the engraved seal stamp — a brass ring with a pine core */
+.p-label::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: 2px solid var(--p-gold);
+  background: var(--p-accent);
+  box-shadow: 0 0 0 2px var(--p-accent-soft);
+}
+
+.p-rule {
+  display: block;
+  height: 1px;
+  background: var(--p-line-strong);
+  border-radius: 999px;
+  transform-origin: left;
+}
+
+/* Shared call-to-action buttons. Primary is filled pine with a soft shadow that
+   settles on press (calm and tactile, never chunky). Ghost is a hairline
+   outline that warms to pine on hover. */
+.p-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.55rem;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  font-family: var(--p-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.p-cta-primary {
+  background: var(--p-accent-strong);
+  color: var(--p-accent-ink);
+  box-shadow: var(--p-shadow-soft);
+}
+.p-cta-primary:hover {
+  background: color-mix(in srgb, var(--p-accent-strong) 88%, white);
+}
+.p-cta-primary:active {
+  transform: translateY(1px);
+}
+.p-cta-ghost {
+  background: var(--p-bg-raise);
+  border-color: var(--p-line-strong);
+  color: var(--p-ink);
+}
+.p-cta-ghost:hover {
+  border-color: var(--p-accent);
+  color: var(--p-accent);
+}
+.p-cta-arrow {
+  transition: transform 0.25s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .p-cta {
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.08s ease;
+  }
+  .p-cta:hover .p-cta-arrow {
+    transform: translateX(3px);
+  }
+}
+
+/* Masked line reveals: the wrapper clips, the inner line rises. The bottom
+   padding gives descenders room to paint; the negative margin keeps the
+   stacked-line rhythm unchanged. The hidden state must clear line + padding,
+   hence 120% (must match the yPercent in practice-motion.ts). */
+.p-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.p-mask-inner {
+  display: block;
+}
+
+/* Section frame: a seal label, then a masked display statement. Sections own
+   their layout below that. */
+.p-section {
+  padding: var(--p-section) var(--p-pad) 0;
+}
+.p-section:focus {
+  outline: none;
+}
+.p-statement {
+  margin-block: clamp(1rem, 2.6vh, 1.6rem) clamp(1.8rem, 5vh, 3rem);
+  font-size: clamp(2rem, 5.2vw, 4.2rem);
+  line-height: 1.02;
+  max-width: 18ch;
+}
+
+/* Card surface: a solid elevated panel with a thin accent rule along the top,
+   like a filed document with a coloured tab. Keeps text on a high-contrast
+   ground over the field. Cards override --p-card-accent to tint the tab. */
+.p-card-surface {
+  --p-card-accent: var(--p-accent);
+  position: relative;
+  background: var(--p-bg-raise);
+  border: 1px solid var(--p-line);
+  border-radius: var(--p-radius);
+  box-shadow: var(--p-shadow);
+}
+.p-card-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  border-radius: var(--p-radius) var(--p-radius) 0 0;
+  background: var(--p-card-accent);
+}
+
+/* ---- motion gates ---- */
+
+/* Initial hidden states for the choreography. Gated on html.js (set pre-paint)
+   AND motion-ok, so no-JS clients, crawlers, and reduced-motion visitors always
+   see complete content. practice-motion.ts animates these in. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .practice .p-mask-inner {
+    transform: translateY(120%);
+  }
+  html.js .practice [data-p-fade],
+  html.js .practice [data-p-hero-fade] {
+    opacity: 0;
+  }
+  html.js .practice [data-p-rule],
+  html.js .practice [data-p-hero-rule] {
+    transform: scaleX(0);
+  }
+  /* Service cards wipe open left-to-right as they enter (practice-motion.ts). */
+  html.js .practice [data-p-card] {
+    clip-path: inset(0% 100% 0% 0%);
+  }
+
+  /* The warm wash drifts and the sheen breathes on slow clocks. */
+  .p-field i:first-child {
+    animation: p-drift 60s ease-in-out infinite alternate;
+  }
+  .p-field i:nth-child(3) {
+    animation: p-breathe 12s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes p-drift {
+  from {
+    transform: translate3d(-1%, -0.6%, 0) rotate(-0.3deg);
+  }
+  to {
+    transform: translate3d(1%, 0.8%, 0) rotate(0.3deg);
+  }
+}
+@keyframes p-breathe {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 0.72;
+  }
+}

@@ -1,0 +1,114 @@
+---
+/**
+ * How an engagement runs: four steps from first conversation to long after
+ * launch. A calm, legible process with concrete promises, so a careful practice
+ * can see exactly what working with us looks like before they commit. The final
+ * step, Care, is the trust differentiator and deliberately distinct from the
+ * other designs' methods.
+ */
+const steps = [
+  {
+    index: '01',
+    name: 'Consult',
+    copy: 'We listen first: who you serve, what you need them to do, and what trust looks like in your field. No build talk until the goal is clear.',
+    color: '--p-c1',
+  },
+  {
+    index: '02',
+    name: 'Plan',
+    copy: 'We pin the outcome and agree scope in writing, in plain language. You know what you are getting, what it costs, and when.',
+    color: '--p-c2',
+  },
+  {
+    index: '03',
+    name: 'Build',
+    copy: 'Design and engineering in one motion: real screens you can click, shipped in working increments, fast and accessible by default.',
+    color: '--p-c4',
+  },
+  {
+    index: '04',
+    name: 'Care',
+    copy: 'Launch starts the relationship. We watch, measure, and tend the work, and we stay reachable in writing long after the site goes live.',
+    color: '--p-c3',
+  },
+];
+---
+
+<section class="p-section p-method" id="method" tabindex="-1">
+  <p class="p-label" data-p-fade>03 · Method</p>
+
+  <h2 class="p-statement p-display" data-p-lines>
+    <span class="p-mask"><span class="p-mask-inner">A way of working</span></span>
+    <span class="p-mask"><span class="p-mask-inner">you can rely on.</span></span>
+  </h2>
+
+  <ol class="p-steps">
+    {
+      steps.map((step) => (
+        <li class="p-step" data-p-fade>
+          <span class="p-step-num p-display" style={`--p-step-color: var(${step.color})`} aria-hidden="true">
+            {step.index}
+          </span>
+          <h3 class="p-step-name p-display">{step.name}</h3>
+          <p class="p-step-copy">{step.copy}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <span class="p-rule" data-p-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .p-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(1.2rem, 2.4vw, 1.8rem);
+    margin: 0 0 clamp(2.6rem, 7vh, 4rem);
+    padding: 0;
+    list-style: none;
+    counter-reset: none;
+  }
+  .p-step {
+    padding: clamp(1.3rem, 2.2vw, 1.7rem);
+    background: var(--p-bg-raise);
+    border: 1px solid var(--p-line);
+    border-radius: var(--p-radius);
+    box-shadow: var(--p-shadow-soft);
+  }
+  /* a seal medallion in the step's accent colour */
+  .p-step-num {
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--p-step-color) 14%, var(--p-bg-raise));
+    border: 1.5px solid var(--p-step-color);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--p-step-color) 12%, transparent);
+    color: var(--p-ink);
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .p-step-name {
+    display: block;
+    margin-top: 1rem;
+    font-size: clamp(1.3rem, 2vw, 1.7rem);
+  }
+  .p-step-copy {
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--p-muted);
+  }
+  @media (max-width: 900px) {
+    .p-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 520px) {
+    .p-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

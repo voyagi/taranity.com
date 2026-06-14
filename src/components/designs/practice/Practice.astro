@@ -1,0 +1,45 @@
+---
+/**
+ * Practice — warm, trust-first, credibility-led design for the highest-paying
+ * local-service niches (medical, dental, med spa, law, home services, trades).
+ * Fraunces display serif over a warm linen canvas lit with pine green, teal,
+ * clay, and brass; content sits on filed-document cards above a CSS atmosphere
+ * of a warm light wash and an engraved guilloché ring texture (the security
+ * print of seals and certificates). One self-contained page experience;
+ * SiteLayout provides head/meta and the floating switcher.
+ *
+ * The server HTML is complete and visible without JS: the atmosphere is pure
+ * CSS, and motion (Lenis scroll + GSAP reveals, src/lib/practice-motion.ts) is
+ * strictly additive. Light-only (designs.ts modes: ['light']).
+ */
+import './practice.css';
+import PracticeHeader from './PracticeHeader.astro';
+import PracticeHero from './PracticeHero.astro';
+import PracticeManifesto from './PracticeManifesto.astro';
+import PracticeCrafts from './PracticeCrafts.astro';
+import PracticeMethod from './PracticeMethod.astro';
+import PracticeStudio from './PracticeStudio.astro';
+import PracticeContact from './PracticeContact.astro';
+import PracticeFooter from './PracticeFooter.astro';
+---
+
+<div class="practice" data-practice>
+  <!-- Fixed CSS atmosphere (warm wash, guilloché engraving, sheen): always
+       present, and the complete backdrop for reduced motion or no JS. -->
+  <div class="p-field" aria-hidden="true"><i></i><i></i><i></i></div>
+  <!-- Scroll progress: replaces the native scrollbar while Lenis drives. -->
+  <span class="p-progress" data-p-progress aria-hidden="true"></span>
+
+  <PracticeHeader />
+  <PracticeHero />
+  <PracticeManifesto />
+  <PracticeCrafts />
+  <PracticeMethod />
+  <PracticeStudio />
+  <PracticeContact />
+  <PracticeFooter />
+</div>
+
+<script>
+  import '../../../lib/practice-motion';
+</script>

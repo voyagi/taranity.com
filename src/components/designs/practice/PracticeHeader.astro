@@ -1,0 +1,182 @@
+---
+/**
+ * Trust-led masthead: a slim, calm reassurance strip (static, not a scrolling
+ * marquee — an established practice reads steady, not busy), then a sticky nav
+ * (wordmark with an engraved seal mark left, section anchors centre, a clear
+ * written-contact CTA right). The CTA carries a small letter mark so the next
+ * step always reads as "send a message", never "book a call" (hard rule 1).
+ * The floating DesignSwitcher carries the cross-design controls.
+ */
+const links = [
+  { label: 'Services', hash: '#crafts' },
+  { label: 'Method', hash: '#method' },
+  { label: 'Studio', hash: '#studio' },
+  { label: 'Contact', hash: '#contact' },
+];
+const trust = ['Worldwide studio', 'Written replies within a day', 'We stay after launch'];
+---
+
+<div class="p-trust">
+  <ul class="p-trust-list" aria-label="What working with us is like">
+    {
+      trust.map((t, i) => (
+        <li>
+          {i > 0 && <span class="p-trust-sep" aria-hidden="true" />}
+          {t}
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<header class="p-header">
+  <div class="p-header-inner">
+    <a class="p-wordmark" href="/" aria-label="Taranity home">
+      <svg class="p-seal" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <circle cx="16" cy="16" r="14" fill="none" stroke="var(--p-gold)" stroke-width="1.4"></circle>
+        <circle cx="16" cy="16" r="10.5" fill="none" stroke="var(--p-accent)" stroke-width="1.4"></circle>
+        <path
+          d="M11.5 16.4l3 3 6-6.4"
+          fill="none"
+          stroke="var(--p-accent)"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+      Taranity
+    </a>
+    <nav class="p-nav" aria-label="Page sections">
+      {links.map((l) => <a href={l.hash}>{l.label}</a>)}
+    </nav>
+    <a class="p-cta p-cta-primary p-header-cta" href="#contact">
+      <svg class="p-letter" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"></rect>
+        <path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      Start the conversation
+    </a>
+  </div>
+</header>
+
+<style>
+  /* ---- trust strip (scrolls away with the page; static, no marquee) ---- */
+  .p-trust {
+    position: relative;
+    z-index: 40;
+    /* Two deep pines, not pine→teal: the cream text must clear AA across the
+       whole bar, and axe cannot verify contrast over a gradient (it reports
+       incomplete, not a pass). The darker tones keep it comfortably legible. */
+    background: linear-gradient(90deg, var(--p-accent-strong), var(--p-accent));
+    color: var(--p-accent-ink);
+    border-bottom: 1px solid var(--p-accent-press);
+  }
+  .p-trust-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0.45rem 1.25rem;
+    list-style: none;
+  }
+  .p-trust-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-family: var(--p-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  /* an engraved seal dot between items */
+  .p-trust-sep {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    border: 1.5px solid var(--p-gold);
+    background: color-mix(in srgb, var(--p-accent-ink) 30%, transparent);
+  }
+
+  /* ---- sticky nav ---- */
+  .p-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--p-bg) 86%, transparent);
+    border-bottom: 1px solid var(--p-line);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+  }
+  .p-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.8rem var(--p-pad);
+  }
+  .p-wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--p-display);
+    font-size: 1.22rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    color: var(--p-ink);
+  }
+  .p-seal {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+  .p-nav {
+    display: flex;
+    gap: clamp(1rem, 2.4vw, 2rem);
+    margin-inline: auto;
+  }
+  .p-nav a {
+    font-size: 0.92rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--p-muted);
+  }
+  .p-nav a:hover {
+    color: var(--p-ink);
+  }
+  .p-header-cta {
+    padding: 0.58rem 1.15rem;
+    font-size: 0.88rem;
+  }
+  .p-letter {
+    width: 17px;
+    height: 17px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .p-nav a {
+      transition: color 0.2s;
+    }
+  }
+  /* Below tablet, drop the section anchors (single scroll, the CTA covers the
+     key action) so nothing overflows the narrow header. */
+  @media (max-width: 720px) {
+    .p-nav {
+      display: none;
+    }
+    .p-header-inner {
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+  }
+  @media (max-width: 380px) {
+    .p-header-cta {
+      padding: 0.52rem 0.9rem;
+      font-size: 0.82rem;
+    }
+    .p-trust-list {
+      gap: 0.6rem;
+    }
+  }
+</style>

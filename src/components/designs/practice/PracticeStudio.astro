@@ -1,0 +1,104 @@
+---
+/**
+ * Who is behind the work. Small crew, worldwide range, written-first. The
+ * principles read like a practice's own standards of care, presented as a
+ * seal-marked list rather than an about page.
+ */
+const principles = [
+  'Written over meetings',
+  'Plain language, always',
+  'Ship in increments',
+  'We stay after launch',
+];
+---
+
+<section class="p-section p-studio" id="studio" tabindex="-1">
+  <p class="p-label" data-p-fade>04 · Studio</p>
+
+  <h2 class="p-statement p-display" data-p-lines>
+    <span class="p-mask"><span class="p-mask-inner">A small crew</span></span>
+    <span class="p-mask"><span class="p-mask-inner">you can trust.</span></span>
+  </h2>
+
+  <div class="p-studio-grid">
+    <div class="p-studio-copy" data-p-fade>
+      <p>
+        Taranity works with practices, firms, and local businesses of every
+        size, across every timezone, in writing. Small on purpose: the people
+        who scope your work are the people who build it.
+      </p>
+      <p>
+        One thing at a time, taken end to end. We would rather do right by one
+        practice that clients keep returning to than rush ten that merely exist.
+      </p>
+    </div>
+    <ul class="p-principles" data-p-fade>
+      {
+        principles.map((principle, i) => (
+          <li>
+            <span class="p-principle-seal" style={`--p-stamp: var(--p-c${i + 1})`} aria-hidden="true" />
+            {principle}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <span class="p-rule" data-p-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .p-studio-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+    margin-bottom: clamp(2.6rem, 7vh, 4rem);
+  }
+  .p-studio-copy p {
+    max-width: 52ch;
+    font-size: clamp(1.02rem, 1.3vw, 1.14rem);
+    line-height: 1.68;
+    color: var(--p-muted);
+  }
+  .p-studio-copy p + p {
+    margin-top: 1.2rem;
+  }
+  .p-principles {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .p-principles li {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding-block: 0.95rem;
+    border-top: 1px solid var(--p-line);
+    font-family: var(--p-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--p-ink);
+  }
+  .p-principles li:last-child {
+    border-bottom: 1px solid var(--p-line);
+  }
+  /* a small engraved seal ring */
+  .p-principle-seal {
+    width: 15px;
+    height: 15px;
+    border-radius: 999px;
+    border: 2px solid var(--p-stamp);
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--p-stamp) 22%, transparent);
+    flex-shrink: 0;
+  }
+  @media (max-width: 820px) {
+    .p-studio-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
