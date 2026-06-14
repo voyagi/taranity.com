@@ -1,0 +1,366 @@
+/* ==========================================================================
+   Signal — clean, light, conversion-focused product design for SaaS, fintech,
+   and startups. Inter display and body, JetBrains Mono labels, indigo accent
+   on a cool near-white canvas. The layout is structured and card-led; motion
+   is restrained and fast (src/lib/signal-motion.ts: Lenis scroll + GSAP
+   reveals, no WebGL). The "wild but fast" richness is a soft fixed aurora and
+   a faint grid behind the content, all CSS.
+
+   Signal is dual-mode (designs.ts modes: ['light', 'dark'], light default):
+   tokens follow data-mode on <html> (set pre-paint by SiteLayout); the no-JS
+   prefers-color-scheme duplicate below follows the system directly. The two
+   dark token sets are pinned identical by tests/unit/signal-css.test.ts.
+   ========================================================================== */
+
+/* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
+   contain, isolation, or will-change on .signal (or its ancestors) — any of
+   them would turn it into a containing block and re-pin the fixed .s-field /
+   .s-progress layers inside it instead of the viewport. Pinned by
+   tests/unit/signal-css.test.ts. */
+.signal {
+  /* light: cool product canvas */
+  --s-bg: #f5f7fc;
+  --s-bg-raise: #ffffff;
+  --s-ink: #0d1426;
+  --s-muted: #4f586f;
+  --s-line: rgba(13, 20, 38, 0.1);
+  --s-line-strong: rgba(13, 20, 38, 0.16);
+  --s-accent: #4f46e5;
+  --s-accent-ink: #ffffff; /* text that sits on a filled accent surface */
+  --s-accent-2: #06b6d4;
+  --s-accent-soft: rgba(79, 70, 229, 0.1);
+  --s-error: #c4362a;
+  --s-shadow: 0 1px 2px rgba(13, 20, 38, 0.04), 0 12px 32px -12px rgba(13, 20, 38, 0.16);
+  /* fixed-atmosphere strengths, tuned per mode so the toggle crossfades */
+  --s-aurora-op: 0.55;
+  --s-grid-op: 0.5;
+  --s-sheen-op: 0.7;
+
+  --s-display: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --s-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --s-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --s-gutter: clamp(1.25rem, 5vw, 5.5rem);
+  /* Composition frame: content capped and centred, symmetric margins on
+     ultrawide. Sections use padding-inline: var(--s-pad). Slightly tighter
+     than the immersive designs — a product page reads better at a closer
+     measure. */
+  --s-max: 1240px;
+  --s-pad: max(var(--s-gutter), calc((100% - var(--s-max)) / 2));
+  --s-section: clamp(5rem, 13vh, 9rem);
+  --s-radius: 16px;
+
+  background: var(--s-bg);
+  color: var(--s-ink);
+  font-family: var(--s-sans);
+  overflow-x: clip;
+}
+
+/* Dark: a clean elevated-dashboard slate (distinct from Atlas's deep space).
+   Keep in sync with the no-JS duplicate below — pinned by the unit test. */
+:root[data-mode='dark'] .signal {
+  --s-bg: #0a0f1d;
+  --s-bg-raise: #121a2e;
+  --s-ink: #eef2fb;
+  --s-muted: #9aa6c0;
+  --s-line: rgba(238, 242, 251, 0.1);
+  --s-line-strong: rgba(238, 242, 251, 0.2);
+  --s-accent: #818cf8;
+  --s-accent-ink: #0a0f1d;
+  --s-accent-2: #38bdf8;
+  --s-accent-soft: rgba(129, 140, 248, 0.16);
+  --s-error: #ff9d85;
+  --s-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 18px 40px -16px rgba(0, 0, 0, 0.6);
+  --s-aurora-op: 0.7;
+  --s-grid-op: 0.55;
+  --s-sheen-op: 0.45;
+}
+/* No-JS fallback: no data-mode attribute, follow the system. Must stay byte-
+   identical to the data-mode='dark' block above (unit test pins it). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode]) .signal {
+    --s-bg: #0a0f1d;
+    --s-bg-raise: #121a2e;
+    --s-ink: #eef2fb;
+    --s-muted: #9aa6c0;
+    --s-line: rgba(238, 242, 251, 0.1);
+    --s-line-strong: rgba(238, 242, 251, 0.2);
+    --s-accent: #818cf8;
+    --s-accent-ink: #0a0f1d;
+    --s-accent-2: #38bdf8;
+    --s-accent-soft: rgba(129, 140, 248, 0.16);
+    --s-error: #ff9d85;
+    --s-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 18px 40px -16px rgba(0, 0, 0, 0.6);
+    --s-aurora-op: 0.7;
+    --s-grid-op: 0.55;
+    --s-sheen-op: 0.45;
+  }
+}
+
+.signal ::selection {
+  background: var(--s-accent);
+  color: var(--s-accent-ink);
+}
+
+/* ---- the field (CSS atmosphere: always present, behind everything) ---- */
+
+/* Three fixed sheets: a soft aurora of accent-tinted light pools, a faint
+   structural grid that fades toward the edges, and a low sheen that keeps the
+   top of the page brighter than the floor. Token-driven opacities so the mode
+   toggle crossfades them with the rest of the canvas. */
+.s-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.s-field i {
+  position: absolute;
+  /* Oversized on purpose: the drift animation must never expose an edge. */
+  inset: -8%;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+/* Aurora: indigo overhead-left, cyan low-right, a violet bloom centre-high. */
+.s-field i:first-child {
+  background-image:
+    radial-gradient(46% 40% at 18% 8%, rgba(79, 70, 229, 0.22), transparent 70%),
+    radial-gradient(42% 38% at 86% 78%, rgba(6, 182, 212, 0.16), transparent 72%),
+    radial-gradient(38% 32% at 62% 22%, rgba(124, 58, 237, 0.14), transparent 72%);
+  opacity: var(--s-aurora-op);
+}
+/* Structural grid: the "product" lattice, masked to a soft vignette so it
+   reads as instrument glass rather than wallpaper. */
+.s-field i:nth-child(2) {
+  background-image:
+    linear-gradient(var(--s-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--s-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-repeat: repeat;
+  mask-image: radial-gradient(78% 70% at 50% 30%, rgba(0, 0, 0, 0.8), transparent 92%);
+  -webkit-mask-image: radial-gradient(78% 70% at 50% 30%, rgba(0, 0, 0, 0.8), transparent 92%);
+  opacity: var(--s-grid-op);
+}
+/* Sheen: a single wide highlight up top that fades into the page. */
+.s-field i:nth-child(3) {
+  background-image: radial-gradient(72% 48% at 50% -8%, rgba(129, 140, 248, 0.16), transparent 70%);
+  opacity: var(--s-sheen-op);
+}
+
+/* The content rides above the fixed field. The header is sticky/positioned
+   already, so it needs no help. */
+.signal > section,
+.signal > footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- scroll affordance ---- */
+
+/* While Lenis drives the scroll, dragging the native scrollbar fights the
+   smoothing loop, so it is hidden for exactly that case (signal-motion.ts
+   toggles html.v-lenis; the class is shared across designs and set pre-paint
+   by SiteLayout). Reduced-motion and no-JS visitors keep their scrollbar.
+   Duplicated from vitrine.css/atlas.css because each design's stylesheet
+   ships alone. */
+html.v-lenis {
+  scrollbar-width: none;
+}
+html.v-lenis::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* The progress bar that replaces it: a thin accent line across the top,
+   scaleX driven from the Lenis scroll handler in signal-motion.ts. A loading-
+   style progress reads naturally on a product page. */
+.s-progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 60;
+  height: 2px;
+  background: linear-gradient(90deg, var(--s-accent), var(--s-accent-2));
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+html:not(.v-lenis) .s-progress {
+  display: none;
+}
+
+/* ---- primitives ---- */
+
+.s-display {
+  font-family: var(--s-display);
+  font-weight: 680;
+  letter-spacing: -0.025em;
+}
+
+.s-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--s-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--s-accent);
+}
+/* A small dot leads the eyebrow labels — the "signal" mark. */
+.s-label::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--s-accent);
+  box-shadow: 0 0 0 4px var(--s-accent-soft);
+}
+
+.s-rule {
+  display: block;
+  height: 1px;
+  background: var(--s-line);
+  transform-origin: left;
+}
+
+/* Shared call-to-action buttons. Primary is filled accent; ghost is a hairline
+   outline. Both stay legible in either mode. */
+.s-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: var(--s-sans);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.s-cta-primary {
+  background: var(--s-accent);
+  color: var(--s-accent-ink);
+  box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--s-accent) 70%, transparent);
+}
+.s-cta-primary:hover {
+  background: color-mix(in srgb, var(--s-accent) 88%, black);
+}
+.s-cta-ghost {
+  background: transparent;
+  border-color: var(--s-line-strong);
+  color: var(--s-ink);
+}
+.s-cta-ghost:hover {
+  border-color: var(--s-accent);
+  color: var(--s-accent);
+}
+.s-cta-arrow {
+  transition: transform 0.25s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .s-cta {
+    transition: background-color 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s;
+  }
+  .s-cta:hover .s-cta-arrow {
+    transform: translateX(3px);
+  }
+}
+
+/* Masked line reveals: the wrapper clips, the inner line rises. The bottom
+   padding gives descenders room to paint; the negative margin keeps the
+   stacked-line rhythm unchanged. The hidden state must clear line + padding,
+   hence 120% (must match the yPercent in signal-motion.ts). */
+.s-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.s-mask-inner {
+  display: block;
+}
+
+/* Section frame: an eyebrow label, then a masked display statement. Sections
+   own their layout below that. */
+.s-section {
+  padding: var(--s-section) var(--s-pad) 0;
+}
+.s-section:focus {
+  outline: none;
+}
+.s-statement {
+  margin-block: clamp(1rem, 2.6vh, 1.6rem) clamp(1.8rem, 5vh, 3rem);
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1.02;
+  max-width: 18ch;
+}
+
+/* Card surface: solid elevated panel. Keeps text on a high-contrast ground
+   (over the field) and carries the product aesthetic. */
+.s-card-surface {
+  background: var(--s-bg-raise);
+  border: 1px solid var(--s-line);
+  border-radius: var(--s-radius);
+  box-shadow: var(--s-shadow);
+}
+
+/* ---- motion gates ---- */
+
+/* Initial hidden states for the choreography. Gated on html.js (set pre-paint)
+   AND motion-ok, so no-JS clients, crawlers, and reduced-motion visitors
+   always see complete content. signal-motion.ts animates these in. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .signal .s-mask-inner {
+    transform: translateY(120%);
+  }
+  html.js .signal [data-s-fade],
+  html.js .signal [data-s-hero-fade] {
+    opacity: 0;
+  }
+  html.js .signal [data-s-rule],
+  html.js .signal [data-s-hero-rule] {
+    transform: scaleX(0);
+  }
+  /* Offering cards wipe open left-to-right as they enter (signal-motion.ts). */
+  html.js .signal [data-s-card] {
+    clip-path: inset(0% 100% 0% 0%);
+  }
+
+  /* The mode toggle cross-fades the canvas instead of snapping. */
+  .signal,
+  .signal .s-card-surface {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  }
+  .s-field i {
+    transition: opacity 0.45s ease;
+  }
+
+  /* The aurora drifts and the sheen breathes on slow clocks. */
+  .s-field i:first-child {
+    animation: s-drift 56s ease-in-out infinite alternate;
+  }
+  .s-field i:nth-child(3) {
+    animation: s-breathe 12s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes s-drift {
+  from {
+    transform: translate3d(-1%, -0.6%, 0);
+  }
+  to {
+    transform: translate3d(1%, 0.8%, 0);
+  }
+}
+@keyframes s-breathe {
+  from {
+    opacity: calc(var(--s-sheen-op) * 0.7);
+  }
+  to {
+    opacity: var(--s-sheen-op);
+  }
+}

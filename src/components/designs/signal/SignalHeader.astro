@@ -1,0 +1,106 @@
+---
+/**
+ * Product masthead: wordmark left, section anchors centre, a persistent
+ * primary CTA right (conversion: the next step is always one tap away). Sticky
+ * so the call to action follows the visitor down the page. The floating
+ * DesignSwitcher carries the cross-design controls.
+ */
+const links = [
+  { label: 'Crafts', hash: '#crafts' },
+  { label: 'Method', hash: '#method' },
+  { label: 'Studio', hash: '#studio' },
+  { label: 'Contact', hash: '#contact' },
+];
+---
+
+<header class="s-header">
+  <div class="s-header-inner">
+    <a class="s-wordmark" href="/" aria-label="Taranity home">
+      <span class="s-wordmark-dot" aria-hidden="true"></span>
+      Taranity
+    </a>
+    <nav class="s-nav" aria-label="Page sections">
+      {links.map((l) => <a href={l.hash}>{l.label}</a>)}
+    </nav>
+    <a class="s-cta s-cta-primary s-header-cta" href="#contact">
+      Start a project
+      <span class="s-cta-arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+</header>
+
+<style>
+  .s-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--s-bg) 82%, transparent);
+    border-bottom: 1px solid var(--s-line);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+  }
+  .s-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.85rem var(--s-pad);
+  }
+  .s-wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--s-display);
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    color: var(--s-ink);
+  }
+  .s-wordmark-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--s-accent), var(--s-accent-2));
+    box-shadow: 0 0 0 4px var(--s-accent-soft);
+  }
+  .s-nav {
+    display: flex;
+    gap: clamp(1rem, 2.4vw, 2rem);
+    margin-inline: auto;
+  }
+  .s-nav a {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--s-muted);
+  }
+  .s-nav a:hover {
+    color: var(--s-ink);
+  }
+  .s-header-cta {
+    padding: 0.6rem 1.15rem;
+    font-size: 0.86rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .s-nav a {
+      transition: color 0.2s;
+    }
+  }
+  /* Below tablet, drop the section anchors (the page is a single scroll and
+     the CTA covers the key action), so nothing overflows the narrow header. */
+  @media (max-width: 720px) {
+    .s-nav {
+      display: none;
+    }
+    .s-header-inner {
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+  }
+  @media (max-width: 380px) {
+    .s-header-cta {
+      padding: 0.55rem 0.9rem;
+      font-size: 0.8rem;
+    }
+  }
+</style>

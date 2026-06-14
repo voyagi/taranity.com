@@ -1,0 +1,97 @@
+---
+/**
+ * Who is behind the work. Small crew, worldwide range, written-first. The
+ * principles read like a product team's working agreement, not an about page.
+ */
+const principles = [
+  'Written over meetings',
+  'Ship in increments',
+  'Measure, then decide',
+  'We stay after launch',
+];
+---
+
+<section class="s-section s-studio" id="studio" tabindex="-1">
+  <p class="s-label" data-s-fade>04 · Studio</p>
+
+  <h2 class="s-statement s-display" data-s-lines>
+    <span class="s-mask"><span class="s-mask-inner">A small crew</span></span>
+    <span class="s-mask"><span class="s-mask-inner">that ships.</span></span>
+  </h2>
+
+  <div class="s-studio-grid">
+    <div class="s-studio-copy" data-s-fade>
+      <p>
+        Taranity works with founders, agencies, and teams of every size, across
+        every timezone, in writing. Small on purpose: the people who scope your
+        work are the people who build it.
+      </p>
+      <p>
+        One thing at a time, taken end to end. We would rather ship one product
+        that moves the number than five that merely exist.
+      </p>
+    </div>
+    <ul class="s-principles" data-s-fade>
+      {
+        principles.map((p, i) => (
+          <li>
+            <span class="s-principle-index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            {p}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <span class="s-rule" data-s-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .s-studio-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+    margin-bottom: clamp(2.6rem, 7vh, 4rem);
+  }
+  .s-studio-copy p {
+    max-width: 52ch;
+    font-size: clamp(1rem, 1.3vw, 1.12rem);
+    line-height: 1.7;
+    color: var(--s-muted);
+  }
+  .s-studio-copy p + p {
+    margin-top: 1.2rem;
+  }
+  .s-principles {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .s-principles li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding-block: 0.95rem;
+    border-top: 1px solid var(--s-line);
+    font-family: var(--s-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .s-principles li:last-child {
+    border-bottom: 1px solid var(--s-line);
+  }
+  .s-principle-index {
+    font-size: 0.6rem;
+    color: var(--s-accent);
+  }
+  @media (max-width: 820px) {
+    .s-studio-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

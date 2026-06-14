@@ -61,6 +61,7 @@ const pages200 = [
   ['/', 'home'],
   ['/privacy', 'privacy'],
   ['/atlas', 'atlas'],
+  ['/signal', 'signal'],
 ];
 
 async function runAxe(label) {
@@ -205,7 +206,7 @@ const viewports = [
 ];
 for (const [w, h, name] of viewports) {
   await page.setViewportSize({ width: w, height: h });
-  for (const route of ['/', '/privacy', '/atlas']) {
+  for (const route of ['/', '/privacy', '/atlas', '/signal']) {
     await page.goto(BASE + route, { waitUntil: 'load' });
     await settle(250);
     const o = await page.evaluate(() => ({
@@ -263,8 +264,8 @@ await settle(400);
 rec('atlas: renders design=atlas', (await dattr('data-design')) === 'atlas', await dattr('data-design'));
 const switcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
 rec(
-  'atlas: switcher lists both ready designs',
-  switcherLinks.includes('/') && switcherLinks.includes('/atlas'),
+  'atlas: switcher lists the ready designs',
+  ['/', '/atlas', '/signal'].every((h) => switcherLinks.includes(h)),
   JSON.stringify(switcherLinks),
 );
 const atlasToggle = await page.$('[data-mode-toggle]');
@@ -290,6 +291,39 @@ const aSuccessVisible = await page.evaluate(() => {
   return el ? !el.hidden : false;
 });
 rec('atlas contact: valid submit shows success panel (demo mode)', aSuccessVisible);
+
+// ---- Signal (third design): registry exposure, dual-mode controls, form ----
+// Still under reduced motion: these are content checks; the reveal motion has
+// its own block below.
+await page.goto(BASE + '/signal', { waitUntil: 'load' });
+await settle(400);
+rec('signal: renders design=signal', (await dattr('data-design')) === 'signal', await dattr('data-design'));
+const sSwitcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
+rec(
+  'signal: switcher lists all three ready designs',
+  ['/', '/atlas', '/signal'].every((h) => sSwitcherLinks.includes(h)),
+  JSON.stringify(sSwitcherLinks),
+);
+const signalToggle = await page.$('[data-mode-toggle]');
+rec('signal: dual-mode design offers the mode toggle', signalToggle !== null);
+const sModeResolved = await dattr('data-mode');
+rec('signal: mode resolved (light default unless system dark)', sModeResolved === 'light' || sModeResolved === 'dark', String(sModeResolved));
+
+// Signal contact form: same hardened flow as the other designs, Signal selectors.
+await page.click('.s-submit');
+await settle(300);
+const sEmptyErrs = await page.$$eval('[data-s-err]', (es) => es.map((e) => e.textContent.trim()).filter(Boolean));
+rec('signal contact: empty submit shows inline errors', sEmptyErrs.length >= 2, JSON.stringify(sEmptyErrs));
+await page.fill('#s-name', 'Jane Tester');
+await page.fill('#s-email', 'jane@example.com');
+await page.fill('#s-message', 'We are launching a fintech dashboard and need it shipped well.');
+await page.click('.s-submit');
+await settle(1300); // demo-mode success has a ~700ms simulated delay
+const sSuccessVisible = await page.evaluate(() => {
+  const el = document.querySelector('[data-s-form-success]');
+  return el ? !el.hidden : false;
+});
+rec('signal contact: valid submit shows success panel (demo mode)', sSuccessVisible);
 
 // evidence: the privacy subpage (desktop, motion on) + a mobile home
 try {
@@ -454,9 +488,73 @@ for (const start = Date.now(); Date.now() - start < 8000; ) {
 await settle(1200); // canvas fade-in + hero settle
 const atlasPath = await saveScreenshot(await page.screenshot(), 'e2e-atlas-desktop.png');
 
+// ---- Signal motion ON: switcher swap, reveals, card wipes (no WebGL) ----
+// Arrive the way a visitor does: through the floating switcher and a
+// View-Transition swap from Atlas. This exercises the atlas→signal teardown
+// for real (Atlas's Lenis + WebGL torn down, Signal's Lenis set up, no double
+// scroll driver).
+consoleErrors = [];
+pageErrors = [];
+failedResponses = [];
+failedRequests = [];
+await page.setViewportSize({ width: 1440, height: 900 });
+await page.click('.ds-design[href="/signal"]');
+for (let i = 0; i < 25 && !/\/signal/.test(page.url()); i++) await settle(200); // await the VT swap
+await settle(300);
+rec(
+  'signal motion: switcher swap lands on design=signal',
+  (await dattr('data-design')) === 'signal' && /\/signal/.test(page.url()),
+  `${await dattr('data-design')} @ ${page.url()}`,
+);
+
+const sHeroCount = await page.evaluate(() => document.querySelectorAll('.s-hero .s-mask-inner').length);
+rec('signal motion: hero has its two masked lines', sHeroCount === 2, 'count=' + sHeroCount);
+const sHeroOffsets = await awaitReveal('.s-hero .s-mask-inner', 6000); // entrance is ~1.6s
+rec('signal motion: hero title lines rise fully into view', revealed(sHeroOffsets), 'offsets=' + JSON.stringify(sHeroOffsets));
+
+// The contact statement reveals after the in-page anchor glide (through the
+// design's own Lenis). The glide passes every offering card, so their wipe
+// reveals must have fired by the time we arrive.
+await page.click('.s-nav a[href="#contact"]');
+const sStmtCount = await page.evaluate(() => document.querySelectorAll('.s-contact [data-s-lines] .s-mask-inner').length);
+rec('signal motion: contact statement has its two masked lines', sStmtCount === 2, 'count=' + sStmtCount);
+const sStmtOffsets = await awaitReveal('.s-contact [data-s-lines] .s-mask-inner', 8000); // 1.4s glide + 0.95s reveal
+rec('signal motion: contact statement lines rise fully into view', revealed(sStmtOffsets), 'offsets=' + JSON.stringify(sStmtOffsets));
+
+const readSignalCardClips = () =>
+  page.evaluate(() =>
+    [...document.querySelectorAll('[data-s-card]')].map((el) => getComputedStyle(el).clipPath),
+  );
+const sCardsOpen = (clips) => clips.length === 6 && clips.every((c) => !c.includes('100%'));
+let sCardClips = await readSignalCardClips();
+for (const start = Date.now(); !sCardsOpen(sCardClips) && Date.now() - start < 4000; ) {
+  await settle(250);
+  sCardClips = await readSignalCardClips();
+}
+rec('signal motion: offering cards wiped fully open', sCardsOpen(sCardClips), JSON.stringify(sCardClips));
+
+// The whole journey (swap, reveals) must stay error-free.
+const signalFirstParty = [
+  ...failedResponses.filter((f) => !isBenign(f.url)),
+  ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
+];
+const signalRealConsole = consoleErrors.filter(
+  (t) => !(/Failed to load resource/i.test(t) && signalFirstParty.length === 0),
+);
+rec(
+  'signal motion: no first-party console/page errors across the journey',
+  signalRealConsole.length === 0 && pageErrors.length === 0 && signalFirstParty.length === 0,
+  [...signalRealConsole, ...pageErrors].join(' | ').slice(0, 240) || 'clean',
+);
+
+// evidence: the signal opening (desktop, motion on)
+await page.goto(BASE + '/signal', { waitUntil: 'load' });
+await settle(1200); // hero entrance + chart draw settle
+const signalPath = await saveScreenshot(await page.screenshot(), 'e2e-signal-desktop.png');
+
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
-console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath, atlasPath] }));
+console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath, atlasPath, signalPath] }));
 if (failed.length) {
   console.log('FAILURES:');
   failed.forEach((f) => console.log('  - ' + f.name + ' :: ' + f.detail));
