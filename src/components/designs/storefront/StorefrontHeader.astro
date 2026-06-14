@@ -1,0 +1,192 @@
+---
+/**
+ * Commerce masthead: a DTC-style promo bar that scrolls a short reassurance
+ * strip, then a sticky nav (wordmark left, section anchors centre, a persistent
+ * primary CTA right). The CTA carries a small shopping-bag mark so the next step
+ * always reads as "start an order". The floating DesignSwitcher carries the
+ * cross-design controls.
+ */
+const links = [
+  { label: 'Shelf', hash: '#crafts' },
+  { label: 'Method', hash: '#method' },
+  { label: 'Studio', hash: '#studio' },
+  { label: 'Contact', hash: '#contact' },
+];
+// Repeated twice so the marquee track is wider than the viewport and loops
+// seamlessly; the duplicate is hidden from assistive tech.
+const promo = [
+  'Worldwide studio',
+  'Written replies within a day',
+  'Fixed scope, no surprises',
+  'We stay after launch',
+];
+---
+
+<div class="f-promo" role="presentation">
+  <div class="f-promo-track">
+    {
+      [0, 1].map((dup) => (
+        <ul class="f-promo-set" aria-hidden={dup === 1 ? 'true' : undefined}>
+          {promo.map((p) => (
+            <li>
+              <span class="f-promo-star" aria-hidden="true">✦</span>
+              {p}
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<header class="f-header">
+  <div class="f-header-inner">
+    <a class="f-wordmark" href="/" aria-label="Taranity home">
+      <span class="f-wordmark-dot" aria-hidden="true"></span>
+      Taranity
+    </a>
+    <nav class="f-nav" aria-label="Page sections">
+      {links.map((l) => <a href={l.hash}>{l.label}</a>)}
+    </nav>
+    <a class="f-cta f-cta-primary f-header-cta" href="#contact">
+      <svg class="f-bag" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path
+          d="M6 8h12l-1 12H7L6 8Zm3 0V6a3 3 0 0 1 6 0v2"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+      Start a project
+    </a>
+  </div>
+</header>
+
+<style>
+  /* ---- promo bar (scrolls away with the page) ---- */
+  .f-promo {
+    position: relative;
+    z-index: 40;
+    overflow: hidden;
+    background: linear-gradient(90deg, var(--f-accent), var(--f-accent-2));
+    color: var(--f-ink);
+    border-bottom: 2px solid var(--f-accent-press);
+  }
+  .f-promo-track {
+    display: flex;
+    width: max-content;
+  }
+  .f-promo-set {
+    display: flex;
+    flex-shrink: 0;
+    gap: 2.5rem;
+    margin: 0;
+    padding: 0.5rem 1.25rem;
+    list-style: none;
+  }
+  .f-promo-set li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--f-mono);
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .f-promo-star {
+    opacity: 0.85;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .f-promo-track {
+      animation: f-marquee 32s linear infinite;
+    }
+  }
+  @keyframes f-marquee {
+    /* the track is two identical sets; sliding by exactly half loops seamlessly */
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ---- sticky nav ---- */
+  .f-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--f-bg) 85%, transparent);
+    border-bottom: 1px solid var(--f-line);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+  }
+  .f-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.8rem var(--f-pad);
+  }
+  .f-wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--f-display);
+    font-size: 1.18rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    color: var(--f-ink);
+  }
+  .f-wordmark-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--f-c1), var(--f-c4));
+    box-shadow: 0 0 0 4px var(--f-accent-soft);
+  }
+  .f-nav {
+    display: flex;
+    gap: clamp(1rem, 2.4vw, 2rem);
+    margin-inline: auto;
+  }
+  .f-nav a {
+    font-size: 0.92rem;
+    font-weight: 550;
+    text-decoration: none;
+    color: var(--f-muted);
+  }
+  .f-nav a:hover {
+    color: var(--f-ink);
+  }
+  .f-header-cta {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.88rem;
+  }
+  .f-bag {
+    width: 17px;
+    height: 17px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .f-nav a {
+      transition: color 0.2s;
+    }
+  }
+  /* Below tablet, drop the section anchors (single scroll, the CTA covers the
+     key action) so nothing overflows the narrow header. */
+  @media (max-width: 720px) {
+    .f-nav {
+      display: none;
+    }
+    .f-header-inner {
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+  }
+  @media (max-width: 380px) {
+    .f-header-cta {
+      padding: 0.55rem 0.95rem;
+      font-size: 0.82rem;
+    }
+  }
+</style>

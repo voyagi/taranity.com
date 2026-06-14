@@ -1,0 +1,395 @@
+---
+/**
+ * Written contact only (hard rule 1: no booking, no calls): a short form and a
+ * direct email address, framed as the page's primary conversion. Submission
+ * posts to Web3Forms with the same hardened pattern as the other designs
+ * (hardcoded endpoint, honeypot, demo mode without a key, inline validation),
+ * restyled for Storefront.
+ */
+import { services, socials, contactEmail } from '../../../config/site';
+
+const hasKey = Boolean(services.web3formsKey);
+---
+
+<section class="f-section f-contact" id="contact" tabindex="-1">
+  <div class="f-contact-grid">
+    <div class="f-contact-aside" data-f-fade>
+      <p class="f-label">05 · Contact</p>
+      <h2 class="f-statement f-display" data-f-lines>
+        <span class="f-mask"><span class="f-mask-inner">Tell us what</span></span>
+        <span class="f-mask"><span class="f-mask-inner">you want to build.</span></span>
+      </h2>
+      <p class="f-contact-lead">
+        Send the outcome you are after and where you are now. We read everything
+        and reply within a day, in writing, with a clear next step.
+      </p>
+      <a class="f-contact-email f-display" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      <p class="f-contact-loc">Working with clients worldwide</p>
+      <ul class="f-contact-socials">
+        {
+          socials.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="f-form-wrap f-card-surface" data-f-fade>
+      <form
+        class="f-form"
+        data-f-form
+        data-fallback-email={contactEmail}
+        action="https://api.web3forms.com/submit"
+        method="POST"
+        novalidate
+      >
+        <input type="hidden" name="access_key" value={services.web3formsKey} />
+        <input type="hidden" name="subject" value="New enquiry via taranity.com (Storefront)" />
+        <input type="hidden" name="from_name" value="taranity.com" />
+        <!-- Honeypot -->
+        <input type="checkbox" name="botcheck" class="f-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        {
+          !hasKey && (
+            <p class="f-demo-note">Demo mode: add a Web3Forms key to send for real (see HUMAN-TODO).</p>
+          )
+        }
+
+        <div class="f-field-row">
+          <label for="f-name">Name</label>
+          <input id="f-name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="f-err-name" />
+          <span class="f-field-err" id="f-err-name" data-f-err="name" role="alert"></span>
+        </div>
+
+        <div class="f-field-row">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="f-err-email" />
+          <span class="f-field-err" id="f-err-email" data-f-err="email" role="alert"></span>
+        </div>
+
+        <div class="f-field-row">
+          <label for="f-message">What are you building?</label>
+          <textarea id="f-message" name="message" rows="5" required maxlength="3000" aria-describedby="f-err-message"></textarea>
+          <span class="f-field-err" id="f-err-message" data-f-err="message" role="alert"></span>
+        </div>
+
+        <button type="submit" class="f-cta f-cta-primary f-submit">
+          <span data-f-submit-label>Send the brief</span>
+          <span class="f-cta-arrow" aria-hidden="true">→</span>
+        </button>
+
+        <p class="f-form-status" data-f-form-status role="status" aria-live="polite"></p>
+        <p class="f-form-privacy">
+          Delivered via Web3Forms and used only to reply. No cookies, nothing
+          sold. <a href="/privacy" data-astro-reload>How your data is handled</a>.
+        </p>
+      </form>
+
+      <div class="f-form-success" data-f-form-success hidden tabindex="-1">
+        <h3 class="f-display">Got it.</h3>
+        <p>Thank you. We reply within a day, usually sooner, and always in writing.</p>
+      </div>
+    </div>
+  </div>
+
+  <span class="f-rule" data-f-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .f-contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(2.4rem, 6vw, 5rem);
+    align-items: start;
+    margin-bottom: clamp(3rem, 8vh, 4.5rem);
+  }
+  .f-contact-aside .f-statement {
+    margin-block: clamp(0.9rem, 2.4vh, 1.4rem) clamp(1.4rem, 3.5vh, 2rem);
+  }
+  .f-contact-lead {
+    max-width: 40ch;
+    margin-bottom: clamp(1.6rem, 4vh, 2.2rem);
+    font-size: 1.05rem;
+    line-height: 1.66;
+    color: var(--f-muted);
+  }
+  .f-contact-email {
+    font-size: clamp(1.3rem, 2.4vw, 1.95rem);
+    font-weight: 650;
+    color: var(--f-ink);
+    text-decoration: none;
+    border-bottom: 3px solid var(--f-accent);
+    padding-bottom: 2px;
+  }
+  .f-contact-email:hover {
+    color: var(--f-accent);
+  }
+  .f-contact-loc {
+    margin-top: 0.9rem;
+    font-family: var(--f-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--f-muted);
+  }
+  .f-contact-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .f-contact-socials a {
+    font-family: var(--f-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--f-muted);
+  }
+  .f-contact-socials a:hover {
+    color: var(--f-ink);
+  }
+
+  /* Form card: fields on light surfaces, capped to a humane measure. */
+  .f-form-wrap {
+    --f-card-accent: var(--f-c1);
+    padding: clamp(1.5rem, 3vw, 2.4rem);
+  }
+  .f-hp {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+  .f-demo-note {
+    margin-bottom: 1.5rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--f-accent-soft);
+    border-radius: var(--f-radius-sm);
+    background: var(--f-accent-soft);
+    font-size: 0.8rem;
+    color: var(--f-accent-press);
+  }
+  .f-field-row {
+    margin-bottom: 1.4rem;
+  }
+  .f-field-row label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--f-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--f-muted);
+  }
+  .f-field-row input,
+  .f-field-row textarea {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    background: var(--f-bg);
+    border: 2px solid var(--f-line-strong);
+    border-radius: var(--f-radius-sm);
+    font-size: 1rem;
+    color: var(--f-ink);
+  }
+  .f-field-row textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .f-field-row input::placeholder,
+  .f-field-row textarea::placeholder {
+    color: color-mix(in srgb, var(--f-muted) 70%, transparent);
+  }
+  .f-field-row input:focus-visible,
+  .f-field-row textarea:focus-visible {
+    outline: none;
+    border-color: var(--f-accent);
+    box-shadow: 0 0 0 3px var(--f-accent-soft);
+  }
+  .f-field-row.invalid input,
+  .f-field-row.invalid textarea {
+    border-color: var(--f-error);
+  }
+  .f-field-err {
+    display: block;
+    min-height: 1rem;
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--f-error);
+  }
+
+  .f-submit {
+    margin-top: 0.4rem;
+    width: 100%;
+    justify-content: center;
+    border: 0;
+  }
+  .f-submit[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .f-form-status {
+    min-height: 1rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--f-muted);
+  }
+  .f-form-status.is-error {
+    color: var(--f-error);
+  }
+  .f-form-privacy {
+    margin-top: 1.2rem;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--f-muted);
+  }
+  .f-form-privacy a {
+    color: var(--f-ink);
+    text-underline-offset: 3px;
+  }
+
+  .f-form-success:focus {
+    outline: none;
+  }
+  .f-form-success h3 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin-bottom: 0.7rem;
+  }
+  .f-form-success p {
+    max-width: 40ch;
+    color: var(--f-muted);
+    line-height: 1.7;
+  }
+  .f-form-success[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 820px) {
+    .f-contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Same hardened submit flow as the other designs' forms: client validation,
+   * honeypot, demo mode without a key, and a hardcoded endpoint (never trust a
+   * DOM attribute for the POST target).
+   */
+  const KEY = (import.meta.env.PUBLIC_WEB3FORMS_KEY as string) || '';
+
+  function bindStorefrontForm() {
+    const form = document.querySelector<HTMLFormElement>('[data-f-form]');
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = '1';
+
+    const status = form.querySelector<HTMLElement>('[data-f-form-status]')!;
+    const submitBtn = form.querySelector<HTMLButtonElement>('.f-submit')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-f-submit-label]')!;
+    // The success panel is the form's sibling inside .f-form-wrap; scope the
+    // lookup there so a second instance of this component could never grab
+    // another form's panel.
+    const successPanel = form.closest('.f-form-wrap')!.querySelector<HTMLElement>('[data-f-form-success]')!;
+
+    const setErr = (name: string, msg: string) => {
+      const field = form.querySelector(`[name="${name}"]`)?.closest('.f-field-row');
+      const errEl = form.querySelector(`[data-f-err="${name}"]`);
+      if (field) field.classList.toggle('invalid', Boolean(msg));
+      if (errEl) errEl.textContent = msg;
+    };
+
+    const validate = () => {
+      let ok = true;
+      const data = new FormData(form);
+      const name = String(data.get('name') || '').trim();
+      const email = String(data.get('email') || '').trim();
+      const message = String(data.get('message') || '').trim();
+
+      setErr('name', name ? '' : 'Tell us your name.');
+      if (!name) ok = false;
+
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      setErr('email', email ? (emailOk ? '' : 'That email looks off.') : 'We need an email to reply.');
+      if (!emailOk) ok = false;
+
+      setErr('message', message.length >= 10 ? '' : 'A sentence or two, please (10+ characters).');
+      if (message.length < 10) ok = false;
+
+      if (!ok) {
+        form.querySelector<HTMLElement>('.f-field-row.invalid input, .f-field-row.invalid textarea')?.focus();
+      }
+      return ok;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '';
+      status.classList.remove('is-error');
+      if (!validate()) return;
+
+      if ((form.querySelector('[name="botcheck"]') as HTMLInputElement)?.checked) return;
+
+      submitBtn.disabled = true;
+      submitLabel.textContent = 'Sending…';
+
+      const showSuccess = () => {
+        form.hidden = true;
+        successPanel.hidden = false;
+        successPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Keyboard/SR users were focused on the now-hidden submit button:
+        // move focus so the confirmation is announced and reachable.
+        successPanel.focus({ preventScroll: true });
+      };
+
+      // Demo mode: no key, simulate success so the flow stays reviewable.
+      if (!KEY) {
+        await new Promise((r) => setTimeout(r, 700));
+        showSuccess();
+        return;
+      }
+
+      // Abort a stalled request: without this a hung endpoint leaves the form
+      // stuck on the sending label with no way to retry.
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12000);
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+          signal: controller.signal,
+        });
+        const json = await res.json().catch(() => ({}));
+        if (res.ok && json.success) {
+          showSuccess();
+        } else {
+          throw new Error(json.message || 'Send failed');
+        }
+      } catch {
+        const fallbackEmail = form.dataset.fallbackEmail || 'hello@taranity.com';
+        status.textContent = `Could not send. Email ${fallbackEmail} directly?`;
+        status.classList.add('is-error');
+        submitBtn.disabled = false;
+        submitLabel.textContent = 'Try again';
+      } finally {
+        clearTimeout(timeout);
+      }
+    });
+
+    // Clear an error as soon as the visitor edits the field.
+    form.querySelectorAll('input, textarea').forEach((el) => {
+      el.addEventListener('input', () => {
+        const name = (el as HTMLInputElement).name;
+        if (el.closest('.f-field-row')?.classList.contains('invalid')) setErr(name, '');
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindStorefrontForm);
+</script>

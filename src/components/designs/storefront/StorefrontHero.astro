@@ -1,0 +1,271 @@
+---
+/**
+ * Opening: a vivid outcome-led headline, a single primary action, and a tactile
+ * "product card" panel that packages the studio itself as something you can buy.
+ * The panel is an abstract brand mark, never a client screenshot (hard rule 7:
+ * no portfolio). Leads with what the work achieves for a brand, never the
+ * tooling. Server-rendered and fully visible without JS; motion only adds the
+ * entrance.
+ */
+---
+
+<section class="f-hero">
+  <div class="f-hero-copy">
+    <p class="f-label f-hero-kicker" data-f-hero-fade>Digital studio · Worldwide</p>
+
+    <h1 class="f-hero-title f-display">
+      <span class="f-mask"><span class="f-mask-inner">Build a brand</span></span>
+      <span class="f-mask"><span class="f-mask-inner">people buy into.</span></span>
+    </h1>
+
+    <p class="f-hero-sub" data-f-hero-fade>
+      Websites, stores, and the systems behind them. Designed, built, and tuned
+      to turn browsers into buyers, then shipped on a schedule you can plan
+      around.
+    </p>
+
+    <div class="f-hero-actions" data-f-hero-fade>
+      <a class="f-cta f-cta-primary" href="#contact">
+        Start a project
+        <span class="f-cta-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="f-cta f-cta-ghost" href="#crafts">Browse the shelf</a>
+    </div>
+
+    <ul class="f-hero-assure" data-f-hero-fade>
+      <li>Fixed scope</li>
+      <li>Written updates</li>
+      <li>We stay after launch</li>
+    </ul>
+  </div>
+
+  <!-- Abstract "product card": the studio, packaged. Decorative brand mark. -->
+  <div class="f-hero-panel f-card-surface" data-f-hero-fade aria-hidden="true">
+    <div class="f-pp-top">
+      <span class="f-pp-swatches">
+        <i style="background: var(--f-c1)"></i>
+        <i style="background: var(--f-c2)"></i>
+        <i style="background: var(--f-c3)"></i>
+        <i style="background: var(--f-c4)"></i>
+      </span>
+      <span class="f-pp-badge">New in</span>
+    </div>
+
+    <div class="f-pp-stage">
+      <svg class="f-pp-mark" viewBox="0 0 200 160" role="presentation">
+        <rect x="40" y="44" width="92" height="92" rx="20" fill="var(--f-c5)" opacity="0.9"></rect>
+        <rect x="62" y="30" width="92" height="92" rx="20" fill="var(--f-c3)" opacity="0.92"></rect>
+        <rect x="84" y="50" width="80" height="80" rx="18" fill="var(--f-c1)"></rect>
+        <path
+          d="M124 70l5 12 12 5-12 5-5 12-5-12-12-5 12-5 5-12Z"
+          fill="var(--f-bg-raise)"></path>
+      </svg>
+    </div>
+
+    <div class="f-pp-meta">
+      <div class="f-pp-titles">
+        <p class="f-pp-name f-display">The studio, packaged</p>
+        <p class="f-pp-sub">Idea to launch, one shelf</p>
+      </div>
+      <span class="f-pp-stars">
+        {
+          [0, 1, 2, 3, 4].map(() => (
+            <svg viewBox="0 0 24 24" class="f-pp-star" role="presentation">
+              <path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.8L12 17.3 5.8 20.8l1.6-6.8L2.2 9.5l6.9-.6L12 2Z" />
+            </svg>
+          ))
+        }
+      </span>
+    </div>
+
+    <div class="f-pp-buy">
+      <span class="f-pp-price"><span class="f-pp-from">from</span> your idea</span>
+      <span class="f-cta f-cta-primary f-pp-add">Add to project</span>
+    </div>
+  </div>
+
+  <span class="f-rule f-hero-rule" data-f-hero-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .f-hero {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    min-height: calc(100svh - 96px);
+    padding: clamp(2.6rem, 7vh, 5rem) var(--f-pad) clamp(2rem, 5vh, 3.5rem);
+  }
+  .f-hero-kicker {
+    margin-bottom: 1.5rem;
+  }
+  .f-hero-title {
+    font-size: clamp(2.7rem, 6.6vw, 5.6rem);
+    line-height: 0.98;
+  }
+  .f-hero-sub {
+    max-width: 46ch;
+    margin-top: clamp(1.4rem, 3vh, 2rem);
+    font-size: clamp(1.04rem, 1.4vw, 1.2rem);
+    line-height: 1.62;
+    color: var(--f-muted);
+  }
+  .f-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: clamp(1.8rem, 4vh, 2.6rem);
+  }
+  .f-hero-assure {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: clamp(1.6rem, 3.5vh, 2.2rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .f-hero-assure li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.8rem 0.4rem 0.7rem;
+    border: 1px solid var(--f-line-strong);
+    border-radius: 999px;
+    background: var(--f-bg-raise);
+    font-family: var(--f-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--f-ink);
+  }
+  .f-hero-assure li::before {
+    content: '';
+    width: 13px;
+    height: 8px;
+    /* a small check mark, drawn with borders */
+    border-left: 2px solid var(--f-c3);
+    border-bottom: 2px solid var(--f-c3);
+    transform: rotate(-45deg) scale(0.85);
+    transform-origin: center;
+  }
+
+  /* ---- the product card panel ---- */
+  .f-hero-panel {
+    --f-card-accent: var(--f-c1);
+    padding: 1.2rem 1.3rem 1.4rem;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .f-pp-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .f-pp-swatches {
+    display: inline-flex;
+    gap: 0.4rem;
+  }
+  .f-pp-swatches i {
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.65);
+  }
+  .f-pp-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.28rem 0.7rem;
+    border-radius: 999px;
+    background: var(--f-c2);
+    color: var(--f-ink);
+    font-family: var(--f-mono);
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transform: rotate(3deg);
+  }
+  .f-pp-stage {
+    display: grid;
+    place-items: center;
+    padding: 1.2rem;
+    border-radius: var(--f-radius-sm);
+    background:
+      radial-gradient(120% 120% at 20% 10%, rgba(255, 244, 230, 0.9), transparent 60%),
+      linear-gradient(145deg, var(--f-accent-soft), color-mix(in srgb, var(--f-c2) 16%, transparent));
+    border: 1px solid var(--f-line);
+  }
+  .f-pp-mark {
+    width: min(100%, 230px);
+    height: auto;
+  }
+  .f-pp-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .f-pp-name {
+    font-size: 1.16rem;
+    line-height: 1.1;
+  }
+  .f-pp-sub {
+    margin-top: 0.25rem;
+    font-size: 0.82rem;
+    color: var(--f-muted);
+  }
+  .f-pp-stars {
+    display: inline-flex;
+    gap: 1px;
+    flex-shrink: 0;
+  }
+  .f-pp-star {
+    width: 15px;
+    height: 15px;
+    fill: var(--f-c2);
+  }
+  .f-pp-buy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--f-line);
+  }
+  .f-pp-price {
+    font-family: var(--f-display);
+    font-size: 1.05rem;
+    font-weight: 650;
+  }
+  .f-pp-from {
+    font-family: var(--f-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--f-muted);
+  }
+  .f-pp-add {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.82rem;
+    /* decorative inside an aria-hidden panel; no pointer affordance */
+    cursor: default;
+    box-shadow: 0 3px 0 var(--f-accent-press);
+  }
+
+  @media (max-width: 900px) {
+    .f-hero {
+      grid-template-columns: 1fr;
+      align-items: start;
+      min-height: 0;
+    }
+    .f-hero-panel {
+      order: 2;
+      max-width: 460px;
+    }
+  }
+  @media (max-width: 560px) {
+    .f-hero-title {
+      font-size: clamp(2.4rem, 12vw, 3.1rem);
+    }
+  }
+</style>

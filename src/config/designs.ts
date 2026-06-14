@@ -29,7 +29,7 @@ export const designs: Design[] = [
   { id: 'vitrine', name: 'Vitrine', tagline: 'Luxury and editorial', audience: 'Anyone who values craft', route: '/', modes: ['dark', 'light'], ready: true },
   { id: 'atlas', name: 'Atlas', tagline: 'Immersive 3D', audience: 'Agencies, tech, launches', route: '/atlas', modes: ['dark'], ready: true },
   { id: 'signal', name: 'Signal', tagline: 'Clean product', audience: 'SaaS, fintech, startups', route: '/signal', modes: ['light', 'dark'], ready: true },
-  { id: 'storefront', name: 'Storefront', tagline: 'Commerce', audience: 'E-commerce and DTC brands', route: '/storefront', modes: ['light'], ready: false },
+  { id: 'storefront', name: 'Storefront', tagline: 'Commerce', audience: 'E-commerce and DTC brands', route: '/storefront', modes: ['light'], ready: true },
   { id: 'practice', name: 'Practice', tagline: 'Trusted local service', audience: 'Medical, legal, trades', route: '/practice', modes: ['light'], ready: false },
   { id: 'raw', name: 'Raw', tagline: 'Brutalist', audience: 'Art, music, culture, dev', route: '/raw', modes: ['dark', 'light'], ready: false },
 ];

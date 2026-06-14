@@ -62,6 +62,7 @@ const pages200 = [
   ['/privacy', 'privacy'],
   ['/atlas', 'atlas'],
   ['/signal', 'signal'],
+  ['/storefront', 'storefront'],
 ];
 
 async function runAxe(label) {
@@ -206,7 +207,7 @@ const viewports = [
 ];
 for (const [w, h, name] of viewports) {
   await page.setViewportSize({ width: w, height: h });
-  for (const route of ['/', '/privacy', '/atlas', '/signal']) {
+  for (const route of ['/', '/privacy', '/atlas', '/signal', '/storefront']) {
     await page.goto(BASE + route, { waitUntil: 'load' });
     await settle(250);
     const o = await page.evaluate(() => ({
@@ -265,7 +266,7 @@ rec('atlas: renders design=atlas', (await dattr('data-design')) === 'atlas', awa
 const switcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
 rec(
   'atlas: switcher lists the ready designs',
-  ['/', '/atlas', '/signal'].every((h) => switcherLinks.includes(h)),
+  ['/', '/atlas', '/signal', '/storefront'].every((h) => switcherLinks.includes(h)),
   JSON.stringify(switcherLinks),
 );
 const atlasToggle = await page.$('[data-mode-toggle]');
@@ -300,8 +301,8 @@ await settle(400);
 rec('signal: renders design=signal', (await dattr('data-design')) === 'signal', await dattr('data-design'));
 const sSwitcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
 rec(
-  'signal: switcher lists all three ready designs',
-  ['/', '/atlas', '/signal'].every((h) => sSwitcherLinks.includes(h)),
+  'signal: switcher lists all four ready designs',
+  ['/', '/atlas', '/signal', '/storefront'].every((h) => sSwitcherLinks.includes(h)),
   JSON.stringify(sSwitcherLinks),
 );
 const signalToggle = await page.$('[data-mode-toggle]');
@@ -324,6 +325,37 @@ const sSuccessVisible = await page.evaluate(() => {
   return el ? !el.hidden : false;
 });
 rec('signal contact: valid submit shows success panel (demo mode)', sSuccessVisible);
+
+// ---- Storefront (fourth design): registry exposure, light-only controls, form ----
+// Still under reduced motion: these are content checks; the reveal motion has
+// its own block below.
+await page.goto(BASE + '/storefront', { waitUntil: 'load' });
+await settle(400);
+rec('storefront: renders design=storefront', (await dattr('data-design')) === 'storefront', await dattr('data-design'));
+const fSwitcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
+rec(
+  'storefront: switcher lists all four ready designs',
+  ['/', '/atlas', '/signal', '/storefront'].every((h) => fSwitcherLinks.includes(h)),
+  JSON.stringify(fSwitcherLinks),
+);
+const storefrontToggle = await page.$('[data-mode-toggle]');
+rec('storefront: light-only design offers no mode toggle', storefrontToggle === null);
+
+// Storefront contact form: same hardened flow as the other designs, Storefront selectors.
+await page.click('.f-submit');
+await settle(300);
+const fEmptyErrs = await page.$$eval('[data-f-err]', (es) => es.map((e) => e.textContent.trim()).filter(Boolean));
+rec('storefront contact: empty submit shows inline errors', fEmptyErrs.length >= 2, JSON.stringify(fEmptyErrs));
+await page.fill('#f-name', 'Jane Tester');
+await page.fill('#f-email', 'jane@example.com');
+await page.fill('#f-message', 'We are launching a beauty brand store and want it to convert.');
+await page.click('.f-submit');
+await settle(1300); // demo-mode success has a ~700ms simulated delay
+const fSuccessVisible = await page.evaluate(() => {
+  const el = document.querySelector('[data-f-form-success]');
+  return el ? !el.hidden : false;
+});
+rec('storefront contact: valid submit shows success panel (demo mode)', fSuccessVisible);
 
 // evidence: the privacy subpage (desktop, motion on) + a mobile home
 try {
@@ -552,9 +584,75 @@ await page.goto(BASE + '/signal', { waitUntil: 'load' });
 await settle(1200); // hero entrance + chart draw settle
 const signalPath = await saveScreenshot(await page.screenshot(), 'e2e-signal-desktop.png');
 
+// ---- Storefront motion ON: switcher swap, reveals, card wipes (no WebGL) ----
+// Arrive the way a visitor does: through the floating switcher and a
+// View-Transition swap from Signal. This exercises the signal→storefront
+// teardown for real (Signal's Lenis torn down, Storefront's Lenis set up, no
+// double scroll driver).
+consoleErrors = [];
+pageErrors = [];
+failedResponses = [];
+failedRequests = [];
+await page.setViewportSize({ width: 1440, height: 900 });
+await page.goto(BASE + '/signal', { waitUntil: 'load' });
+await settle(400);
+await page.click('.ds-design[href="/storefront"]');
+for (let i = 0; i < 25 && !/\/storefront/.test(page.url()); i++) await settle(200); // await the VT swap
+await settle(300);
+rec(
+  'storefront motion: switcher swap lands on design=storefront',
+  (await dattr('data-design')) === 'storefront' && /\/storefront/.test(page.url()),
+  `${await dattr('data-design')} @ ${page.url()}`,
+);
+
+const fHeroCount = await page.evaluate(() => document.querySelectorAll('.f-hero .f-mask-inner').length);
+rec('storefront motion: hero has its two masked lines', fHeroCount === 2, 'count=' + fHeroCount);
+const fHeroOffsets = await awaitReveal('.f-hero .f-mask-inner', 6000); // entrance is ~1.6s
+rec('storefront motion: hero title lines rise fully into view', revealed(fHeroOffsets), 'offsets=' + JSON.stringify(fHeroOffsets));
+
+// The contact statement reveals after the in-page anchor glide (through the
+// design's own Lenis). The glide passes every product card, so their wipe
+// reveals must have fired by the time we arrive.
+await page.click('.f-nav a[href="#contact"]');
+const fStmtCount = await page.evaluate(() => document.querySelectorAll('.f-contact [data-f-lines] .f-mask-inner').length);
+rec('storefront motion: contact statement has its two masked lines', fStmtCount === 2, 'count=' + fStmtCount);
+const fStmtOffsets = await awaitReveal('.f-contact [data-f-lines] .f-mask-inner', 8000); // 1.4s glide + 0.95s reveal
+rec('storefront motion: contact statement lines rise fully into view', revealed(fStmtOffsets), 'offsets=' + JSON.stringify(fStmtOffsets));
+
+const readStorefrontCardClips = () =>
+  page.evaluate(() =>
+    [...document.querySelectorAll('[data-f-card]')].map((el) => getComputedStyle(el).clipPath),
+  );
+const fCardsOpen = (clips) => clips.length === 6 && clips.every((c) => !c.includes('100%'));
+let fCardClips = await readStorefrontCardClips();
+for (const start = Date.now(); !fCardsOpen(fCardClips) && Date.now() - start < 4000; ) {
+  await settle(250);
+  fCardClips = await readStorefrontCardClips();
+}
+rec('storefront motion: product cards wiped fully open', fCardsOpen(fCardClips), JSON.stringify(fCardClips));
+
+// The whole journey (swap, reveals) must stay error-free.
+const storefrontFirstParty = [
+  ...failedResponses.filter((f) => !isBenign(f.url)),
+  ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
+];
+const storefrontRealConsole = consoleErrors.filter(
+  (t) => !(/Failed to load resource/i.test(t) && storefrontFirstParty.length === 0),
+);
+rec(
+  'storefront motion: no first-party console/page errors across the journey',
+  storefrontRealConsole.length === 0 && pageErrors.length === 0 && storefrontFirstParty.length === 0,
+  [...storefrontRealConsole, ...pageErrors].join(' | ').slice(0, 240) || 'clean',
+);
+
+// evidence: the storefront opening (desktop, motion on)
+await page.goto(BASE + '/storefront', { waitUntil: 'load' });
+await settle(1200); // hero entrance settle
+const storefrontPath = await saveScreenshot(await page.screenshot(), 'e2e-storefront-desktop.png');
+
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
-console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath, atlasPath, signalPath] }));
+console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath, atlasPath, signalPath, storefrontPath] }));
 if (failed.length) {
   console.log('FAILURES:');
   failed.forEach((f) => console.log('  - ' + f.name + ' :: ' + f.detail));
