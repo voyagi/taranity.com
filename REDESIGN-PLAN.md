@@ -176,8 +176,8 @@ vitest + build + dev-browser screenshot each design; trivy if deps change. Never
 `npm run preview -- --port 4340` then open http://localhost:4340. serve-headers.mjs honors a PORT env.
 
 ## To resume in a new session
-Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Signal
-(Phase 3) next." Then it has everything it needs.
+Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Storefront
+(Phase 4) next." Then it has everything it needs.
 
-Ready designs so far: Vitrine (`/`), Atlas (`/atlas`). Build order remaining: Signal, then
-Storefront, Practice, Raw.
+Ready designs so far: Vitrine (`/`), Atlas (`/atlas`), Signal (`/signal`). Build order remaining:
+Storefront, then Practice, Raw.
