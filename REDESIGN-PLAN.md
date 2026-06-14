@@ -126,13 +126,46 @@ rebuilding the front end from scratch as a showcase of several genuinely differe
     swap signal->storefront, hero masks, contact statement after anchor glide, 6 card wipes, zero
     console errors).
 
-- NEXT: PHASE 5 (Practice). Warm, trust-first, credibility-led design for medical, dental, med
-  spa, law, home services and trades. Route /practice, light-only (modes: ['light']). Reuse
-  SiteLayout + the same motion teardown contract (gate on a [data-practice] root). Content =
+- PHASE 5 (Practice) COMPLETE, merged to main (PR #26): warm, trust-first, credibility-led
+  design for the highest-paying local-service niches (medical, dental, med spa, law, home
+  services, trades) at /practice, light-only.
+  - src/components/designs/practice/: Practice.astro shell ([data-practice] root, fixed CSS
+    .p-field of a warm light wash + an engraved guilloche ring texture (the seal/certificate
+    security print, distinct from Storefront's halftone dots) + sheen, top .p-progress scroll
+    bar) + Header (STATIC trust strip, not a marquee; sticky nav with an engraved-seal wordmark
+    and a letter-mark "Start the conversation" CTA that shortens to "Contact" below 480px) /
+    Hero (outcome-led "Be the practice people choose.", dual CTA, a "studio guarantee" trust
+    panel with a large engraved seal in place of a product shot or client work, rule 7) /
+    Manifesto ("Trust is the whole product.") / Crafts (six offerings as filed-document cards
+    with wax-seal index stamps, Websites first, intelligent systems LAST) / Method
+    (Consult/Plan/Build/Care seal medallions; Care is the trust step) / Studio / Contact
+    (hardened Web3Forms clone, p-* ids) / Footer. Fraunces display serif (the only serif in the
+    repo, shared with Vitrine but differentiated by palette + structure), Inter body, JetBrains
+    Mono seal labels, pine green (#1f6f5c) + clay + brass over a warm linen canvas (#f6f1e6).
+  - Light-only: color-scheme pinned light; themeLight = themeDark = #f6f1e6. No three.js
+    (Lenis+GSAP only). src/lib/practice-motion.ts: storefront-motion teardown contract copied
+    exactly (Lenis 1.1 for a calm scroll, v-lenis, lagSmoothing restore, astro:before-swap
+    teardown, anchor glide); p-* data-attr vocabulary (data-p-fade/-hero-fade/-rule/-hero-rule/
+    -lines/-card/-progress). Masked line reveals, hairline draws, left-to-right card wipes.
+  - practice ready=true in designs.ts; switcher live at 5 designs. Shared DesignSwitcher now
+    wraps (flex-wrap + max-width: calc(100vw - 2rem), min-width:0 on the nav) so five pills
+    never clip off-screen on small phones. CSP: PracticeContact's inline form script added hash
+    'sha256-6sLGtLk3VskucTbe5y/gMfamNysHt8P4ZQ/LdFnmCik=' to public/_headers (7 total).
+  - Tests: tests/unit/practice-css.test.ts (containment invariant, color-scheme light pin,
+    CSS<->motion gate sync incl. card clip string AND the yPercent/y co-ownership, field layer
+    count, registry wiring; light-only, no dual-mode block). e2e 133/133: /practice audits +
+    axe, overflow at 4 viewports, switcher lists all 5, NO mode toggle (light-only), form
+    validation+success, motion-on guards (switcher swap storefront->practice, hero masks,
+    contact statement after anchor glide, 6 card wipes, zero console errors). Light verified by
+    screenshot.
+
+- NEXT: PHASE 6 (Raw). Brutalist, monospace, raw grids, glitch, for art, music, fashion
+  forward, design studios, dev tools. Route /raw, dark + light (modes: ['dark', 'light']).
+  Reuse SiteLayout + the same motion teardown contract (gate on a [data-raw] root). Content =
   crafts + method (rule 7: NO portfolio), AI never leads, no em dashes, dead-simple written
-  contact. Flip practice ready=true in designs.ts same PR. Add unit invariants + e2e blocks
+  contact. Flip raw ready=true in designs.ts same PR. Add unit invariants + e2e blocks
   mirroring the prior designs (motion-on guards!). New inline scripts rotate CSP hashes
-  (csp-hash.mjs + public/_headers same commit).
+  (csp-hash.mjs + public/_headers same commit). Raw is the LAST design.
 
 ## Session gotchas (cost real time; read before working)
 - scripts/serve-headers.mjs caches dist/_headers AT STARTUP: restart it after any rebuild that
@@ -207,8 +240,9 @@ vitest + build + dev-browser screenshot each design; trivy if deps change. Never
 `npm run preview -- --port 4340` then open http://localhost:4340. serve-headers.mjs honors a PORT env.
 
 ## To resume in a new session
-Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Practice
-(Phase 5) next." Then it has everything it needs.
+Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Raw
+(Phase 6, the last design) next." Then it has everything it needs.
 
-Ready designs so far: Vitrine (`/`), Atlas (`/atlas`), Signal (`/signal`), Storefront (`/storefront`).
-Build order remaining: Practice, then Raw.
+Ready designs so far: Vitrine (`/`), Atlas (`/atlas`), Signal (`/signal`), Storefront (`/storefront`),
+Practice (`/practice`).
+Build order remaining: Raw (the last design).
