@@ -1,0 +1,42 @@
+---
+/**
+ * Signal — clean, light, conversion-focused product design for SaaS, fintech,
+ * and startups. Inter over a cool product canvas; a soft fixed aurora and a
+ * faint grid sit behind structured, card-led content. One self-contained page
+ * experience; SiteLayout provides head/meta and the floating switcher.
+ *
+ * The server HTML is complete and visible without JS: the atmosphere is pure
+ * CSS, and motion (Lenis scroll + GSAP reveals, src/lib/signal-motion.ts) is
+ * strictly additive. Dual-mode (light default); tokens follow data-mode.
+ */
+import './signal.css';
+import SignalHeader from './SignalHeader.astro';
+import SignalHero from './SignalHero.astro';
+import SignalManifesto from './SignalManifesto.astro';
+import SignalCrafts from './SignalCrafts.astro';
+import SignalMethod from './SignalMethod.astro';
+import SignalStudio from './SignalStudio.astro';
+import SignalContact from './SignalContact.astro';
+import SignalFooter from './SignalFooter.astro';
+---
+
+<div class="signal" data-signal>
+  <!-- Fixed CSS atmosphere (aurora, grid, sheen): always present, and the
+       complete backdrop for reduced motion or no JS. -->
+  <div class="s-field" aria-hidden="true"><i></i><i></i><i></i></div>
+  <!-- Scroll progress: replaces the native scrollbar while Lenis drives. -->
+  <span class="s-progress" data-s-progress aria-hidden="true"></span>
+
+  <SignalHeader />
+  <SignalHero />
+  <SignalManifesto />
+  <SignalCrafts />
+  <SignalMethod />
+  <SignalStudio />
+  <SignalContact />
+  <SignalFooter />
+</div>
+
+<script>
+  import '../../../lib/signal-motion';
+</script>

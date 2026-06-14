@@ -1,0 +1,25 @@
+---
+/**
+ * Signal (clean, light, conversion-focused product design), the third
+ * design-showcase experience. The flagship (Vitrine) renders at "/"; the
+ * floating switcher links between them (src/config/designs.ts).
+ *
+ * Dual-mode (light default): themeLight/themeDark differ so the browser chrome
+ * matches the active canvas. Runs Lenis, so `smooth` lets SiteLayout hide the
+ * scrollbar pre-paint.
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Signal from '../components/designs/signal/Signal.astro';
+---
+
+<SiteLayout
+  design="signal"
+  title="Taranity · Signal"
+  description="Taranity is a digital studio working with clients worldwide. Signal is the product-focused face of the same studio: websites, stores, apps, automation, and intelligent systems, shipped fast for teams measuring an outcome."
+  themeLight="#f5f7fc"
+  themeDark="#0a0f1d"
+  preloadFonts={['/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2']}
+  smooth
+>
+  <Signal />
+</SiteLayout>

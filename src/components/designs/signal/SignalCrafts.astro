@@ -1,0 +1,162 @@
+---
+/**
+ * The six crafts as a clean card grid: an index, a title, one line, and what
+ * an engagement includes. No project portfolio anywhere on the site (hard rule
+ * 7): these cards present the offerings, intelligent systems last per the
+ * content rules (AI never leads). Each card wipes open as it enters
+ * (signal-motion.ts).
+ */
+interface Craft {
+  index: string;
+  title: string;
+  line: string;
+  includes: string[];
+}
+
+const crafts: Craft[] = [
+  {
+    index: '01',
+    title: 'Websites',
+    line: 'Marketing sites that load fast and point every visitor at the one action that matters.',
+    includes: ['Design and build', 'Speed, SEO, accessibility', 'Conversion-first layout'],
+  },
+  {
+    index: '02',
+    title: 'Commerce',
+    line: 'Storefronts engineered from first visit through payment, built to convert without friction.',
+    includes: ['Store design', 'Payments and checkout', 'Conversion care'],
+  },
+  {
+    index: '03',
+    title: 'Applications',
+    line: 'Web and mobile products, designed and engineered as one continuous piece.',
+    includes: ['Product design', 'Full-stack build', 'Care after launch'],
+  },
+  {
+    index: '04',
+    title: 'Automation',
+    line: 'The repetitive work, mapped and rebuilt to run itself, with alerts when something needs you.',
+    includes: ['Process mapping', 'Integrations', 'Monitoring and alerts'],
+  },
+  {
+    index: '05',
+    title: 'Advisory',
+    line: 'A clear read on scope, cost, and risk before you commit a build budget.',
+    includes: ['Audits and reviews', 'Technical direction', 'Roadmaps and estimates'],
+  },
+  {
+    index: '06',
+    title: 'Intelligent systems',
+    line: 'AI applied only where it earns its place, with evaluation and guardrails to match.',
+    includes: ['Use-case selection', 'Implementation', 'Evaluation and guardrails'],
+  },
+];
+---
+
+<section class="s-section s-crafts" id="crafts" tabindex="-1">
+  <div class="s-crafts-head">
+    <p class="s-label" data-s-fade>02 · Crafts</p>
+    <h2 class="s-statement s-display" data-s-lines>
+      <span class="s-mask"><span class="s-mask-inner">Everything a</span></span>
+      <span class="s-mask"><span class="s-mask-inner">launch needs.</span></span>
+    </h2>
+    <p class="s-crafts-intro" data-s-fade>
+      One studio, taken end to end. Pick a single craft or the whole stack.
+    </p>
+  </div>
+
+  <ul class="s-craft-grid">
+    {
+      crafts.map((c) => (
+        <li class="s-craft s-card-surface" data-s-card>
+          <p class="s-craft-index" aria-hidden="true">{c.index}</p>
+          <h3 class="s-craft-title s-display">{c.title}</h3>
+          <p class="s-craft-line">{c.line}</p>
+          <ul class="s-craft-includes">
+            {c.includes.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .s-crafts-head {
+    max-width: 40ch;
+  }
+  .s-crafts-intro {
+    margin-bottom: clamp(2.2rem, 5vh, 3.2rem);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--s-muted);
+  }
+  .s-craft-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(1rem, 1.8vw, 1.5rem);
+    margin: 0 0 clamp(2.6rem, 7vh, 4rem);
+    padding: 0;
+    list-style: none;
+  }
+  .s-craft {
+    padding: clamp(1.4rem, 2.4vw, 1.9rem);
+    /* the clip wipe (data-s-card gate) reveals each card on entry */
+  }
+  .s-craft-index {
+    font-family: var(--s-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    color: var(--s-accent);
+  }
+  .s-craft-title {
+    margin-top: 0.9rem;
+    font-size: clamp(1.3rem, 2vw, 1.6rem);
+    line-height: 1.1;
+  }
+  .s-craft-line {
+    margin-top: 0.7rem;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--s-muted);
+  }
+  .s-craft-includes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1.3rem 0 0;
+    padding: 1.3rem 0 0;
+    border-top: 1px solid var(--s-line);
+    list-style: none;
+  }
+  .s-craft-includes li {
+    position: relative;
+    padding-left: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--s-muted);
+  }
+  .s-craft-includes li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.34em;
+    width: 14px;
+    height: 9px;
+    /* a small check mark, drawn with borders */
+    border-left: 2px solid var(--s-accent);
+    border-bottom: 2px solid var(--s-accent);
+    transform: rotate(-45deg) scale(0.7);
+    transform-origin: center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .s-craft {
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .s-craft:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--s-accent) 40%, var(--s-line));
+    }
+  }
+</style>

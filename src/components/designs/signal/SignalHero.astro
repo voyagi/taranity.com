@@ -1,0 +1,286 @@
+---
+/**
+ * Opening: a clear outcome-led headline, a single primary action, and an
+ * abstract "signal" panel (a rising line over noise — the brand mark, never a
+ * client screenshot; hard rule 7: no portfolio). Leads with what the work
+ * achieves, never the tooling. Server-rendered and fully visible without JS;
+ * motion only adds the entrance and the line draw.
+ */
+---
+
+<section class="s-hero">
+  <div class="s-hero-copy">
+    <p class="s-label s-hero-kicker" data-s-hero-fade>Digital studio · Worldwide</p>
+
+    <h1 class="s-hero-title s-display">
+      <span class="s-mask"><span class="s-mask-inner">Ship the product.</span></span>
+      <span class="s-mask"><span class="s-mask-inner">Move the metric.</span></span>
+    </h1>
+
+    <p class="s-hero-sub" data-s-hero-fade>
+      Websites, apps, and the systems behind them. Designed, built, and tuned
+      for the outcome you are measuring, then shipped on a schedule you can
+      plan around.
+    </p>
+
+    <div class="s-hero-actions" data-s-hero-fade>
+      <a class="s-cta s-cta-primary" href="#contact">
+        Start a project
+        <span class="s-cta-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="s-cta s-cta-ghost" href="#method">See how we work</a>
+    </div>
+
+    <ul class="s-hero-assure" data-s-hero-fade>
+      <li>Fixed scope</li>
+      <li>Written updates</li>
+      <li>We stay after launch</li>
+    </ul>
+  </div>
+
+  <div class="s-hero-panel s-card-surface" data-s-hero-fade aria-hidden="true">
+    <div class="s-panel-top">
+      <span class="s-panel-tag">Signal</span>
+      <span class="s-panel-legend">
+        <span class="s-dot-signal"></span>signal
+        <span class="s-dot-noise"></span>noise
+      </span>
+    </div>
+    <svg class="s-panel-chart" viewBox="0 0 520 300" preserveAspectRatio="none" role="presentation">
+      <!-- faint baseline grid -->
+      <g class="s-chart-grid">
+        <line x1="0" y1="75" x2="520" y2="75"></line>
+        <line x1="0" y1="150" x2="520" y2="150"></line>
+        <line x1="0" y1="225" x2="520" y2="225"></line>
+      </g>
+      <!-- noise: a jittery low band that the signal pulls away from -->
+      <path
+        class="s-chart-noise"
+        d="M0 232 L40 224 L80 236 L120 220 L160 233 L200 222 L240 230 L280 224 L320 232 L360 226 L400 231 L440 227 L480 233 L520 228"
+      ></path>
+      <!-- signal: a confident rising line, drawn on entry -->
+      <path
+        class="s-chart-area"
+        d="M0 250 L70 236 L140 210 L210 214 L280 168 L350 150 L420 96 L520 54 L520 300 L0 300 Z"
+      ></path>
+      <path
+        class="s-chart-line"
+        d="M0 250 L70 236 L140 210 L210 214 L280 168 L350 150 L420 96 L520 54"
+      ></path>
+      <circle class="s-chart-head" cx="520" cy="54" r="5"></circle>
+    </svg>
+    <div class="s-panel-bars">
+      <span style="height: 38%"></span>
+      <span style="height: 56%"></span>
+      <span style="height: 47%"></span>
+      <span style="height: 72%"></span>
+      <span style="height: 64%"></span>
+      <span style="height: 88%"></span>
+    </div>
+  </div>
+
+  <span class="s-rule s-hero-rule" data-s-hero-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .s-hero {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    min-height: calc(100svh - 60px);
+    padding: clamp(3rem, 8vh, 6rem) var(--s-pad) clamp(2rem, 5vh, 3.5rem);
+  }
+  .s-hero-kicker {
+    margin-bottom: 1.5rem;
+  }
+  .s-hero-title {
+    font-size: clamp(2.6rem, 6.2vw, 5.2rem);
+    line-height: 1;
+  }
+  .s-hero-sub {
+    max-width: 46ch;
+    margin-top: clamp(1.4rem, 3vh, 2rem);
+    font-size: clamp(1.02rem, 1.4vw, 1.18rem);
+    line-height: 1.65;
+    color: var(--s-muted);
+  }
+  .s-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: clamp(1.8rem, 4vh, 2.6rem);
+  }
+  .s-hero-assure {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.4rem;
+    margin: clamp(1.6rem, 3.5vh, 2.2rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .s-hero-assure li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-family: var(--s-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--s-muted);
+  }
+  .s-hero-assure li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.38em;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    border: 2px solid var(--s-accent);
+  }
+
+  /* ---- the signal panel ---- */
+  .s-hero-panel {
+    padding: 1.3rem 1.4rem 1.5rem;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .s-panel-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .s-panel-tag {
+    font-family: var(--s-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--s-accent);
+  }
+  .s-panel-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--s-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--s-muted);
+  }
+  .s-dot-signal,
+  .s-dot-noise {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+  }
+  .s-dot-signal {
+    background: var(--s-accent);
+  }
+  .s-dot-noise {
+    background: var(--s-line-strong);
+    margin-left: 0.6rem;
+  }
+  .s-panel-chart {
+    width: 100%;
+    height: clamp(150px, 22vh, 220px);
+    overflow: visible;
+  }
+  .s-chart-grid line {
+    stroke: var(--s-line);
+    stroke-width: 1;
+  }
+  .s-chart-noise {
+    fill: none;
+    stroke: var(--s-line-strong);
+    stroke-width: 1.5;
+    opacity: 0.7;
+  }
+  .s-chart-area {
+    fill: color-mix(in srgb, var(--s-accent) 14%, transparent);
+    stroke: none;
+  }
+  .s-chart-line {
+    fill: none;
+    stroke: var(--s-accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 0;
+  }
+  .s-chart-head {
+    fill: var(--s-accent);
+  }
+  .s-panel-bars {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    align-items: end;
+    gap: 0.5rem;
+    height: 56px;
+  }
+  .s-panel-bars span {
+    display: block;
+    border-radius: 5px 5px 2px 2px;
+    background: linear-gradient(var(--s-accent), color-mix(in srgb, var(--s-accent) 35%, transparent));
+    opacity: 0.85;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .s-chart-line {
+      stroke-dashoffset: 1000;
+      animation: s-draw 1.8s ease-out 0.5s forwards;
+    }
+    .s-chart-head {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: s-pulse 2.4s ease-in-out 2s infinite;
+    }
+    .s-panel-bars span {
+      transform: scaleY(0.4);
+      transform-origin: bottom;
+      animation: s-grow 0.7s ease-out forwards;
+    }
+    .s-panel-bars span:nth-child(1) { animation-delay: 0.8s; }
+    .s-panel-bars span:nth-child(2) { animation-delay: 0.9s; }
+    .s-panel-bars span:nth-child(3) { animation-delay: 1s; }
+    .s-panel-bars span:nth-child(4) { animation-delay: 1.1s; }
+    .s-panel-bars span:nth-child(5) { animation-delay: 1.2s; }
+    .s-panel-bars span:nth-child(6) { animation-delay: 1.3s; }
+  }
+  @keyframes s-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes s-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.5);
+      opacity: 0.6;
+    }
+  }
+  @keyframes s-grow {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .s-hero {
+      grid-template-columns: 1fr;
+      align-items: start;
+      min-height: 0;
+    }
+    .s-hero-panel {
+      order: 2;
+    }
+  }
+  @media (max-width: 560px) {
+    .s-hero-title {
+      font-size: clamp(2.3rem, 11vw, 3rem);
+    }
+  }
+</style>
