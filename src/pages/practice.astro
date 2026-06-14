@@ -1,0 +1,31 @@
+---
+/**
+ * Practice (warm, trust-first, credibility-led design), the fifth design-showcase
+ * experience. The flagship (Vitrine) renders at "/"; the floating switcher links
+ * between them (src/config/designs.ts).
+ *
+ * Light-only (designs.ts modes: ['light']): themeLight and themeDark are the
+ * same warm linen so the browser chrome matches even when a visitor's system or
+ * stored preference is dark (the page is always light; the switcher hides the
+ * mode toggle). Runs Lenis, so `smooth` lets SiteLayout hide the scrollbar
+ * pre-paint.
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Practice from '../components/designs/practice/Practice.astro';
+---
+
+<SiteLayout
+  design="practice"
+  title="Taranity · Practice"
+  description="Taranity is a digital studio working with clients worldwide. Practice is the trust-first face of the same studio: websites, applications, automation, and intelligent systems for medical, dental, legal, and home-service practices, built to earn trust and win the work."
+  themeLight="#f6f1e6"
+  themeDark="#f6f1e6"
+  preloadFonts={[
+    '/fonts/fraunces-latin-var.woff2',
+    '/fonts/inter-latin-var.woff2',
+    '/fonts/jetbrains-mono-latin-400.woff2',
+  ]}
+  smooth
+>
+  <Practice />
+</SiteLayout>

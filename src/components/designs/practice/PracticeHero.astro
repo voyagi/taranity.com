@@ -1,0 +1,251 @@
+---
+/**
+ * Opening: a warm, outcome-led credibility headline, a single primary action,
+ * and a "studio guarantee" trust panel in place of a product shot or any client
+ * work (hard rule 7: no portfolio). The panel is an engraved seal over three
+ * plain-language commitments — it sells how we work, not what we have built.
+ * Leads with the outcome for these niches (being the practice people choose),
+ * never the tooling. Server-rendered and fully visible without JS; motion only
+ * adds the entrance.
+ */
+const guarantees = [
+  'Plain-language scope, agreed up front',
+  'Written updates, replies within a day',
+  'We stay after launch',
+];
+---
+
+<section class="p-hero">
+  <div class="p-hero-copy">
+    <p class="p-label p-hero-kicker" data-p-hero-fade>Digital studio · Worldwide</p>
+
+    <h1 class="p-hero-title p-display">
+      <span class="p-mask"><span class="p-mask-inner">Be the practice</span></span>
+      <span class="p-mask"><span class="p-mask-inner">people choose.</span></span>
+    </h1>
+
+    <p class="p-hero-sub" data-p-hero-fade>
+      Websites, applications, and the systems behind them, built to earn trust
+      at first glance and turn quiet visitors into the clients you want. Shipped
+      on a schedule you can plan around.
+    </p>
+
+    <div class="p-hero-actions" data-p-hero-fade>
+      <a class="p-cta p-cta-primary" href="#contact">
+        Start the conversation
+        <span class="p-cta-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="p-cta p-cta-ghost" href="#method">See how we work</a>
+    </div>
+
+    <ul class="p-hero-assure" data-p-hero-fade>
+      <li>Fixed scope</li>
+      <li>Written updates</li>
+      <li>We stay after launch</li>
+    </ul>
+  </div>
+
+  <!-- The studio guarantee: an engraved seal over plain commitments. A trust
+       mark, never client work. Decorative, so hidden from assistive tech. -->
+  <div class="p-hero-panel p-card-surface" data-p-hero-fade aria-hidden="true">
+    <div class="p-gtop">
+      <span class="p-glabel">Studio guarantee</span>
+      <span class="p-gworld">Worldwide</span>
+    </div>
+
+    <div class="p-gstage">
+      <svg class="p-gseal" viewBox="0 0 160 160" role="presentation">
+        <!-- engraved guilloché rings -->
+        <circle cx="80" cy="80" r="68" fill="none" stroke="var(--p-gold)" stroke-width="1.5" opacity="0.7"></circle>
+        <circle cx="80" cy="80" r="58" fill="none" stroke="var(--p-accent)" stroke-width="1.5"></circle>
+        <circle cx="80" cy="80" r="49" fill="none" stroke="var(--p-gold)" stroke-width="0.9" opacity="0.55"></circle>
+        <!-- radiating ticks -->
+        {
+          Array.from({ length: 48 }).map((_, i) => {
+            const a = (i / 48) * Math.PI * 2;
+            const r1 = 62;
+            const r2 = i % 2 === 0 ? 66 : 64;
+            return (
+              <line
+                x1={80 + Math.cos(a) * r1}
+                y1={80 + Math.sin(a) * r1}
+                x2={80 + Math.cos(a) * r2}
+                y2={80 + Math.sin(a) * r2}
+                stroke="var(--p-gold)"
+                stroke-width="1.1"
+                opacity="0.6"
+              />
+            );
+          })
+        }
+        <!-- core: a pressed check -->
+        <circle cx="80" cy="80" r="34" fill="var(--p-accent-soft)"></circle>
+        <path
+          d="M65 81l10 10 21-23"
+          fill="none"
+          stroke="var(--p-accent)"
+          stroke-width="5"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+    </div>
+
+    <ul class="p-glist">
+      {guarantees.map((g) => <li>{g}</li>)}
+    </ul>
+
+    <p class="p-gfoot">In writing, every time.</p>
+  </div>
+
+  <span class="p-rule p-hero-rule" data-p-hero-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .p-hero {
+    display: grid;
+    grid-template-columns: 1.08fr 0.92fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    min-height: calc(100svh - 92px);
+    padding: clamp(2.6rem, 7vh, 5rem) var(--p-pad) clamp(2rem, 5vh, 3.5rem);
+  }
+  .p-hero-kicker {
+    margin-bottom: 1.5rem;
+  }
+  .p-hero-title {
+    font-size: clamp(2.7rem, 6.6vw, 5.4rem);
+    line-height: 1;
+    font-weight: 560;
+  }
+  .p-hero-sub {
+    max-width: 46ch;
+    margin-top: clamp(1.4rem, 3vh, 2rem);
+    font-size: clamp(1.04rem, 1.4vw, 1.2rem);
+    line-height: 1.64;
+    color: var(--p-muted);
+  }
+  .p-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: clamp(1.8rem, 4vh, 2.6rem);
+  }
+  .p-hero-assure {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: clamp(1.6rem, 3.5vh, 2.2rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .p-hero-assure li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.85rem 0.4rem 0.7rem;
+    border: 1px solid var(--p-line-strong);
+    border-radius: 999px;
+    background: var(--p-bg-raise);
+    font-family: var(--p-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--p-ink);
+  }
+  .p-hero-assure li::before {
+    content: '';
+    width: 13px;
+    height: 8px;
+    /* a small check mark, drawn with borders */
+    border-left: 2px solid var(--p-accent);
+    border-bottom: 2px solid var(--p-accent);
+    transform: rotate(-45deg) scale(0.85);
+    transform-origin: center;
+  }
+
+  /* ---- the studio-guarantee panel ---- */
+  .p-hero-panel {
+    --p-card-accent: var(--p-gold);
+    padding: 1.3rem 1.4rem 1.5rem;
+    display: grid;
+    gap: 1.1rem;
+    text-align: center;
+  }
+  .p-gtop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--p-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .p-glabel {
+    color: var(--p-ink);
+    font-weight: 500;
+  }
+  .p-gworld {
+    color: var(--p-muted);
+  }
+  .p-gstage {
+    display: grid;
+    place-items: center;
+    padding: 0.5rem;
+  }
+  .p-gseal {
+    width: min(100%, 188px);
+    height: auto;
+  }
+  .p-glist {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 1.1rem 0 0;
+    border-top: 1px solid var(--p-line);
+    list-style: none;
+    text-align: left;
+  }
+  .p-glist li {
+    position: relative;
+    padding-left: 1.7rem;
+    font-size: 0.92rem;
+    line-height: 1.4;
+    color: var(--p-ink);
+  }
+  .p-glist li::before {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    top: 0.3em;
+    width: 14px;
+    height: 9px;
+    border-left: 2.5px solid var(--p-accent);
+    border-bottom: 2.5px solid var(--p-accent);
+    transform: rotate(-45deg) scale(0.8);
+    transform-origin: center;
+  }
+  .p-gfoot {
+    margin: 0;
+    font-family: var(--p-display);
+    font-size: 1.02rem;
+    font-style: italic;
+    color: var(--p-muted);
+  }
+
+  @media (max-width: 900px) {
+    .p-hero {
+      grid-template-columns: 1fr;
+      align-items: start;
+      min-height: 0;
+    }
+    .p-hero-panel {
+      order: 2;
+      max-width: 440px;
+    }
+  }
+  @media (max-width: 560px) {
+    .p-hero-title {
+      font-size: clamp(2.4rem, 12vw, 3.1rem);
+    }
+  }
+</style>
