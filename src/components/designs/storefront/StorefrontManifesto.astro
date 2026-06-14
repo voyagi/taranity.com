@@ -1,0 +1,52 @@
+---
+/**
+ * The idea behind the studio, stated plainly. Leads with the outcome (a brand
+ * worth returning to); the tooling never opens. The commerce motif carries the
+ * section: every choice should earn its place on the shelf.
+ */
+---
+
+<section class="f-section f-manifesto">
+  <p class="f-label" data-f-fade>01 · The idea</p>
+
+  <h2 class="f-statement f-display" data-f-lines>
+    <span class="f-mask"><span class="f-mask-inner">Make it worth</span></span>
+    <span class="f-mask"><span class="f-mask-inner">coming back for.</span></span>
+  </h2>
+
+  <div class="f-manifesto-cols">
+    <p data-f-fade>
+      A storefront is judged in seconds. We start from the moment a visitor
+      lands and work backwards: what they need to see, feel, and trust before
+      they reach for their card, agreed in plain language first.
+    </p>
+    <p data-f-fade>
+      From there it is fast and tactile. Real screens you can click, vivid where
+      it sells and quiet where it should, built to load quickly and hold up long
+      after the launch-day rush.
+    </p>
+  </div>
+
+  <span class="f-rule" data-f-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .f-manifesto-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.6rem, 4vw, 4rem);
+    max-width: 920px;
+    margin-bottom: clamp(2.6rem, 7vh, 4rem);
+  }
+  .f-manifesto-cols p {
+    max-width: 44ch;
+    font-size: clamp(1.02rem, 1.3vw, 1.14rem);
+    line-height: 1.68;
+    color: var(--f-muted);
+  }
+  @media (max-width: 720px) {
+    .f-manifesto-cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

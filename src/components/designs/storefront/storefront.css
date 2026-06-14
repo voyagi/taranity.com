@@ -1,0 +1,344 @@
+/* ==========================================================================
+   Storefront — vivid, product-forward, tactile commerce design for e-commerce
+   and DTC brands (beauty, food, fashion retail). Space Grotesk display, Inter
+   body, JetBrains Mono price-tag labels, a warm cream canvas lit with vivid
+   coral, amber, mint, and berry pops. The layout is a "shelf" of product-like
+   offering cards with chunky rounded surfaces, soft coloured shadows, sticker
+   badges, and swatch chips. Motion is restrained and fast (Lenis scroll + GSAP
+   reveals, src/lib/storefront-motion.ts; no WebGL). The "wild but fast"
+   richness is a CSS atmosphere: drifting warm gradient blobs and a halftone
+   dot texture, all behind server-rendered content.
+
+   Storefront is light-only (designs.ts modes: ['light']). There is no dark
+   token set: color-scheme is pinned to light so a system/stored dark
+   preference never restyles native widgets on this page (mirrors how Atlas
+   pins dark). Pinned by tests/unit/storefront-css.test.ts.
+   ========================================================================== */
+
+/* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
+   contain, isolation, or will-change on .storefront (or its ancestors) — any
+   of them would turn it into a containing block and re-pin the fixed .f-field /
+   .f-progress layers inside it instead of the viewport. Pinned by
+   tests/unit/storefront-css.test.ts. */
+.storefront {
+  /* light-only: a warm cream retail canvas */
+  --f-bg: #fff5ea;
+  --f-bg-raise: #fffdfa;
+  --f-ink: #2a1810;
+  --f-muted: #715b4f;
+  --f-line: rgba(42, 24, 16, 0.12);
+  --f-line-strong: rgba(42, 24, 16, 0.22);
+
+  /* primary brand pop + the swatch set the product cards cycle through */
+  --f-accent: #ff4a23; /* vivid tomato/coral — decorative (chips, borders, rules, checks) */
+  --f-accent-ink: #fff7f0; /* warm text on a filled accent surface */
+  --f-accent-2: #ff9a1f; /* warm amber, for gradients and the promo bar */
+  --f-accent-strong: #c8300d; /* deep coral for filled buttons (carries light text at AA) */
+  --f-accent-press: #9e2708; /* darker tone for the tactile shelf shadow + the demo note */
+  --f-accent-soft: rgba(255, 74, 35, 0.12);
+  --f-c1: #ff4a23; /* coral */
+  --f-c2: #f59e0b; /* amber */
+  --f-c3: #12a594; /* mint */
+  --f-c4: #e0357b; /* berry */
+  --f-c5: #3f5bff; /* blue */
+  --f-c6: #8b5cf6; /* plum */
+  --f-error: #c4362a;
+
+  /* tactile shadows: a soft drop plus, on cards, a chunky coloured shelf edge */
+  --f-shadow: 0 1px 2px rgba(42, 24, 16, 0.05), 0 16px 34px -16px rgba(42, 24, 16, 0.28);
+  --f-shadow-soft: 0 10px 28px -14px rgba(42, 24, 16, 0.3);
+
+  --f-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --f-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --f-gutter: clamp(1.25rem, 5vw, 5.5rem);
+  /* Composition frame: content capped and centred, symmetric margins on
+     ultrawide. Sections use padding-inline: var(--f-pad). */
+  --f-max: 1280px;
+  --f-pad: max(var(--f-gutter), calc((100% - var(--f-max)) / 2));
+  --f-section: clamp(5rem, 13vh, 9rem);
+  --f-radius: 22px; /* generous, tactile rounding — never brutalist-hard */
+  --f-radius-sm: 14px;
+
+  background: var(--f-bg);
+  color: var(--f-ink);
+  font-family: var(--f-sans);
+  /* light-only: a dark system/stored mode must not restyle native widgets */
+  color-scheme: light;
+  overflow-x: clip;
+}
+
+.storefront ::selection {
+  background: var(--f-accent);
+  color: var(--f-accent-ink);
+}
+
+/* ---- the field (CSS atmosphere: always present, behind everything) ---- */
+
+/* Three fixed sheets: warm vivid gradient blobs, a halftone dot texture (the
+   tactile "print" signature, distinct from Signal's straight lattice), and a
+   soft top sheen. Always present, so reduced motion and no-JS visitors get the
+   full atmosphere. */
+.f-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.f-field i {
+  position: absolute;
+  /* Oversized on purpose: the drift animation must never expose an edge. */
+  inset: -8%;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+/* Warm vivid blobs: coral overhead-left, amber low-right, a berry bloom and a
+   mint pool centre. The page's vividness lives here. */
+.f-field i:first-child {
+  background-image:
+    radial-gradient(44% 40% at 14% 6%, rgba(255, 74, 35, 0.26), transparent 70%),
+    radial-gradient(46% 42% at 88% 84%, rgba(255, 154, 31, 0.24), transparent 72%),
+    radial-gradient(34% 30% at 70% 18%, rgba(224, 53, 123, 0.16), transparent 72%),
+    radial-gradient(40% 36% at 32% 72%, rgba(18, 165, 148, 0.14), transparent 74%);
+  opacity: 0.85;
+}
+/* Halftone dots: a tiled radial-gradient dot field, masked to a soft vignette
+   so it reads as a tactile printed ground rather than wallpaper. */
+.f-field i:nth-child(2) {
+  background-image: radial-gradient(rgba(42, 24, 16, 0.16) 1.4px, transparent 1.6px);
+  background-size: 22px 22px;
+  background-repeat: repeat;
+  mask-image: radial-gradient(80% 72% at 50% 32%, rgba(0, 0, 0, 0.7), transparent 92%);
+  -webkit-mask-image: radial-gradient(80% 72% at 50% 32%, rgba(0, 0, 0, 0.7), transparent 92%);
+  opacity: 0.5;
+}
+/* Sheen: a warm highlight up top that keeps the masthead brighter than the floor. */
+.f-field i:nth-child(3) {
+  background-image: radial-gradient(72% 50% at 50% -10%, rgba(255, 244, 230, 0.9), transparent 70%);
+  opacity: 0.7;
+}
+
+/* The content rides above the fixed field. The header is sticky/positioned
+   already, so it needs no help. */
+.storefront > section,
+.storefront > footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- scroll affordance ---- */
+
+/* While Lenis drives the scroll, dragging the native scrollbar fights the
+   smoothing loop, so it is hidden for exactly that case (storefront-motion.ts
+   toggles html.v-lenis; the class is shared across designs and set pre-paint by
+   SiteLayout). Reduced-motion and no-JS visitors keep their scrollbar.
+   Duplicated from the other designs' css because each ships its stylesheet
+   alone. */
+html.v-lenis {
+  scrollbar-width: none;
+}
+html.v-lenis::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* The progress bar that replaces it: a thick, candy-bright sweep across the
+   top, scaleX driven from the Lenis scroll handler in storefront-motion.ts. */
+.f-progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 60;
+  height: 4px;
+  background: linear-gradient(90deg, var(--f-c1), var(--f-c2) 38%, var(--f-c4) 70%, var(--f-c6));
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+html:not(.v-lenis) .f-progress {
+  display: none;
+}
+
+/* ---- primitives ---- */
+
+.f-display {
+  font-family: var(--f-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Price-tag style eyebrow: a small mono label inside a rounded chip with a
+   punched hole, like a swing ticket. */
+.f-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.32rem 0.7rem 0.32rem 0.85rem;
+  border: 1px solid var(--f-line-strong);
+  border-radius: 999px;
+  background: var(--f-bg-raise);
+  font-family: var(--f-mono);
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--f-ink);
+}
+/* the swing-ticket hole */
+.f-label::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: 2px solid var(--f-accent);
+  background: var(--f-bg);
+}
+
+.f-rule {
+  display: block;
+  height: 2px;
+  background: var(--f-line);
+  border-radius: 999px;
+  transform-origin: left;
+}
+
+/* Shared call-to-action buttons. Primary is filled coral with a chunky
+   coloured "shelf" shadow that compresses on press (tactile, never flat).
+   Ghost is a hairline outline. */
+.f-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.9rem 1.6rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font-family: var(--f-sans);
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.f-cta-primary {
+  background: var(--f-accent-strong);
+  color: var(--f-accent-ink);
+  box-shadow: 0 4px 0 var(--f-accent-press), var(--f-shadow-soft);
+}
+.f-cta-primary:hover {
+  background: color-mix(in srgb, var(--f-accent-strong) 90%, white);
+}
+.f-cta-primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--f-accent-press), var(--f-shadow-soft);
+}
+.f-cta-ghost {
+  background: var(--f-bg-raise);
+  border-color: var(--f-line-strong);
+  color: var(--f-ink);
+}
+.f-cta-ghost:hover {
+  border-color: var(--f-accent);
+  color: var(--f-accent);
+}
+.f-cta-arrow {
+  transition: transform 0.25s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .f-cta {
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.08s ease,
+      box-shadow 0.08s ease;
+  }
+  .f-cta:hover .f-cta-arrow {
+    transform: translateX(3px);
+  }
+}
+
+/* Masked line reveals: the wrapper clips, the inner line rises. The bottom
+   padding gives descenders room to paint; the negative margin keeps the
+   stacked-line rhythm unchanged. The hidden state must clear line + padding,
+   hence 120% (must match the yPercent in storefront-motion.ts). */
+.f-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.f-mask-inner {
+  display: block;
+}
+
+/* Section frame: a price-tag label, then a masked display statement. Sections
+   own their layout below that. */
+.f-section {
+  padding: var(--f-section) var(--f-pad) 0;
+}
+.f-section:focus {
+  outline: none;
+}
+.f-statement {
+  margin-block: clamp(1rem, 2.6vh, 1.6rem) clamp(1.8rem, 5vh, 3rem);
+  font-size: clamp(2.1rem, 5.4vw, 4.4rem);
+  line-height: 1;
+  max-width: 16ch;
+}
+
+/* Card surface: a solid elevated panel with a chunky coloured shelf edge.
+   Keeps text on a high-contrast ground over the field and carries the tactile
+   product aesthetic. The shelf colour defaults to the ink line; cards override
+   --f-card-accent to tint it. */
+.f-card-surface {
+  --f-card-accent: var(--f-line-strong);
+  background: var(--f-bg-raise);
+  border: 1px solid var(--f-line);
+  border-radius: var(--f-radius);
+  box-shadow: 0 4px 0 var(--f-card-accent), var(--f-shadow);
+}
+
+/* ---- motion gates ---- */
+
+/* Initial hidden states for the choreography. Gated on html.js (set pre-paint)
+   AND motion-ok, so no-JS clients, crawlers, and reduced-motion visitors always
+   see complete content. storefront-motion.ts animates these in. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .storefront .f-mask-inner {
+    transform: translateY(120%);
+  }
+  html.js .storefront [data-f-fade],
+  html.js .storefront [data-f-hero-fade] {
+    opacity: 0;
+  }
+  html.js .storefront [data-f-rule],
+  html.js .storefront [data-f-hero-rule] {
+    transform: scaleX(0);
+  }
+  /* Product cards wipe open left-to-right as they enter (storefront-motion.ts). */
+  html.js .storefront [data-f-card] {
+    clip-path: inset(0% 100% 0% 0%);
+  }
+
+  /* The warm blobs drift and the sheen breathes on slow clocks. */
+  .f-field i:first-child {
+    animation: f-drift 52s ease-in-out infinite alternate;
+  }
+  .f-field i:nth-child(3) {
+    animation: f-breathe 11s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes f-drift {
+  from {
+    transform: translate3d(-1.2%, -0.8%, 0) rotate(-0.4deg);
+  }
+  to {
+    transform: translate3d(1.2%, 1%, 0) rotate(0.4deg);
+  }
+}
+@keyframes f-breathe {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 0.78;
+  }
+}

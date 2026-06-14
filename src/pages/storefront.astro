@@ -1,0 +1,31 @@
+---
+/**
+ * Storefront (vivid, product-forward, tactile commerce design), the fourth
+ * design-showcase experience. The flagship (Vitrine) renders at "/"; the
+ * floating switcher links between them (src/config/designs.ts).
+ *
+ * Light-only (designs.ts modes: ['light']): themeLight and themeDark are the
+ * same cream canvas so the browser chrome matches even when a visitor's system
+ * or stored preference is dark (the page is always light; the switcher hides
+ * the mode toggle). Runs Lenis, so `smooth` lets SiteLayout hide the scrollbar
+ * pre-paint.
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Storefront from '../components/designs/storefront/Storefront.astro';
+---
+
+<SiteLayout
+  design="storefront"
+  title="Taranity · Storefront"
+  description="Taranity is a digital studio working with clients worldwide. Storefront is the commerce-focused face of the same studio: stores, websites, apps, automation, and intelligent systems, built to turn browsers into buyers."
+  themeLight="#fff5ea"
+  themeDark="#fff5ea"
+  preloadFonts={[
+    '/fonts/space-grotesk-latin-var.woff2',
+    '/fonts/inter-latin-var.woff2',
+    '/fonts/jetbrains-mono-latin-400.woff2',
+  ]}
+  smooth
+>
+  <Storefront />
+</SiteLayout>
