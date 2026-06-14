@@ -1,0 +1,52 @@
+---
+/**
+ * The idea behind the studio, stated plainly. Leads with the outcome (clarity,
+ * momentum); the tooling never opens. The "signal over noise" motif carries
+ * the section.
+ */
+---
+
+<section class="s-section s-manifesto">
+  <p class="s-label" data-s-fade>01 · The idea</p>
+
+  <h2 class="s-statement s-display" data-s-lines>
+    <span class="s-mask"><span class="s-mask-inner">Signal over</span></span>
+    <span class="s-mask"><span class="s-mask-inner">noise, always.</span></span>
+  </h2>
+
+  <div class="s-manifesto-cols">
+    <p data-s-fade>
+      Most software is built on guesses and ships late. We start from the one
+      thing that matters: the outcome you are trying to move, agreed in plain
+      language before a line is written.
+    </p>
+    <p data-s-fade>
+      From there it is fast and deliberate. Clear scope, working increments you
+      can see, and a product that earns its place. Built to hold up long after
+      launch day.
+    </p>
+  </div>
+
+  <span class="s-rule" data-s-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .s-manifesto-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.6rem, 4vw, 4rem);
+    max-width: 920px;
+    margin-bottom: clamp(2.6rem, 7vh, 4rem);
+  }
+  .s-manifesto-cols p {
+    max-width: 44ch;
+    font-size: clamp(1rem, 1.3vw, 1.12rem);
+    line-height: 1.7;
+    color: var(--s-muted);
+  }
+  @media (max-width: 720px) {
+    .s-manifesto-cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

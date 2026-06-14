@@ -7,7 +7,7 @@
 # allows 'unsafe-inline' because GSAP applies dynamic inline styles via JS; style
 # injection cannot execute scripts, so XSS protection is unaffected.
 /*
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://plausible.io/js/ 'sha256-NkkFHmJWeTS44HyTSlBAkR81cDoIAbCa3/q9bKkmj9c=' 'sha256-kvv2MMxPgLBmVvzywxyF6zcaAvR+xXG7E4lae3jI0nw=' 'sha256-GDilAfDjHTMwZ/drFnnmquvBS21b1eccrGFOt/ctZko=' 'sha256-QVfN+/3/lmstiP5akREPNxUJav6TFeZ2bk67xinXd8Y='; connect-src 'self' https://api.web3forms.com https://plausible.io; form-action 'self' https://api.web3forms.com
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://plausible.io/js/ 'sha256-NkkFHmJWeTS44HyTSlBAkR81cDoIAbCa3/q9bKkmj9c=' 'sha256-kvv2MMxPgLBmVvzywxyF6zcaAvR+xXG7E4lae3jI0nw=' 'sha256-GDilAfDjHTMwZ/drFnnmquvBS21b1eccrGFOt/ctZko=' 'sha256-QVfN+/3/lmstiP5akREPNxUJav6TFeZ2bk67xinXd8Y=' 'sha256-11m7SNlo670LwLsQC7b+fn1NUPZZl76o1ej/kFLCD7o='; connect-src 'self' https://api.web3forms.com https://plausible.io; form-action 'self' https://api.web3forms.com
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
