@@ -1,0 +1,102 @@
+---
+/**
+ * Who is behind the work. Small crew, worldwide range, written-first. The
+ * principles read like a studio's house rules, presented as a hard-edged mono
+ * list rather than an about page.
+ */
+const principles = [
+  'Written over meetings',
+  'Plain language, always',
+  'Ship in increments',
+  'We stay after launch',
+];
+---
+
+<section class="r-section r-studio" id="studio" tabindex="-1">
+  <p class="r-label" data-r-fade>04 / Studio</p>
+
+  <h2 class="r-statement r-display r-glitch" data-r-lines>
+    <span class="r-mask"><span class="r-mask-inner">Small crew,</span></span>
+    <span class="r-mask"><span class="r-mask-inner">big swings.</span></span>
+  </h2>
+
+  <div class="r-studio-grid">
+    <div class="r-studio-copy" data-r-fade>
+      <p>
+        Taranity works with studios, labels, and makers of every size, across
+        every timezone, in writing. Small on purpose: the people who scope your
+        work are the people who build it.
+      </p>
+      <p>
+        One thing at a time, taken end to end. We would rather make one thing
+        people remember than ship ten that blend into the feed.
+      </p>
+    </div>
+    <ul class="r-principles" data-r-fade>
+      {
+        principles.map((principle, i) => (
+          <li>
+            <span class="r-principle-tick" style={`--r-tick: var(${i % 2 === 0 ? '--r-cy' : '--r-mg'})`} aria-hidden="true" />
+            {principle}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <span class="r-rule" data-r-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .r-studio-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+    margin-bottom: clamp(2.6rem, 7vh, 4rem);
+  }
+  .r-studio-copy p {
+    max-width: 52ch;
+    font-size: clamp(0.96rem, 1.2vw, 1.08rem);
+    line-height: 1.72;
+    color: var(--r-muted);
+  }
+  .r-studio-copy p + p {
+    margin-top: 1.2rem;
+  }
+  .r-principles {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .r-principles li {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding-block: 0.95rem;
+    border-top: 1px solid var(--r-line);
+    font-family: var(--r-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--r-ink);
+  }
+  .r-principles li:last-child {
+    border-bottom: 1px solid var(--r-line);
+  }
+  /* a hard square tick (no rounding) */
+  .r-principle-tick {
+    width: 13px;
+    height: 13px;
+    background: var(--r-tick);
+    flex-shrink: 0;
+  }
+  @media (max-width: 820px) {
+    .r-studio-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

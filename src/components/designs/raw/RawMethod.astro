@@ -1,0 +1,103 @@
+---
+/**
+ * How an engagement runs: four steps from first brief to long after launch. A
+ * blunt, legible process so a studio or maker can see exactly what working with
+ * us looks like before they commit. The final step, Ship, folds in the studio's
+ * promise to stay after launch, distinct from the other designs' methods.
+ */
+const steps = [
+  {
+    index: '01',
+    name: 'Init',
+    copy: 'We start blunt: who you are, who it is for, and what it has to do. No build talk until the point is clear.',
+    color: '--r-cy',
+  },
+  {
+    index: '02',
+    name: 'Draft',
+    copy: 'We shape it fast. Structure, type, and direction you can react to and pull apart before anything is locked.',
+    color: '--r-mg',
+  },
+  {
+    index: '03',
+    name: 'Build',
+    copy: 'Design and engineering in one motion. Real screens you can click, shipped in working increments, fast by default.',
+    color: '--r-cy',
+  },
+  {
+    index: '04',
+    name: 'Ship',
+    copy: 'We launch, then stay. Watch, measure, and tune the work, reachable in writing long after it goes live.',
+    color: '--r-mg',
+  },
+];
+---
+
+<section class="r-section r-method" id="method" tabindex="-1">
+  <p class="r-label" data-r-fade>03 / Method</p>
+
+  <h2 class="r-statement r-display r-glitch" data-r-lines>
+    <span class="r-mask"><span class="r-mask-inner">From brief</span></span>
+    <span class="r-mask"><span class="r-mask-inner">to shipped.</span></span>
+  </h2>
+
+  <ol class="r-steps">
+    {
+      steps.map((step) => (
+        <li class="r-step r-card-surface" data-r-fade style={`--r-card-accent: var(${step.color})`}>
+          <span class="r-step-num r-display" aria-hidden="true">
+            {step.index}
+          </span>
+          <h3 class="r-step-name r-display">{step.name}</h3>
+          <p class="r-step-copy">{step.copy}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <span class="r-rule" data-r-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .r-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(0.9rem, 1.8vw, 1.4rem);
+    margin: 0 0 clamp(2.6rem, 7vh, 4rem);
+    padding: 0;
+    list-style: none;
+  }
+  .r-step {
+    padding: clamp(1.3rem, 2.2vw, 1.7rem);
+  }
+  .r-step-num {
+    display: block;
+    font-size: clamp(2.4rem, 4vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    /* outlined numeral: brutalist, lets the accent read without a filled block */
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--r-card-accent);
+  }
+  .r-step-name {
+    display: block;
+    margin-top: 0.9rem;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+  }
+  .r-step-copy {
+    margin-top: 0.6rem;
+    font-size: 0.86rem;
+    line-height: 1.62;
+    color: var(--r-muted);
+  }
+  @media (max-width: 900px) {
+    .r-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 520px) {
+    .r-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+/**
+ * Raw (brutalist, monospace, raw-grid design), the sixth and final
+ * design-showcase experience. The flagship (Vitrine) renders at "/"; the
+ * floating switcher links between them (src/config/designs.ts).
+ *
+ * Dual-mode (designs.ts modes: ['dark', 'light']): themeLight/themeDark differ
+ * so the browser chrome matches the active canvas. Runs Lenis, so `smooth` lets
+ * SiteLayout hide the scrollbar pre-paint. Preloads both JetBrains Mono weights
+ * because the whole design is set in mono (400 body, 700 display).
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Raw from '../components/designs/raw/Raw.astro';
+---
+
+<SiteLayout
+  design="raw"
+  title="Taranity · Raw"
+  description="Taranity is a digital studio working with clients worldwide. Raw is the brutalist face of the same studio: websites, apps, commerce, automation, and intelligent systems for studios, labels, and makers who refuse to look like everyone else."
+  themeLight="#efeee8"
+  themeDark="#0a0a0b"
+  preloadFonts={[
+    '/fonts/jetbrains-mono-latin-700.woff2',
+    '/fonts/jetbrains-mono-latin-400.woff2',
+  ]}
+  smooth
+>
+  <Raw />
+</SiteLayout>
