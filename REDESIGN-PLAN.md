@@ -69,14 +69,39 @@ rebuilding the front end from scratch as a showcase of several genuinely differe
     dims the field behind content; hero (.a-hero) is excluded and stays vivid. CSS-only, CSP
     hashes unchanged. The scrim alpha (0.58) is the single dial for globe dimness behind text.
 
-- NEXT: PHASE 3 (Signal). Clean, light, structured SaaS/fintech/startup design: conversion-
-  focused, clear next step, the "most sellable" of the six. Route /signal, modes light+dark
-  (light default). Reuse SiteLayout (design="signal", themeLight/themeDark, smooth only if it
-  runs Lenis, preloadFonts). Copy the motion teardown contract (gate on a [data-signal] root,
-  destroy on astro:before-swap). Content = crafts + method (rule 7: NO portfolio), AI never
-  leads, no em dashes. Flip signal ready=true in designs.ts in the same PR (switcher already
-  multi at 2 designs). Add Signal unit invariants + e2e blocks mirroring Atlas (motion-on
-  guards!). New inline scripts rotate CSP hashes (csp-hash.mjs + public/_headers same commit).
+- PHASE 3 (Signal) COMPLETE, merged to main (PR #22): clean, light, conversion-focused
+  product design for SaaS/fintech/startups at /signal, light+dark (light default).
+  - src/components/designs/signal/: Signal.astro shell ([data-signal] root, fixed CSS
+    .s-field aurora/grid/sheen field, top .s-progress scroll bar) + Header (sticky, persistent
+    "Start a project" CTA) / Hero (outcome-led headline "Ship the product. Move the metric.",
+    dual CTA, an abstract decorative SVG "signal" panel — rising line over noise + bars, NOT a
+    portfolio) / Manifesto ("Signal over noise") / Crafts (six offerings as a card grid,
+    intelligent systems LAST) / Method (Define/Design/Build/Improve) / Studio / Contact
+    (hardened Web3Forms clone, s-* ids) / Footer. Inter display+body, JetBrains Mono labels,
+    indigo accent (#4f46e5 light / #818cf8 dark) on a cool canvas.
+  - Dual-mode: tokens on .signal follow data-mode with a no-JS prefers-color-scheme dark
+    fallback (Vitrine pattern, NOT Atlas's pinned-dark); toggle crossfades canvas + field.
+    No three.js (clean+fast, Lenis+GSAP only) — distinct from Atlas's WebGL globe.
+  - src/lib/signal-motion.ts: Atlas teardown contract copied minus the GL boot (Lenis 1.0,
+    v-lenis, lagSmoothing restore, astro:before-swap teardown, anchor glide). Masked line
+    reveals, hairline draws, left-to-right card wipes; s- data-attr vocabulary
+    (data-s-fade/-hero-fade/-rule/-hero-rule/-lines/-card/-progress).
+  - signal ready=true in designs.ts; switcher live at 3 designs. CSP: SignalContact's inline
+    form script added hash 'sha256-11m7SNlo670...' to public/_headers (5 total).
+  - Tests: tests/unit/signal-css.test.ts (containment invariant, dual-mode palette match,
+    CSS<->motion gate sync incl. card clip string, field layer count, registry wiring). e2e
+    87/87: /signal page audits + axe, overflow at 4 viewports, switcher lists all 3, mode
+    toggle PRESENT (dual-mode), form validation+success, motion-ON guards (switcher swap
+    atlas->signal, hero masks, contact statement after anchor glide, 6 card wipes, zero
+    console errors). Light + dark verified by screenshot.
+
+- NEXT: PHASE 4 (Storefront). Vivid, product-forward, tactile e-commerce/DTC design for
+  beauty, food, fashion retail. Route /storefront, light-only (modes: ['light'] in designs.ts).
+  Reuse SiteLayout. Same motion teardown contract (gate on a [data-storefront] root). Content =
+  crafts + method (rule 7: NO portfolio), AI never leads, no em dashes. Flip storefront
+  ready=true in designs.ts same PR. Add unit invariants + e2e blocks mirroring Atlas/Signal
+  (motion-on guards!). New inline scripts rotate CSP hashes (csp-hash.mjs + public/_headers
+  same commit).
 
 ## Session gotchas (cost real time; read before working)
 - scripts/serve-headers.mjs caches dist/_headers AT STARTUP: restart it after any rebuild that
