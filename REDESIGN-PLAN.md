@@ -31,7 +31,8 @@ rebuilding the front end from scratch as a showcase of several genuinely differe
   - e2e (scripts/e2e.devbrowser.js, 38/38): pages / + /privacy; audits under emulated reduced
     motion; motion-ON guards assert hero/statement reveal offsets and plate wipes (6 plates);
     form checks on the home form (#v-name etc.); BASE pinned to http://127.0.0.1:4321.
-- PHASE 2 (Atlas) BUILT (branch feat/atlas-design): immersive dark 3D journey at /atlas.
+- PHASE 2 (Atlas) COMPLETE, merged to main (PR #20 build, PR #21 legibility): immersive dark
+  3D journey at /atlas.
   - src/components/designs/atlas/: Atlas.astro shell ([data-atlas] root, 3-layer .a-field CSS
     starfield/nebula/graticule fallback, [data-a-gl] mount, .a-track instrument rail) + Header/
     Hero/Manifesto/Crafts (6 waypoint rows, wipe reveals)/Method (Survey/Chart/Build/Stay)/
@@ -60,6 +61,22 @@ rebuilding the front end from scratch as a showcase of several genuinely differe
     no mode toggle on /atlas, atlas form validation+success, motion-ON guards (switcher VT
     swap from /, hero mask offsets, contact statement after anchor glide, 6 card wipes,
     data-gl resolves on+canvas, zero console/page errors across the journey).
+  - Legibility pass (PR #21): content sections are transparent over the globe, so small muted
+    captions lost contrast over bright particles. Fixed in atlas.css with (1) a glyph-hugging
+    text-shadow halo on all .atlas text (masked display lines get a tighter shadow so .a-mask
+    overflow:hidden does not clip the glow) and (2) a feathered .a-section::before reading scrim
+    (rgba(5,7,13,.58), z-index:-1 inside the section's z-1 context, pointer-events:none) that
+    dims the field behind content; hero (.a-hero) is excluded and stays vivid. CSS-only, CSP
+    hashes unchanged. The scrim alpha (0.58) is the single dial for globe dimness behind text.
+
+- NEXT: PHASE 3 (Signal). Clean, light, structured SaaS/fintech/startup design: conversion-
+  focused, clear next step, the "most sellable" of the six. Route /signal, modes light+dark
+  (light default). Reuse SiteLayout (design="signal", themeLight/themeDark, smooth only if it
+  runs Lenis, preloadFonts). Copy the motion teardown contract (gate on a [data-signal] root,
+  destroy on astro:before-swap). Content = crafts + method (rule 7: NO portfolio), AI never
+  leads, no em dashes. Flip signal ready=true in designs.ts in the same PR (switcher already
+  multi at 2 designs). Add Signal unit invariants + e2e blocks mirroring Atlas (motion-on
+  guards!). New inline scripts rotate CSP hashes (csp-hash.mjs + public/_headers same commit).
 
 ## Session gotchas (cost real time; read before working)
 - scripts/serve-headers.mjs caches dist/_headers AT STARTUP: restart it after any rebuild that
@@ -134,5 +151,8 @@ vitest + build + dev-browser screenshot each design; trivy if deps change. Never
 `npm run preview -- --port 4340` then open http://localhost:4340. serve-headers.mjs honors a PORT env.
 
 ## To resume in a new session
-Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Atlas
-(Phase 2) next." Then it has everything it needs.
+Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Signal
+(Phase 3) next." Then it has everything it needs.
+
+Ready designs so far: Vitrine (`/`), Atlas (`/atlas`). Build order remaining: Signal, then
+Storefront, Practice, Raw.
