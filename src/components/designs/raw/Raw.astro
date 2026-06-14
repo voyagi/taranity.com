@@ -1,0 +1,46 @@
+---
+/**
+ * Raw — brutalist, monospace, raw-grid design for art, music, fashion-forward
+ * labels, design studios, and dev tools. JetBrains Mono for everything, hard
+ * 0-radius edges, exposed structure, and a chromatic-aberration glitch on the
+ * display type; content sits in hard-bordered boxes above a CSS atmosphere of a
+ * graph-paper grid, CRT scanlines, and faint cyan/magenta blooms. One
+ * self-contained page experience; SiteLayout provides head/meta and the
+ * floating switcher.
+ *
+ * The server HTML is complete and visible without JS: the atmosphere is pure
+ * CSS, and motion (Lenis scroll + GSAP reveals, src/lib/raw-motion.ts) is
+ * strictly additive. Dual-mode (designs.ts modes: ['dark', 'light']); tokens
+ * follow data-mode.
+ */
+import './raw.css';
+import RawHeader from './RawHeader.astro';
+import RawHero from './RawHero.astro';
+import RawManifesto from './RawManifesto.astro';
+import RawCrafts from './RawCrafts.astro';
+import RawMethod from './RawMethod.astro';
+import RawStudio from './RawStudio.astro';
+import RawContact from './RawContact.astro';
+import RawFooter from './RawFooter.astro';
+---
+
+<div class="raw" data-raw>
+  <!-- Fixed CSS atmosphere (graph grid, scanlines, blooms): always present, and
+       the complete backdrop for reduced motion or no JS. -->
+  <div class="r-field" aria-hidden="true"><i></i><i></i><i></i></div>
+  <!-- Scroll progress: replaces the native scrollbar while Lenis drives. -->
+  <span class="r-progress" data-r-progress aria-hidden="true"></span>
+
+  <RawHeader />
+  <RawHero />
+  <RawManifesto />
+  <RawCrafts />
+  <RawMethod />
+  <RawStudio />
+  <RawContact />
+  <RawFooter />
+</div>
+
+<script>
+  import '../../../lib/raw-motion';
+</script>

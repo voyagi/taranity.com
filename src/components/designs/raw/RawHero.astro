@@ -1,0 +1,225 @@
+---
+/**
+ * Opening: an outcome-led, brutalist headline with a chromatic glitch, a single
+ * primary action, and a monospace "studio spec" panel in place of any client
+ * work (hard rule 7: no portfolio). The panel is a decorative system readout of
+ * how the studio operates, not a showcase. Leads with the outcome (work people
+ * cannot ignore), never the tooling. Server-rendered and fully visible without
+ * JS; motion only adds the entrance.
+ */
+const spec: [string, string][] = [
+  ['type', 'digital studio'],
+  ['output', 'web / apps / systems'],
+  ['range', 'worldwide'],
+  ['contact', 'written, < 1 day'],
+  ['status', 'open for work'],
+];
+---
+
+<section class="r-hero">
+  <div class="r-hero-copy">
+    <p class="r-label r-hero-kicker" data-r-hero-fade>Digital studio / worldwide</p>
+
+    <h1 class="r-hero-title r-display r-glitch">
+      <span class="r-mask"><span class="r-mask-inner">Make it</span></span>
+      <span class="r-mask"><span class="r-mask-inner">unmissable.</span></span>
+    </h1>
+
+    <p class="r-hero-sub" data-r-hero-fade>
+      Websites, apps, and the systems behind them, built with edge and shipped
+      fast. For studios, labels, and makers who refuse to look like everyone
+      else.
+    </p>
+
+    <div class="r-hero-actions" data-r-hero-fade>
+      <a class="r-cta r-cta-primary" href="#contact">
+        Start a project
+        <span class="r-cta-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a class="r-cta r-cta-ghost" href="#method">See how we work</a>
+    </div>
+
+    <ul class="r-hero-assure" data-r-hero-fade>
+      <li>Fixed scope</li>
+      <li>Written updates</li>
+      <li>We stay after launch</li>
+    </ul>
+  </div>
+
+  <!-- Studio spec: a decorative monospace readout of how we operate. Never
+       client work; everything here is restated in real content below. -->
+  <div class="r-hero-panel r-card-surface" data-r-hero-fade aria-hidden="true">
+    <div class="r-panel-top">
+      <span class="r-panel-tag">studio.spec</span>
+      <span class="r-panel-dots">
+        <i></i><i></i><i></i>
+      </span>
+    </div>
+    <dl class="r-spec">
+      {
+        spec.map(([k, v]) => (
+          <div class="r-spec-row">
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="r-panel-foot"><span class="r-panel-prompt">&gt;</span> ready<span class="r-cursor"></span></p>
+  </div>
+
+  <span class="r-rule r-hero-rule" data-r-hero-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .r-hero {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    min-height: calc(100svh - 96px);
+    padding: clamp(2.6rem, 7vh, 5rem) var(--r-pad) clamp(2rem, 5vh, 3.5rem);
+  }
+  .r-hero-kicker {
+    margin-bottom: 1.6rem;
+  }
+  .r-hero-title {
+    font-size: clamp(2.9rem, 9vw, 6.4rem);
+    line-height: 0.96;
+  }
+  .r-hero-sub {
+    max-width: 46ch;
+    margin-top: clamp(1.4rem, 3vh, 2rem);
+    font-size: clamp(0.98rem, 1.3vw, 1.12rem);
+    line-height: 1.68;
+    color: var(--r-muted);
+  }
+  .r-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: clamp(1.8rem, 4vh, 2.6rem);
+  }
+  .r-hero-assure {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.4rem;
+    margin: clamp(1.6rem, 3.5vh, 2.2rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .r-hero-assure li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-family: var(--r-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--r-muted);
+  }
+  /* a hard square tick, not a dot — brutalist */
+  .r-hero-assure li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.4em;
+    width: 8px;
+    height: 8px;
+    background: var(--r-cy);
+  }
+
+  /* ---- the studio-spec panel ---- */
+  .r-hero-panel {
+    --r-card-accent: var(--r-cy);
+    padding: 0;
+    overflow: hidden;
+  }
+  .r-panel-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1rem;
+    border-bottom: 1.5px solid var(--r-line-strong);
+    font-family: var(--r-mono);
+  }
+  .r-panel-tag {
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--r-ink);
+  }
+  .r-panel-dots {
+    display: inline-flex;
+    gap: 0.4rem;
+  }
+  .r-panel-dots i {
+    width: 9px;
+    height: 9px;
+    border: 1.5px solid var(--r-line-strong);
+  }
+  .r-panel-dots i:first-child {
+    background: var(--r-cy);
+    border-color: var(--r-cy);
+  }
+  .r-panel-dots i:nth-child(2) {
+    background: var(--r-mg);
+    border-color: var(--r-mg);
+  }
+  .r-spec {
+    margin: 0;
+    padding: 0.4rem 0;
+    font-family: var(--r-mono);
+    font-size: 0.8rem;
+  }
+  .r-spec-row {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--r-line);
+  }
+  .r-spec-row:last-child {
+    border-bottom: 0;
+  }
+  .r-spec dt {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--r-muted);
+  }
+  .r-spec dd {
+    margin: 0;
+    color: var(--r-ink);
+  }
+  .r-panel-foot {
+    margin: 0;
+    padding: 0.7rem 1rem;
+    border-top: 1.5px solid var(--r-line-strong);
+    font-family: var(--r-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--r-ink);
+  }
+  .r-panel-prompt {
+    color: var(--r-cy);
+    font-weight: 700;
+    margin-right: 0.4rem;
+  }
+
+  @media (max-width: 900px) {
+    .r-hero {
+      grid-template-columns: 1fr;
+      align-items: start;
+      min-height: 0;
+    }
+    .r-hero-panel {
+      order: 2;
+      max-width: 440px;
+    }
+  }
+  @media (max-width: 560px) {
+    .r-hero-title {
+      font-size: clamp(2.7rem, 15vw, 3.6rem);
+    }
+  }
+</style>

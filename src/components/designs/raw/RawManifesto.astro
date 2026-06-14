@@ -1,0 +1,53 @@
+---
+/**
+ * The idea behind the studio, stated plainly and bluntly. Leads with the outcome
+ * (work that stands out and lasts), never the tooling. The brutalist motif
+ * carries it: sameness is the risk these clients are paying to avoid.
+ */
+---
+
+<section class="r-section r-manifesto">
+  <p class="r-label" data-r-fade>01 / The idea</p>
+
+  <h2 class="r-statement r-display r-glitch" data-r-lines>
+    <span class="r-mask"><span class="r-mask-inner">Default is</span></span>
+    <span class="r-mask"><span class="r-mask-inner">the enemy.</span></span>
+  </h2>
+
+  <div class="r-manifesto-cols">
+    <p data-r-fade>
+      Most of the web looks the same because it is built the same: templates,
+      stock parts, safe defaults. For a studio, a label, or a tool with a point
+      of view, that sameness is the real risk. Blending in is how good work goes
+      unseen.
+    </p>
+    <p data-r-fade>
+      We build from the structure out. Raw grids, honest type, motion with
+      intent. Fast and accessible by default, unmistakably yours, made to be
+      remembered and to hold up under real traffic long after launch.
+    </p>
+  </div>
+
+  <span class="r-rule" data-r-rule aria-hidden="true"></span>
+</section>
+
+<style>
+  .r-manifesto-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.6rem, 4vw, 4rem);
+    max-width: 920px;
+    margin-bottom: clamp(2.6rem, 7vh, 4rem);
+  }
+  .r-manifesto-cols p {
+    max-width: 46ch;
+    font-size: clamp(0.96rem, 1.2vw, 1.08rem);
+    line-height: 1.72;
+    color: var(--r-muted);
+  }
+  @media (max-width: 720px) {
+    .r-manifesto-cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

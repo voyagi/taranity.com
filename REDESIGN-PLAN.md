@@ -159,13 +159,40 @@ rebuilding the front end from scratch as a showcase of several genuinely differe
     contact statement after anchor glide, 6 card wipes, zero console errors). Light verified by
     screenshot.
 
-- NEXT: PHASE 6 (Raw). Brutalist, monospace, raw grids, glitch, for art, music, fashion
-  forward, design studios, dev tools. Route /raw, dark + light (modes: ['dark', 'light']).
-  Reuse SiteLayout + the same motion teardown contract (gate on a [data-raw] root). Content =
-  crafts + method (rule 7: NO portfolio), AI never leads, no em dashes, dead-simple written
-  contact. Flip raw ready=true in designs.ts same PR. Add unit invariants + e2e blocks
-  mirroring the prior designs (motion-on guards!). New inline scripts rotate CSP hashes
-  (csp-hash.mjs + public/_headers same commit). Raw is the LAST design.
+- PHASE 6 (Raw) COMPLETE, merged to main: brutalist, monospace, raw-grid design for art,
+  music, fashion-forward labels, design studios, and dev tools at /raw, dark + light. The
+  LAST design; all six are now shipped.
+  - src/components/designs/raw/: Raw.astro shell ([data-raw] root, fixed CSS .r-field of a
+    graph-paper grid + CRT scanlines + faint cyan/magenta corner blooms, top .r-progress
+    scroll bar) + Header (hard-edged static status strip, sticky nav with a blinking-cursor
+    wordmark and a bracketed "Start a project" CTA) / Hero (outcome-led "Make it unmissable."
+    with a chromatic-aberration glitch, dual CTA, a decorative monospace "studio.spec" panel
+    in place of a product shot or client work, rule 7) / Manifesto ("Default is the enemy.") /
+    Crafts (six offerings as hard-bordered cards with bracketed indices, Websites first,
+    intelligent systems LAST) / Method (Init/Draft/Build/Ship with outlined numerals; Ship is
+    the stay-after-launch step) / Studio / Contact (hardened Web3Forms clone, r-* ids) /
+    Footer. JetBrains Mono for EVERYTHING (700 display + 400 body, both preloaded),
+    border-radius 0, ink-monochrome type over a true-black canvas (dark) or concrete paper
+    (light); cyan (#2ff5e4 dark) + magenta (#ff3d9a dark) are reserved for non-text structure
+    only (the field, glitch ghosts, progress bar, accent bars, ticks) so type always clears AA.
+  - Dual-mode (Signal pattern, NOT pinned): tokens on .raw follow data-mode with a no-JS
+    prefers-color-scheme dark duplicate (pinned identical by the unit test); color-scheme is
+    NOT pinned (site.css drives native widgets via data-mode). The glitch is pure CSS
+    (.r-glitch static split text-shadow on .r-display, survives reduced motion). No three.js
+    (Lenis+GSAP only). themeLight #efeee8 / themeDark #0a0a0b differ so the chrome matches.
+  - src/lib/raw-motion.ts: practice-motion teardown contract copied exactly (Lenis 0.9 for a
+    snappier brutalist scroll, v-lenis, lagSmoothing restore, astro:before-swap teardown,
+    anchor glide); r-* data-attr vocabulary (data-r-fade/-hero-fade/-rule/-hero-rule/-lines/
+    -card/-progress). Masked line reveals, hairline draws, left-to-right card wipes.
+  - raw ready=true in designs.ts; switcher live at 6 designs (ALL ready). CSP: RawContact's
+    inline form script added hash 'sha256-3XxpUi0EVL8Tcq7mpEj9HXVVUxirpcFFoD7YrK+2Icg=' to
+    public/_headers (8 total).
+  - Tests: tests/unit/raw-css.test.ts (containment invariant, dual-mode dark palette match,
+    CSS<->motion gate sync incl. card clip string AND the yPercent/y co-ownership, field layer
+    count, registry wiring; dual-mode). e2e 157/157: /raw audits + axe, overflow at 4
+    viewports, switcher lists all 6, mode toggle PRESENT (dual-mode), form validation+success,
+    motion-on guards (switcher swap practice->raw, hero masks, contact statement after anchor
+    glide, 6 card wipes, zero console errors). Dark + light verified by screenshot.
 
 ## Session gotchas (cost real time; read before working)
 - scripts/serve-headers.mjs caches dist/_headers AT STARTUP: restart it after any rebuild that
@@ -243,6 +270,7 @@ vitest + build + dev-browser screenshot each design; trivy if deps change. Never
 Say: "Continue the Taranity redesign. Read REDESIGN-PLAN.md, we are on main, build Raw
 (Phase 6, the last design) next." Then it has everything it needs.
 
-Ready designs so far: Vitrine (`/`), Atlas (`/atlas`), Signal (`/signal`), Storefront (`/storefront`),
-Practice (`/practice`).
-Build order remaining: Raw (the last design).
+Ready designs: Vitrine (`/`), Atlas (`/atlas`), Signal (`/signal`), Storefront (`/storefront`),
+Practice (`/practice`), Raw (`/raw`). ALL SIX COMPLETE. The showcase is done.
+Build order remaining: none. The only outstanding step is the manual production deploy
+(`npm run deploy`, human-gated): taranity.com still serves the OLD site until the user deploys.

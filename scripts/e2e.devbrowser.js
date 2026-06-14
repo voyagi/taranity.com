@@ -64,6 +64,7 @@ const pages200 = [
   ['/signal', 'signal'],
   ['/storefront', 'storefront'],
   ['/practice', 'practice'],
+  ['/raw', 'raw'],
 ];
 
 async function runAxe(label) {
@@ -208,7 +209,7 @@ const viewports = [
 ];
 for (const [w, h, name] of viewports) {
   await page.setViewportSize({ width: w, height: h });
-  for (const route of ['/', '/privacy', '/atlas', '/signal', '/storefront', '/practice']) {
+  for (const route of ['/', '/privacy', '/atlas', '/signal', '/storefront', '/practice', '/raw']) {
     await page.goto(BASE + route, { waitUntil: 'load' });
     await settle(250);
     const o = await page.evaluate(() => ({
@@ -267,7 +268,7 @@ rec('atlas: renders design=atlas', (await dattr('data-design')) === 'atlas', awa
 const switcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
 rec(
   'atlas: switcher lists the ready designs',
-  ['/', '/atlas', '/signal', '/storefront', '/practice'].every((h) => switcherLinks.includes(h)),
+  ['/', '/atlas', '/signal', '/storefront', '/practice', '/raw'].every((h) => switcherLinks.includes(h)),
   JSON.stringify(switcherLinks),
 );
 const atlasToggle = await page.$('[data-mode-toggle]');
@@ -302,8 +303,8 @@ await settle(400);
 rec('signal: renders design=signal', (await dattr('data-design')) === 'signal', await dattr('data-design'));
 const sSwitcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
 rec(
-  'signal: switcher lists all five ready designs',
-  ['/', '/atlas', '/signal', '/storefront', '/practice'].every((h) => sSwitcherLinks.includes(h)),
+  'signal: switcher lists all six ready designs',
+  ['/', '/atlas', '/signal', '/storefront', '/practice', '/raw'].every((h) => sSwitcherLinks.includes(h)),
   JSON.stringify(sSwitcherLinks),
 );
 const signalToggle = await page.$('[data-mode-toggle]');
@@ -335,8 +336,8 @@ await settle(400);
 rec('storefront: renders design=storefront', (await dattr('data-design')) === 'storefront', await dattr('data-design'));
 const fSwitcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
 rec(
-  'storefront: switcher lists all five ready designs',
-  ['/', '/atlas', '/signal', '/storefront', '/practice'].every((h) => fSwitcherLinks.includes(h)),
+  'storefront: switcher lists all six ready designs',
+  ['/', '/atlas', '/signal', '/storefront', '/practice', '/raw'].every((h) => fSwitcherLinks.includes(h)),
   JSON.stringify(fSwitcherLinks),
 );
 const storefrontToggle = await page.$('[data-mode-toggle]');
@@ -366,8 +367,8 @@ await settle(400);
 rec('practice: renders design=practice', (await dattr('data-design')) === 'practice', await dattr('data-design'));
 const pSwitcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
 rec(
-  'practice: switcher lists all five ready designs',
-  ['/', '/atlas', '/signal', '/storefront', '/practice'].every((h) => pSwitcherLinks.includes(h)),
+  'practice: switcher lists all six ready designs',
+  ['/', '/atlas', '/signal', '/storefront', '/practice', '/raw'].every((h) => pSwitcherLinks.includes(h)),
   JSON.stringify(pSwitcherLinks),
 );
 const practiceToggle = await page.$('[data-mode-toggle]');
@@ -388,6 +389,39 @@ const pSuccessVisible = await page.evaluate(() => {
   return el ? !el.hidden : false;
 });
 rec('practice contact: valid submit shows success panel (demo mode)', pSuccessVisible);
+
+// ---- Raw (sixth design): registry exposure, dual-mode controls, form ----
+// Still under reduced motion: these are content checks; the reveal motion has
+// its own block below.
+await page.goto(BASE + '/raw', { waitUntil: 'load' });
+await settle(400);
+rec('raw: renders design=raw', (await dattr('data-design')) === 'raw', await dattr('data-design'));
+const rSwitcherLinks = await page.$$eval('.ds-design', (as) => as.map((a) => a.getAttribute('href')));
+rec(
+  'raw: switcher lists all six ready designs',
+  ['/', '/atlas', '/signal', '/storefront', '/practice', '/raw'].every((h) => rSwitcherLinks.includes(h)),
+  JSON.stringify(rSwitcherLinks),
+);
+const rawToggle = await page.$('[data-mode-toggle]');
+rec('raw: dual-mode design offers the mode toggle', rawToggle !== null);
+const rModeResolved = await dattr('data-mode');
+rec('raw: mode resolved (light or dark)', rModeResolved === 'light' || rModeResolved === 'dark', String(rModeResolved));
+
+// Raw contact form: same hardened flow as the other designs, Raw selectors.
+await page.click('.r-submit');
+await settle(300);
+const rEmptyErrs = await page.$$eval('[data-r-err]', (es) => es.map((e) => e.textContent.trim()).filter(Boolean));
+rec('raw contact: empty submit shows inline errors', rEmptyErrs.length >= 2, JSON.stringify(rEmptyErrs));
+await page.fill('#r-name', 'Jane Tester');
+await page.fill('#r-email', 'jane@example.com');
+await page.fill('#r-message', 'We run a record label and need a site that looks like nothing else.');
+await page.click('.r-submit');
+await settle(1300); // demo-mode success has a ~700ms simulated delay
+const rSuccessVisible = await page.evaluate(() => {
+  const el = document.querySelector('[data-r-form-success]');
+  return el ? !el.hidden : false;
+});
+rec('raw contact: valid submit shows success panel (demo mode)', rSuccessVisible);
 
 // evidence: the privacy subpage (desktop, motion on) + a mobile home
 try {
@@ -748,9 +782,75 @@ await page.goto(BASE + '/practice', { waitUntil: 'load' });
 await settle(1200); // hero entrance settle
 const practicePath = await saveScreenshot(await page.screenshot(), 'e2e-practice-desktop.png');
 
+// ---- Raw motion ON: switcher swap, reveals, card wipes (no WebGL) ----
+// Arrive the way a visitor does: through the floating switcher and a
+// View-Transition swap from Practice. This exercises the practice→raw teardown
+// for real (Practice's Lenis torn down, Raw's Lenis set up, no double scroll
+// driver).
+consoleErrors = [];
+pageErrors = [];
+failedResponses = [];
+failedRequests = [];
+await page.setViewportSize({ width: 1440, height: 900 });
+await page.goto(BASE + '/practice', { waitUntil: 'load' });
+await settle(400);
+await page.click('.ds-design[href="/raw"]');
+for (let i = 0; i < 25 && !/\/raw/.test(page.url()); i++) await settle(200); // await the VT swap
+await settle(300);
+rec(
+  'raw motion: switcher swap lands on design=raw',
+  (await dattr('data-design')) === 'raw' && /\/raw/.test(page.url()),
+  `${await dattr('data-design')} @ ${page.url()}`,
+);
+
+const rHeroCount = await page.evaluate(() => document.querySelectorAll('.r-hero .r-mask-inner').length);
+rec('raw motion: hero has its two masked lines', rHeroCount === 2, 'count=' + rHeroCount);
+const rHeroOffsets = await awaitReveal('.r-hero .r-mask-inner', 6000); // entrance is ~1.6s
+rec('raw motion: hero title lines rise fully into view', revealed(rHeroOffsets), 'offsets=' + JSON.stringify(rHeroOffsets));
+
+// The contact statement reveals after the in-page anchor glide (through the
+// design's own Lenis). The glide passes every craft card, so their wipe reveals
+// must have fired by the time we arrive.
+await page.click('.r-nav a[href="#contact"]');
+const rStmtCount = await page.evaluate(() => document.querySelectorAll('.r-contact [data-r-lines] .r-mask-inner').length);
+rec('raw motion: contact statement has its two masked lines', rStmtCount === 2, 'count=' + rStmtCount);
+const rStmtOffsets = await awaitReveal('.r-contact [data-r-lines] .r-mask-inner', 8000); // 1.3s glide + 0.9s reveal
+rec('raw motion: contact statement lines rise fully into view', revealed(rStmtOffsets), 'offsets=' + JSON.stringify(rStmtOffsets));
+
+const readRawCardClips = () =>
+  page.evaluate(() =>
+    [...document.querySelectorAll('[data-r-card]')].map((el) => getComputedStyle(el).clipPath),
+  );
+const rCardsOpen = (clips) => clips.length === 6 && clips.every((c) => !c.includes('100%'));
+let rCardClips = await readRawCardClips();
+for (const start = Date.now(); !rCardsOpen(rCardClips) && Date.now() - start < 4000; ) {
+  await settle(250);
+  rCardClips = await readRawCardClips();
+}
+rec('raw motion: cards wiped fully open', rCardsOpen(rCardClips), JSON.stringify(rCardClips));
+
+// The whole journey (swap, reveals) must stay error-free.
+const rawFirstParty = [
+  ...failedResponses.filter((f) => !isBenign(f.url)),
+  ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
+];
+const rawRealConsole = consoleErrors.filter(
+  (t) => !(/Failed to load resource/i.test(t) && rawFirstParty.length === 0),
+);
+rec(
+  'raw motion: no first-party console/page errors across the journey',
+  rawRealConsole.length === 0 && pageErrors.length === 0 && rawFirstParty.length === 0,
+  [...rawRealConsole, ...pageErrors].join(' | ').slice(0, 240) || 'clean',
+);
+
+// evidence: the raw opening (desktop, motion on)
+await page.goto(BASE + '/raw', { waitUntil: 'load' });
+await settle(1200); // hero entrance settle
+const rawPath = await saveScreenshot(await page.screenshot(), 'e2e-raw-desktop.png');
+
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
-console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath, atlasPath, signalPath, storefrontPath, practicePath] }));
+console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath, atlasPath, signalPath, storefrontPath, practicePath, rawPath] }));
 if (failed.length) {
   console.log('FAILURES:');
   failed.forEach((f) => console.log('  - ' + f.name + ' :: ' + f.detail));
