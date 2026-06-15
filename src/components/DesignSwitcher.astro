@@ -10,11 +10,11 @@
  *   1. a "Designs" label that frames the pills as design choices, not nav;
  *   2. the current design's pill is marked active (aria-current, build-time per
  *      route), so the others read as alternatives to try;
- *   3. a dismissible nudge (revealed by design-theme.ts and re-offered across
- *      navigations until the visitor picks a design or dismisses it) that
- *      invites switching. Its copy is count-driven so it stays correct as
- *      designs are added or removed.
- * The nudge/label add no inline script, so the shared CSP hash is untouched.
+ *   3. a permanent floating invite ("Same site, N designs. Take your pick.")
+ *      that points at the pills. Its copy is count-driven so it stays correct
+ *      as designs are added or removed.
+ * The invite/label are static markup (no inline script), so the shared CSP hash
+ * is untouched.
  *
  * Single-mode designs (Atlas is dark-only) hide the mode toggle: a control
  * that visibly does nothing reads as broken. The stored preference still
@@ -35,12 +35,9 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
 <div class="design-switcher" data-design-switcher>
   {
     multi && (
-      <div class="ds-nudge" data-design-nudge hidden>
+      <div class="ds-nudge" data-design-nudge>
         <span class="ds-nudge-arrow" aria-hidden="true">↓</span>
         <span class="ds-nudge-text">{`Same site, ${items.length} designs. Take your pick.`}</span>
-        <button type="button" class="ds-nudge-x" data-nudge-dismiss aria-label="Dismiss">
-          <span aria-hidden="true">×</span>
-        </button>
       </div>
     )
   }
@@ -156,9 +153,9 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
     background: color-mix(in srgb, CanvasText 16%, transparent);
   }
 
-  /* First-visit invite, revealed once by design-theme.ts. Floats just above the
-     pill (out of flow, so it never changes how the pill wraps) and is near-opaque
-     for readable text over any design. */
+  /* Permanent floating invite. Floats just above the pill (out of flow, so it
+     never changes how the pill wraps) and is near-opaque for readable text over
+     any design. */
   .ds-nudge {
     position: absolute;
     right: 0;
@@ -167,7 +164,7 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
     align-items: center;
     gap: 0.5rem;
     max-width: min(20rem, calc(100vw - 2rem));
-    padding: 0.5rem 0.55rem 0.5rem 0.7rem;
+    padding: 0.5rem 0.7rem;
     border-radius: 0.85rem;
     background: color-mix(in srgb, Canvas 94%, transparent);
     border: 1px solid color-mix(in srgb, CanvasText 22%, transparent);
@@ -177,12 +174,6 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
     font-size: 0.8rem;
     line-height: 1.3;
   }
-  /* The shown state IS the default (no transform/opacity gate), so reduced-motion
-     visitors see it plainly; specificity beats the UA `[hidden]` rule, which a
-     bare `.ds-nudge { display: flex }` would otherwise override. */
-  .ds-nudge[hidden] {
-    display: none;
-  }
   .ds-nudge-arrow {
     font-size: 1rem;
     opacity: 0.65;
@@ -190,50 +181,7 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
   .ds-nudge-text {
     flex: 1 1 auto;
   }
-  .ds-nudge-x {
-    flex: none;
-    display: inline-grid;
-    place-items: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 0;
-    border-radius: 999px;
-    cursor: pointer;
-    color: inherit;
-    font-size: 1.05rem;
-    line-height: 1;
-    background: color-mix(in srgb, CanvasText 12%, transparent);
-  }
-  .ds-nudge-x:hover {
-    background: color-mix(in srgb, CanvasText 22%, transparent);
-  }
   @media (prefers-reduced-motion: no-preference) {
     .ds-design { transition: opacity 0.2s, background-color 0.2s; }
-    .ds-nudge {
-      animation: ds-nudge-in 0.45s ease both;
-    }
-    /* a few gentle bobs draw the eye toward the pills, then stop */
-    .ds-nudge-arrow {
-      animation: ds-nudge-bob 1.6s ease-in-out 3;
-    }
-    @keyframes ds-nudge-in {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: none;
-      }
-    }
-    @keyframes ds-nudge-bob {
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(3px);
-      }
-    }
   }
 </style>
