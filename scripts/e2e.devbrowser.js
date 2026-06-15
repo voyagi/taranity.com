@@ -366,6 +366,7 @@ for (const [vw, vh, route] of [
   [1280, 800, '/raw'],
   [390, 844, '/'],
   [390, 844, '/signal/privacy'],
+  [320, 720, '/signal/privacy'],
 ]) {
   await page.setViewportSize({ width: vw, height: vh });
   await page.goto(BASE + route, { waitUntil: 'load' });
