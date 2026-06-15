@@ -18,8 +18,11 @@ interface Plate {
   includes: string[];
   /** Engraved etching depicting the craft, drawn over the gradient field. */
   motif: 'page' | 'tag' | 'panels' | 'orbits' | 'compass' | 'constellation';
-  /** Gradient stops: a/b/e highlights and a conic sweep over a c→d base. */
+  /** Gradient stops: a/b/e highlights and a conic sweep over a c→d base.
+      `art` is the rich dark-mode plate; `artLight` is a pale tint of the same
+      hue so the plates read as light gallery prints in light mode. */
   art: { a: string; b: string; c: string; d: string; e: string };
+  artLight: { a: string; b: string; c: string; d: string; e: string };
 }
 
 const plates: Plate[] = [
@@ -31,6 +34,7 @@ const plates: Plate[] = [
     includes: ['Design direction', 'Build and launch', 'Speed, SEO, accessibility'],
     motif: 'page',
     art: { a: '#4a3a80', b: '#2d2452', c: '#1a1430', d: '#2a2046', e: '#6e54b4' },
+    artLight: { a: '#c9b6ec', b: '#d9ccf1', c: '#f2edfa', d: '#e7def5', e: '#bda7e8' },
   },
   {
     numeral: 'II',
@@ -40,6 +44,7 @@ const plates: Plate[] = [
     includes: ['Store design', 'Build and payments', 'Conversion care'],
     motif: 'tag',
     art: { a: '#84304e', b: '#4e1f30', c: '#271018', d: '#46202e', e: '#b04a66' },
+    artLight: { a: '#ecbecc', b: '#f2d8de', c: '#fbeef1', d: '#f4dee4', e: '#e2a4b3' },
   },
   {
     numeral: 'III',
@@ -49,6 +54,7 @@ const plates: Plate[] = [
     includes: ['Product design', 'Full-stack build', 'Care after launch'],
     motif: 'panels',
     art: { a: '#3c5a7a', b: '#243447', c: '#131c26', d: '#27384c', e: '#5a82a8' },
+    artLight: { a: '#bdd0e4', b: '#d8e3f0', c: '#eef4fa', d: '#dde8f2', e: '#a6c1dd' },
   },
   {
     numeral: 'IV',
@@ -58,6 +64,7 @@ const plates: Plate[] = [
     includes: ['Process mapping', 'Integrations', 'Monitoring and alerts'],
     motif: 'orbits',
     art: { a: '#7a5a2c', b: '#473522', c: '#241b12', d: '#42301a', e: '#a87c3c' },
+    artLight: { a: '#e7d0a3', b: '#f1e2c8', c: '#faf3e3', d: '#f1e4cd', e: '#dbbe85' },
   },
   {
     numeral: 'V',
@@ -67,6 +74,7 @@ const plates: Plate[] = [
     includes: ['Audits and reviews', 'Technical direction', 'Roadmaps and estimates'],
     motif: 'compass',
     art: { a: '#5a6474', b: '#393f4c', c: '#1b1f26', d: '#333a46', e: '#7e8aa0' },
+    artLight: { a: '#cbd1db', b: '#dde2e9', c: '#f0f2f6', d: '#e1e5eb', e: '#b1bbc8' },
   },
   {
     numeral: 'VI',
@@ -76,6 +84,7 @@ const plates: Plate[] = [
     includes: ['Use-case selection', 'Implementation', 'Evaluation and guardrails'],
     motif: 'constellation',
     art: { a: '#2a6a5e', b: '#1c443c', c: '#102420', d: '#1d4038', e: '#3f947f' },
+    artLight: { a: '#b9dbd2', b: '#d5e9e3', c: '#ecf6f3', d: '#d9eae5', e: '#9ecfc1' },
   },
 ];
 
@@ -161,7 +170,7 @@ const arcRadii = [620, 780, 950, 1130, 1320];
           class="v-plate-art"
           data-v-plate-art
           aria-hidden="true"
-          style={`--pa:${p.art.a};--pb:${p.art.b};--pc:${p.art.c};--pd:${p.art.d};--pe:${p.art.e}`}
+          style={`--pa-d:${p.art.a};--pb-d:${p.art.b};--pc-d:${p.art.c};--pd-d:${p.art.d};--pe-d:${p.art.e};--pa-l:${p.artLight.a};--pb-l:${p.artLight.b};--pc-l:${p.artLight.c};--pd-l:${p.artLight.d};--pe-l:${p.artLight.e}`}
         >
           <div class="v-plate-art-inner" data-v-art-inner>
             <svg class="v-plate-motif" viewBox="0 0 1600 1100" preserveAspectRatio="xMidYMid slice">
@@ -395,7 +404,16 @@ const arcRadii = [620, 780, 950, 1130, 1320];
   /* Oversized inner layer: the parallax travels within it, so edges never
      show. Two highlight radials + an accent radial + a conic sweep give the
      field depth; the etching and sheen ride on top. */
+  /* Plate colours resolve to the light tints by default (light mode) and to the
+     rich dark set when dark mode is active. The per-plate values arrive as inline
+     --p*-l / --p*-d custom properties; :global() keeps the mode ancestor out of
+     Astro's component scoping so the override actually matches .vitrine. */
   .v-plate-art-inner {
+    --pa: var(--pa-l);
+    --pb: var(--pb-l);
+    --pc: var(--pc-l);
+    --pd: var(--pd-l);
+    --pe: var(--pe-l);
     position: absolute;
     inset: -10%;
     background:
@@ -405,6 +423,22 @@ const arcRadii = [620, 780, 950, 1130, 1320];
       conic-gradient(from 200deg at 28% 72%, transparent 0deg, var(--pd) 90deg, transparent 210deg),
       linear-gradient(160deg, var(--pc) 0%, var(--pd) 100%);
     will-change: transform;
+  }
+  :global(:root[data-mode='dark']) .v-plate-art-inner {
+    --pa: var(--pa-d);
+    --pb: var(--pb-d);
+    --pc: var(--pc-d);
+    --pd: var(--pd-d);
+    --pe: var(--pe-d);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-mode])) .v-plate-art-inner {
+      --pa: var(--pa-d);
+      --pb: var(--pb-d);
+      --pc: var(--pc-d);
+      --pd: var(--pd-d);
+      --pe: var(--pe-d);
+    }
   }
   /* A slow beam of light passes over the artwork (parked off-frame under
      reduced motion). Painted after the motif/numeral children, so the light
