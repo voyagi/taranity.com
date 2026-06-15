@@ -5,6 +5,17 @@
  * Neutral and unobtrusive so it sits over any design. Behaviour is in
  * src/lib/design-theme.ts (delegated, View-Transition safe).
  *
+ * Discoverability: the showcase only works if a visitor realises the same site
+ * is rebuilt in several designs. Three cues make that obvious without clutter:
+ *   1. a "Designs" label that frames the pills as design choices, not nav;
+ *   2. the current design's pill is marked active (aria-current, build-time per
+ *      route), so the others read as alternatives to try;
+ *   3. a dismissible nudge (revealed by design-theme.ts and re-offered across
+ *      navigations until the visitor picks a design or dismisses it) that
+ *      invites switching. Its copy is count-driven so it stays correct as
+ *      designs are added or removed.
+ * The nudge/label add no inline script, so the shared CSP hash is untouched.
+ *
  * Single-mode designs (Atlas is dark-only) hide the mode toggle: a control
  * that visibly does nothing reads as broken. The stored preference still
  * applies the moment the visitor switches to a design with both modes.
@@ -23,17 +34,35 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
 
 <div class="design-switcher" data-design-switcher>
   {
+    multi && (
+      <div class="ds-nudge" data-design-nudge hidden>
+        <span class="ds-nudge-arrow" aria-hidden="true">↓</span>
+        <span class="ds-nudge-text">{`Same site, ${items.length} designs. Take your pick.`}</span>
+        <button type="button" class="ds-nudge-x" data-nudge-dismiss aria-label="Dismiss">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+    )
+  }
+  {
     hasModes && (
       <button type="button" class="ds-mode" data-mode-toggle aria-label="Toggle light or dark">
         <span class="ds-mode-dot" aria-hidden="true" />
       </button>
     )
   }
+  {multi && <span class="ds-label" aria-hidden="true">Designs</span>}
   {
     multi && (
       <nav class="ds-designs" aria-label="Choose a design">
         {items.map((d) => (
-          <a class="ds-design" href={d.route} data-design-go={d.id} title={`${d.tagline} for ${d.audience}`}>
+          <a
+            class="ds-design"
+            href={d.route}
+            data-design-go={d.id}
+            aria-current={d.id === design ? 'page' : undefined}
+            title={`${d.tagline} for ${d.audience}`}
+          >
             {d.name}
           </a>
         ))}
@@ -94,6 +123,17 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
     min-width: 0;
     gap: 0.15rem;
   }
+  /* A non-interactive label so the pills read as design choices, not page nav. */
+  .ds-label {
+    align-self: center;
+    padding-left: 0.3rem;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    white-space: nowrap;
+  }
   .ds-design {
     padding: 0.35rem 0.7rem;
     border-radius: 999px;
@@ -101,14 +141,99 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
     letter-spacing: 0.02em;
     color: inherit;
     text-decoration: none;
-    opacity: 0.7;
+    opacity: 0.75;
     white-space: nowrap;
   }
   .ds-design:hover {
     opacity: 1;
     background: color-mix(in srgb, CanvasText 10%, transparent);
   }
+  /* "You are here": the current design is filled and solid, so the rest read as
+     alternatives to try. Set at build time per route (aria-current). */
+  .ds-design[aria-current='page'] {
+    opacity: 1;
+    font-weight: 600;
+    background: color-mix(in srgb, CanvasText 16%, transparent);
+  }
+
+  /* First-visit invite, revealed once by design-theme.ts. Floats just above the
+     pill (out of flow, so it never changes how the pill wraps) and is near-opaque
+     for readable text over any design. */
+  .ds-nudge {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 0.5rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: min(20rem, calc(100vw - 2rem));
+    padding: 0.5rem 0.55rem 0.5rem 0.7rem;
+    border-radius: 0.85rem;
+    background: color-mix(in srgb, Canvas 94%, transparent);
+    border: 1px solid color-mix(in srgb, CanvasText 22%, transparent);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    box-shadow: 0 8px 24px color-mix(in srgb, CanvasText 20%, transparent);
+    font-size: 0.8rem;
+    line-height: 1.3;
+  }
+  /* The shown state IS the default (no transform/opacity gate), so reduced-motion
+     visitors see it plainly; specificity beats the UA `[hidden]` rule, which a
+     bare `.ds-nudge { display: flex }` would otherwise override. */
+  .ds-nudge[hidden] {
+    display: none;
+  }
+  .ds-nudge-arrow {
+    font-size: 1rem;
+    opacity: 0.65;
+  }
+  .ds-nudge-text {
+    flex: 1 1 auto;
+  }
+  .ds-nudge-x {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    color: inherit;
+    font-size: 1.05rem;
+    line-height: 1;
+    background: color-mix(in srgb, CanvasText 12%, transparent);
+  }
+  .ds-nudge-x:hover {
+    background: color-mix(in srgb, CanvasText 22%, transparent);
+  }
   @media (prefers-reduced-motion: no-preference) {
     .ds-design { transition: opacity 0.2s, background-color 0.2s; }
+    .ds-nudge {
+      animation: ds-nudge-in 0.45s ease both;
+    }
+    /* a few gentle bobs draw the eye toward the pills, then stop */
+    .ds-nudge-arrow {
+      animation: ds-nudge-bob 1.6s ease-in-out 3;
+    }
+    @keyframes ds-nudge-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    @keyframes ds-nudge-bob {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(3px);
+      }
+    }
   }
 </style>
