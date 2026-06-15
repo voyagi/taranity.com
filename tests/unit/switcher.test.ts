@@ -47,16 +47,20 @@ describe('DesignSwitcher discoverability cues', () => {
 });
 
 describe('design-theme invite behaviour', () => {
-  it('reveals the invite only once via a persisted flag', () => {
+  it('offers the invite on load and re-offers it after a View-Transition swap', () => {
     expect(theme).toMatch(/const KEY_SEEN = 'taranity-switcher-seen'/);
-    expect(theme).toMatch(/function revealNudgeOnce\(\)/);
-    expect(theme).toMatch(/initDesignTheme\(\)[\s\S]*?revealNudgeOnce\(\)/);
-    // shown-state is recorded immediately (not on dismissal) so it never nags
-    expect(theme).toMatch(/removeAttribute\('hidden'\)[\s\S]*?setItem\(KEY_SEEN, '1'\)/);
+    expect(theme).toMatch(/function revealNudgeIfUnseen\(\)/);
+    expect(theme).toMatch(/initDesignTheme\(\)[\s\S]*?revealNudgeIfUnseen\(\)/);
+    // keeps inviting across navigations until the visitor engages
+    expect(theme).toMatch(/after-swap[\s\S]*?revealNudgeIfUnseen\(\)/);
+  });
+
+  it('persists the seen flag only when hidden, so it never returns once handled', () => {
+    expect(theme).toMatch(/function hideNudge\(\)/);
+    expect(theme).toMatch(/setAttribute\('hidden', ''\)[\s\S]*?setItem\(KEY_SEEN, '1'\)/);
   });
 
   it('hides the invite on dismiss and when a design is chosen', () => {
-    expect(theme).toMatch(/function hideNudge\(\)/);
     expect(theme).toMatch(/data-nudge-dismiss\]'\)\)\s*\{[\s\S]*?hideNudge\(\)/);
     expect(theme).toMatch(/data-design-go\]'\)[\s\S]*?hideNudge\(\)/);
   });

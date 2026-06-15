@@ -55,18 +55,25 @@ function chooseMode(mode: 'light' | 'dark') {
   applyMode(mode);
 }
 
+/** Hide the invite and remember it as handled, so it does not return. */
 function hideNudge() {
   document.querySelectorAll('[data-design-nudge]').forEach((n) => n.setAttribute('hidden', ''));
+  try {
+    localStorage.setItem(KEY_SEEN, '1');
+  } catch {
+    /* not fatal: the invite simply re-offers after the next navigation */
+  }
 }
 
 /**
- * Reveal the "try another design" invite, but only on a visitor's first visit.
- * The flag is set the moment it is shown (not on dismissal), so a single missed
- * glance does not nag on every reload; the always-on label and active-state pill
- * carry the affordance after that. Storage-blocked (private mode) visitors just
- * see it each load, which is harmless.
+ * Offer the "try another design" invite until the visitor engages with the
+ * switcher. It is revealed on the first load and re-checked after each
+ * View-Transition swap, so it keeps inviting across navigations and subpages;
+ * the flag is set only when the visitor dismisses it or picks a design
+ * (hideNudge), after which it never returns. Storage-blocked (private mode)
+ * visitors see it re-offer after each navigation, which is harmless.
  */
-function revealNudgeOnce() {
+function revealNudgeIfUnseen() {
   const nudge = document.querySelector('[data-design-nudge]');
   if (!nudge) return;
   // No initializer: both branches assign before use, so `= false` would trip
@@ -77,23 +84,21 @@ function revealNudgeOnce() {
   } catch {
     seen = false;
   }
-  if (seen) return;
-  nudge.removeAttribute('hidden');
-  try {
-    localStorage.setItem(KEY_SEEN, '1');
-  } catch {
-    /* not fatal: it simply reappears next load when storage is unavailable */
-  }
+  if (!seen) nudge.removeAttribute('hidden');
 }
 
 export function initDesignTheme() {
   if (bound) return;
   bound = true;
 
-  revealNudgeOnce();
+  revealNudgeIfUnseen();
 
-  // Re-apply after a View-Transition swap (the swapped-in HTML has the build-time attr).
-  document.addEventListener('astro:after-swap', () => applyMode(effectiveMode()));
+  // Re-apply after a View-Transition swap (the swapped-in HTML carries the
+  // build-time attrs) and re-offer the invite until the visitor has engaged.
+  document.addEventListener('astro:after-swap', () => {
+    applyMode(effectiveMode());
+    revealNudgeIfUnseen();
+  });
 
   // Follow the system while the visitor has made no explicit choice.
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {

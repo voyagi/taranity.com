@@ -276,7 +276,7 @@ const inviteText = await page.evaluate(() => {
 });
 rec(
   'switcher: invite copy is count-driven and em-dash-free',
-  /Same site, 6 designs\. Take your pick\./.test(inviteText) && !inviteText.includes('—'),
+  /Same site, \d+ designs\. Take your pick\./.test(inviteText) && !inviteText.includes('—'),
   inviteText,
 );
 const hasLabel = (await page.$('.ds-label')) !== null;
