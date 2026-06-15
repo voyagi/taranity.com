@@ -24,7 +24,7 @@
   --v-error: #9c3322;
   --v-stars: 0; /* the night sky belongs to dark mode */
   --v-paper: 0.9; /* and the sunlit paper atmosphere to light mode */
-  --v-plate-ink: #f1ebdf; /* on the art plates, which stay dark in both modes */
+  --v-plate-ink: #1a1712; /* dark ink for the light-mode plates; flips light in dark */
   --v-serif: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --v-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --v-gutter: clamp(1.25rem, 5vw, 5.5rem);
@@ -53,6 +53,7 @@
   --v-error: #e08870;
   --v-stars: 0.85;
   --v-paper: 0;
+  --v-plate-ink: #f1ebdf;
 }
 /* No-JS fallback: no data-mode attribute, follow the system. */
 @media (prefers-color-scheme: dark) {
@@ -67,6 +68,7 @@
     --v-error: #e08870;
     --v-stars: 0.85;
     --v-paper: 0;
+    --v-plate-ink: #f1ebdf;
   }
 }
 
