@@ -33,6 +33,17 @@ const systemMode = (): 'light' | 'dark' =>
 
 const effectiveMode = (): 'light' | 'dark' => readStoredMode() ?? systemMode();
 
+/**
+ * The sun/moon toggle shows the current mode visually; tell assistive tech the
+ * action it will take, so its purpose is clear without seeing the lit icon.
+ */
+function syncToggleLabel(mode: 'light' | 'dark') {
+  const toggle = document.querySelector('[data-mode-toggle]');
+  if (toggle) {
+    toggle.setAttribute('aria-label', mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+}
+
 function applyMode(mode: 'light' | 'dark') {
   const el = document.documentElement;
   el.setAttribute('data-mode', mode);
@@ -41,6 +52,7 @@ function applyMode(mode: 'light' | 'dark') {
   const color = el.getAttribute(mode === 'dark' ? 'data-theme-dark' : 'data-theme-light');
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta && color) meta.setAttribute('content', color);
+  syncToggleLabel(mode);
   document.dispatchEvent(new CustomEvent('mode:change', { detail: { mode } }));
 }
 
@@ -57,6 +69,9 @@ function chooseMode(mode: 'light' | 'dark') {
 export function initDesignTheme() {
   if (bound) return;
   bound = true;
+
+  // The pre-paint script set data-mode but cannot see the toggle; label it now.
+  syncToggleLabel(effectiveMode());
 
   // Re-apply after a View-Transition swap (the swapped-in HTML has the build-time attr).
   document.addEventListener('astro:after-swap', () => applyMode(effectiveMode()));
