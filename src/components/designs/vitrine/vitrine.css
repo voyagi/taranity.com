@@ -288,7 +288,9 @@ html:not(.v-lenis) .v-progress {
   line-height: 1.02;
   letter-spacing: -0.015em;
 }
-.v-page .sp-kicker {
+/* p.sp-kicker (not just .sp-kicker): the eyebrow is a <p>, and `.v-page p`
+   later in this file would otherwise win on source order and mute its colour. */
+.v-page p.sp-kicker {
   font-size: 0.68rem;
   font-weight: 560;
   letter-spacing: 0.24em;

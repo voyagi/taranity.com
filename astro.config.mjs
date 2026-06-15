@@ -7,7 +7,15 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://taranity.com',
   output: 'static',
-  integrations: [sitemap({ filter: (page) => !page.includes('/og-preview') })],
+  integrations: [
+    sitemap({
+      // Drop the OG preview and the noindex per-design privacy variants
+      // (/<design>/privacy); Vitrine's canonical /privacy stays in the sitemap.
+      filter: (page) =>
+        !page.includes('/og-preview') &&
+        !/\/(atlas|signal|storefront|practice|raw)\/privacy\/?$/.test(page),
+    }),
+  ],
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport',
