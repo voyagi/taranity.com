@@ -289,7 +289,23 @@ rec(
 );
 // evidence: invite + label + active pill, all visible together
 const switcherPath = await saveScreenshot(await page.screenshot(), 'e2e-switcher-invite.png');
-// dismissing hides it, and the choice persists across a reload (shown once)
+// it keeps offering across a client-side (View-Transition) navigation while the
+// visitor has not engaged. The footer privacy link swaps without a full reload
+// (the contact-page link carries data-astro-reload, which would not), so this
+// exercises the astro:after-swap re-offer path a hard goto cannot reach.
+await page.click('a[href="/privacy"]:not([data-astro-reload])');
+for (let i = 0; i < 25 && !/\/privacy/.test(page.url()); i++) await settle(200);
+await settle(300);
+const reOffered = await page.evaluate(() => {
+  const n = document.querySelector('[data-design-nudge]');
+  return n ? !n.hidden : false;
+});
+rec(
+  'switcher: invite re-offers across a View-Transition swap (not yet engaged)',
+  reOffered && /\/privacy/.test(page.url()),
+  page.url(),
+);
+// engaging (dismiss) hides it, and the choice then persists across a reload
 await page.click('[data-nudge-dismiss]');
 await settle(150);
 const afterDismiss = await page.evaluate(() => {
