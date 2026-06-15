@@ -1,0 +1,23 @@
+---
+/**
+ * Raw subpage shell (privacy): the privacy content inside the full Raw
+ * experience — the real (subpage-aware) header with its status strip, the Raw
+ * brutalist monospace palette/type, and the Raw footer. Raw has no single accent
+ * colour, so ink doubles as --sp-accent to keep the article monochrome.
+ */
+import './raw.css';
+import '../../../styles/subpage.css';
+import RawHeader from './RawHeader.astro';
+import RawFooter from './RawFooter.astro';
+---
+
+<div
+  class="raw sp-shell"
+  style="--sp-accent: var(--r-ink); --sp-line: var(--r-line); --sp-muted: var(--r-muted); --sp-display: var(--r-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
+>
+  <RawHeader subpage />
+  <div class="sp-main">
+    <div class="subpage-body"><slot /></div>
+  </div>
+  <RawFooter />
+</div>

@@ -1,0 +1,23 @@
+---
+/**
+ * Signal subpage shell (privacy): the privacy content inside the full Signal
+ * experience — the real header (subpage-aware: its section links point back to
+ * the Signal home), the Signal palette/type, and the Signal footer. Signal's
+ * tokens are mapped onto the shared --sp-* bridge variables for the article.
+ */
+import './signal.css';
+import '../../../styles/subpage.css';
+import SignalHeader from './SignalHeader.astro';
+import SignalFooter from './SignalFooter.astro';
+---
+
+<div
+  class="signal sp-shell"
+  style="--sp-accent: var(--s-accent); --sp-line: var(--s-line); --sp-muted: var(--s-muted); --sp-display: var(--s-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
+>
+  <SignalHeader subpage />
+  <div class="sp-main">
+    <div class="subpage-body"><slot /></div>
+  </div>
+  <SignalFooter />
+</div>

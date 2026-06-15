@@ -1,0 +1,23 @@
+---
+/**
+ * Practice subpage shell (privacy): the privacy content inside the full Practice
+ * experience — the real (subpage-aware) header with its trust strip, the
+ * Practice palette/serif type, and the Practice footer. Practice's tokens map
+ * onto the shared --sp-* bridge variables for the article.
+ */
+import './practice.css';
+import '../../../styles/subpage.css';
+import PracticeHeader from './PracticeHeader.astro';
+import PracticeFooter from './PracticeFooter.astro';
+---
+
+<div
+  class="practice sp-shell"
+  style="--sp-accent: var(--p-accent); --sp-line: var(--p-line); --sp-muted: var(--p-muted); --sp-display: var(--p-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
+>
+  <PracticeHeader subpage />
+  <div class="sp-main">
+    <div class="subpage-body"><slot /></div>
+  </div>
+  <PracticeFooter />
+</div>

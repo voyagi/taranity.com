@@ -1,0 +1,23 @@
+---
+/**
+ * Storefront subpage shell (privacy): the privacy content inside the full
+ * Storefront experience — the real (subpage-aware) header with its promo bar,
+ * the Storefront palette/type, and the Storefront footer. Storefront's tokens
+ * map onto the shared --sp-* bridge variables for the article.
+ */
+import './storefront.css';
+import '../../../styles/subpage.css';
+import StorefrontHeader from './StorefrontHeader.astro';
+import StorefrontFooter from './StorefrontFooter.astro';
+---
+
+<div
+  class="storefront sp-shell"
+  style="--sp-accent: var(--f-accent); --sp-line: var(--f-line); --sp-muted: var(--f-muted); --sp-display: var(--f-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
+>
+  <StorefrontHeader subpage />
+  <div class="sp-main">
+    <div class="subpage-body"><slot /></div>
+  </div>
+  <StorefrontFooter />
+</div>
