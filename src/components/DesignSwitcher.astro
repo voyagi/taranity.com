@@ -16,9 +16,11 @@
  * The invite/label are static markup (no inline script), so the shared CSP hash
  * is untouched.
  *
- * Single-mode designs (Atlas is dark-only) hide the mode toggle: a control
- * that visibly does nothing reads as broken. The stored preference still
- * applies the moment the visitor switches to a design with both modes.
+ * The light/dark control is a segmented sun/moon toggle (the active mode lit),
+ * so it reads as a theme switch with two states rather than a mystery dot.
+ * Single-mode designs (Atlas is dark-only) hide it: a control that visibly does
+ * nothing reads as broken. The stored preference still applies the moment the
+ * visitor switches to a design with both modes.
  */
 import { readyDesigns, getDesign } from '../config/designs';
 
@@ -43,8 +45,18 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
   }
   {
     hasModes && (
-      <button type="button" class="ds-mode" data-mode-toggle aria-label="Toggle light or dark">
-        <span class="ds-mode-dot" aria-hidden="true" />
+      <button type="button" class="ds-mode" data-mode-toggle aria-label="Switch between light and dark">
+        <span class="ds-mode-opt ds-mode-sun" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2.5M12 19.5V22M22 12h-2.5M4.5 12H2M19.07 4.93l-1.77 1.77M6.7 17.3l-1.77 1.77M19.07 19.07l-1.77-1.77M6.7 6.7 4.93 4.93" />
+          </svg>
+        </span>
+        <span class="ds-mode-opt ds-mode-moon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z" />
+          </svg>
+        </span>
       </button>
     )
   }
@@ -92,24 +104,56 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
     font-family: ui-sans-serif, system-ui, sans-serif;
     color: CanvasText;
   }
+  /* A segmented sun/moon toggle: showing both icons with the active one lit makes
+     it obvious this is a light/dark switch with two states, not a mystery dot.
+     Only rendered on dual-mode designs. Mode-reactive via :global() so the
+     :root[data-mode] ancestor stays out of Astro's component scoping. */
   .ds-mode {
-    display: inline-grid;
-    place-items: center;
-    width: 30px;
-    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    padding: 0.15rem;
+    border: 1px solid color-mix(in srgb, CanvasText 16%, transparent);
     border-radius: 999px;
-    border: 0;
     cursor: pointer;
     background: transparent;
     color: inherit;
   }
-  .ds-mode-dot {
-    width: 14px;
-    height: 14px;
+  .ds-mode-opt {
+    display: inline-grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
     border-radius: 999px;
-    border: 2px solid currentColor;
-    /* a half-filled disc reads as a light/dark toggle in any theme */
-    background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+    /* inactive mode is dimmed; the active mode is lit + sits in a filled pill */
+    opacity: 0.4;
+  }
+  .ds-mode-opt svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+  .ds-mode-sun {
+    opacity: 1;
+    background: color-mix(in srgb, CanvasText 16%, transparent);
+  }
+  :global(:root[data-mode='dark']) .ds-mode-sun {
+    opacity: 0.4;
+    background: transparent;
+  }
+  :global(:root[data-mode='dark']) .ds-mode-moon {
+    opacity: 1;
+    background: color-mix(in srgb, CanvasText 16%, transparent);
+  }
+  /* No-JS fallback: follow the system when no explicit mode has been chosen. */
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-mode])) .ds-mode-sun {
+      opacity: 0.4;
+      background: transparent;
+    }
+    :global(:root:not([data-mode])) .ds-mode-moon {
+      opacity: 1;
+      background: color-mix(in srgb, CanvasText 16%, transparent);
+    }
   }
   .ds-designs {
     display: inline-flex;
@@ -120,15 +164,21 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
     min-width: 0;
     gap: 0.15rem;
   }
-  /* A non-interactive label so the pills read as design choices, not page nav. */
+  /* A non-interactive section title, set off from the design pills by a hairline
+     divider and a quieter micro-caps treatment, so it never reads as another
+     selectable item. */
   .ds-label {
-    align-self: center;
-    padding-left: 0.3rem;
-    font-size: 0.62rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    padding-inline: 0.35rem 0.6rem;
+    margin-right: 0.15rem;
+    border-right: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    opacity: 0.55;
+    opacity: 0.5;
     white-space: nowrap;
   }
   .ds-design {
@@ -183,5 +233,6 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
   }
   @media (prefers-reduced-motion: no-preference) {
     .ds-design { transition: opacity 0.2s, background-color 0.2s; }
+    .ds-mode-opt { transition: opacity 0.2s, background-color 0.2s; }
   }
 </style>
