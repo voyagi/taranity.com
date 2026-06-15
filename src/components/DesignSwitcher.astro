@@ -237,4 +237,38 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
     .ds-design { transition: opacity 0.2s, background-color 0.2s; }
     .ds-mode-opt { transition: opacity 0.2s, background-color 0.2s; }
   }
+
+  /* Slim it on small screens: tighter pills, a smaller toggle, drop the label
+     (the invite already frames the row) and compact the invite, so the wrapped
+     switcher takes far less vertical space at the foot of the page. */
+  @media (max-width: 640px) {
+    .design-switcher {
+      gap: 0.28rem;
+      padding: 0.3rem;
+    }
+    .ds-label {
+      display: none;
+    }
+    .ds-design {
+      padding: 0.26rem 0.5rem;
+      font-size: 0.66rem;
+      letter-spacing: 0;
+    }
+    .ds-mode {
+      padding: 0.12rem;
+    }
+    .ds-mode-opt {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+    .ds-mode-opt svg {
+      width: 0.78rem;
+      height: 0.78rem;
+    }
+    .ds-nudge {
+      max-width: min(16rem, calc(100vw - 2rem));
+      padding: 0.4rem 0.55rem;
+      font-size: 0.72rem;
+    }
+  }
 </style>
