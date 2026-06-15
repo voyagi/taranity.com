@@ -259,6 +259,61 @@ rec(
 );
 await page.evaluate(() => { try { localStorage.clear(); } catch {} });
 
+// ---- Discoverability cues: label, active-state pill, one-time invite ----
+// Switching designs is the whole point of the showcase, so a first-time visitor
+// must see it is offered. Start from cleared storage so the first-visit path is
+// exercised deterministically regardless of the harness profile.
+await page.goto(BASE + '/', { waitUntil: 'load' });
+await settle(400);
+const inviteShown = await page.evaluate(() => {
+  const n = document.querySelector('[data-design-nudge]');
+  return n ? !n.hidden : false;
+});
+rec('switcher: first-visit invite appears on a fresh visit', inviteShown);
+const inviteText = await page.evaluate(() => {
+  const el = document.querySelector('[data-design-nudge] .ds-nudge-text');
+  return el ? el.textContent.trim() : '';
+});
+rec(
+  'switcher: invite copy is count-driven and em-dash-free',
+  /Same site, 6 designs\. Take your pick\./.test(inviteText) && !inviteText.includes('—'),
+  inviteText,
+);
+const hasLabel = (await page.$('.ds-label')) !== null;
+rec('switcher: carries a "Designs" label', hasLabel);
+const activeHrefs = await page.$$eval('.ds-design[aria-current="page"]', (as) => as.map((a) => a.getAttribute('href')));
+rec(
+  'switcher: exactly the current design is marked active',
+  activeHrefs.length === 1 && activeHrefs[0] === '/',
+  JSON.stringify(activeHrefs),
+);
+// evidence: invite + label + active pill, all visible together
+const switcherPath = await saveScreenshot(await page.screenshot(), 'e2e-switcher-invite.png');
+// dismissing hides it, and the choice persists across a reload (shown once)
+await page.click('[data-nudge-dismiss]');
+await settle(150);
+const afterDismiss = await page.evaluate(() => {
+  const n = document.querySelector('[data-design-nudge]');
+  return n ? n.hidden : true;
+});
+rec('switcher: dismiss hides the invite', afterDismiss);
+await page.goto(BASE + '/', { waitUntil: 'load' });
+await settle(300);
+const afterReload = await page.evaluate(() => {
+  const n = document.querySelector('[data-design-nudge]');
+  return n ? n.hidden : true;
+});
+rec('switcher: invite stays gone after being seen (persisted)', afterReload);
+// the active pill tracks the route, not just the home page
+await page.goto(BASE + '/atlas', { waitUntil: 'load' });
+await settle(300);
+const atlasActive = await page.$$eval('.ds-design[aria-current="page"]', (as) => as.map((a) => a.getAttribute('href')));
+rec(
+  'switcher: active pill follows the route (atlas)',
+  atlasActive.length === 1 && atlasActive[0] === '/atlas',
+  JSON.stringify(atlasActive),
+);
+
 // ---- Atlas (second design): registry exposure, dark-only controls, form ----
 // Still under reduced motion: these are content checks, the journey motion
 // has its own block below.
@@ -850,7 +905,7 @@ const rawPath = await saveScreenshot(await page.screenshot(), 'e2e-raw-desktop.p
 
 const failed = results.filter((r) => !r.ok);
 console.log(`\n==== SUMMARY: ${results.length - failed.length}/${results.length} checks passed ====`);
-console.log(JSON.stringify({ screenshots: [contactPath, workPath, mobilePath, atlasPath, signalPath, storefrontPath, practicePath, rawPath] }));
+console.log(JSON.stringify({ screenshots: [switcherPath, contactPath, workPath, mobilePath, atlasPath, signalPath, storefrontPath, practicePath, rawPath] }));
 if (failed.length) {
   console.log('FAILURES:');
   failed.forEach((f) => console.log('  - ' + f.name + ' :: ' + f.detail));
