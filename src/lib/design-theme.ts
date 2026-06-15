@@ -14,6 +14,7 @@ import { DEFAULT_DESIGN } from '../config/designs';
 
 const KEY_MODE = 'taranity-mode';
 const KEY_DESIGN = 'taranity-design';
+const KEY_SEEN = 'taranity-switcher-seen';
 let memMode: 'light' | 'dark' | null = null;
 let storageOk = true;
 let bound = false;
@@ -54,21 +55,65 @@ function chooseMode(mode: 'light' | 'dark') {
   applyMode(mode);
 }
 
+/** Hide the invite and remember it as handled, so it does not return. */
+function hideNudge() {
+  document.querySelectorAll('[data-design-nudge]').forEach((n) => n.setAttribute('hidden', ''));
+  try {
+    localStorage.setItem(KEY_SEEN, '1');
+  } catch {
+    /* not fatal: the invite simply re-offers after the next navigation */
+  }
+}
+
+/**
+ * Offer the "try another design" invite until the visitor engages with the
+ * switcher. It is revealed on the first load and re-checked after each
+ * View-Transition swap, so it keeps inviting across navigations and subpages;
+ * the flag is set only when the visitor dismisses it or picks a design
+ * (hideNudge), after which it never returns. Storage-blocked (private mode)
+ * visitors see it re-offer after each navigation, which is harmless.
+ */
+function revealNudgeIfUnseen() {
+  const nudge = document.querySelector('[data-design-nudge]');
+  if (!nudge) return;
+  // No initializer: both branches assign before use, so `= false` would trip
+  // eslint no-useless-assignment; TS still proves definite assignment here.
+  let seen: boolean;
+  try {
+    seen = localStorage.getItem(KEY_SEEN) === '1';
+  } catch {
+    seen = false;
+  }
+  if (!seen) nudge.removeAttribute('hidden');
+}
+
 export function initDesignTheme() {
   if (bound) return;
   bound = true;
 
-  // Re-apply after a View-Transition swap (the swapped-in HTML has the build-time attr).
-  document.addEventListener('astro:after-swap', () => applyMode(effectiveMode()));
+  revealNudgeIfUnseen();
+
+  // Re-apply after a View-Transition swap (the swapped-in HTML carries the
+  // build-time attrs) and re-offer the invite until the visitor has engaged.
+  document.addEventListener('astro:after-swap', () => {
+    applyMode(effectiveMode());
+    revealNudgeIfUnseen();
+  });
 
   // Follow the system while the visitor has made no explicit choice.
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     if (readStoredMode() === null) applyMode(systemMode());
   });
 
-  // Delegated controls: mode toggle, and remembering the chosen design before nav.
+  // Delegated controls: dismiss the invite, mode toggle, and remembering the
+  // chosen design before nav.
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
+    if (target.closest('[data-nudge-dismiss]')) {
+      e.preventDefault();
+      hideNudge();
+      return;
+    }
     if (target.closest('[data-mode-toggle]')) {
       e.preventDefault();
       chooseMode(document.documentElement.getAttribute('data-mode') === 'dark' ? 'light' : 'dark');
@@ -76,6 +121,8 @@ export function initDesignTheme() {
     }
     const go = target.closest<HTMLElement>('[data-design-go]');
     if (go) {
+      // Acting on the switcher answers the invite: get it out of the way.
+      hideNudge();
       try {
         localStorage.setItem(KEY_DESIGN, go.dataset.designGo || DEFAULT_DESIGN);
       } catch {
