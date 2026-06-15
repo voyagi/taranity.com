@@ -343,6 +343,7 @@ for (const id of ['signal', 'atlas', 'storefront', 'practice', 'raw']) {
     h1: (document.querySelector('.subpage-body h1') || {}).textContent || '',
     active: [...document.querySelectorAll('.ds-design[aria-current="page"]')].map((a) => a.getAttribute('href')),
     mains: document.querySelectorAll('main').length,
+    pillHrefs: [...document.querySelectorAll('.ds-design')].map((a) => a.getAttribute('href')),
   }), id);
   rec(
     `${id} privacy: renders in the ${id} design`,
@@ -353,10 +354,28 @@ for (const id of ['signal', 'atlas', 'storefront', 'practice', 'raw']) {
   rec(`${id} privacy: exactly one <main> landmark`, got.mains === 1, 'mains=' + got.mains);
   rec(
     `${id} privacy: switcher marks ${id} active`,
-    got.active.length === 1 && got.active[0] === '/' + id,
+    got.active.length === 1 && got.active[0] === '/' + id + '/privacy',
     JSON.stringify(got.active),
   );
+  // On a privacy page the design pills link to the OTHER designs' privacy pages,
+  // so switching designs keeps the visitor on privacy (Vitrine's is /privacy).
+  rec(
+    `${id} privacy: switcher pills point at privacy routes`,
+    got.pillHrefs.length === 6 && got.pillHrefs.every((h) => h === '/privacy' || /^\/[a-z-]+\/privacy$/.test(h)),
+    JSON.stringify(got.pillHrefs),
+  );
 }
+// The reported path: switching designs FROM a privacy page must stay on privacy.
+await page.goto(BASE + '/signal/privacy', { waitUntil: 'load' });
+await settle(300);
+await page.click('.ds-design[href="/storefront/privacy"]');
+for (let i = 0; i < 25 && !/\/storefront\/privacy/.test(page.url()); i++) await settle(200);
+await settle(300);
+rec(
+  'switcher: switching design on a privacy page stays on privacy',
+  /\/storefront\/privacy\/?$/.test(page.url()) && (await dattr('data-design')) === 'storefront',
+  `${await dattr('data-design')} @ ${page.url()}`,
+);
 
 // ---- The fixed switcher must not cover the footer Privacy link ----
 // The invite bubble floats ABOVE the pill, so measure the union of both and
