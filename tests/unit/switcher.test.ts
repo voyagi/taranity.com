@@ -13,6 +13,7 @@ const switcher = readFileSync(
   resolve(__dirname, '../../src/components/DesignSwitcher.astro'),
   'utf8',
 );
+const theme = readFileSync(resolve(__dirname, '../../src/lib/design-theme.ts'), 'utf8');
 
 describe('DesignSwitcher discoverability cues', () => {
   it('frames the pills with a non-interactive label', () => {
@@ -37,5 +38,14 @@ describe('DesignSwitcher discoverability cues', () => {
 
   it('never uses an em dash (site-copy hard rule)', () => {
     expect(switcher).not.toContain('—');
+  });
+});
+
+describe('mode toggle accessibility', () => {
+  it('labels the toggle with the action it will take, synced to the mode', () => {
+    expect(theme).toMatch(/function syncToggleLabel/);
+    expect(theme).toMatch(/data-mode-toggle/);
+    expect(theme).toMatch(/Switch to light mode/);
+    expect(theme).toMatch(/Switch to dark mode/);
   });
 });
