@@ -78,7 +78,14 @@ function setup() {
   const onAnchorClick = (e: MouseEvent) => {
     const anchor = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]');
     if (!anchor) return;
-    const target = document.querySelector<HTMLElement>(anchor.hash);
+    // A malformed hash (e.g. "#1foo" or "#a:b") is not a valid selector and
+    // makes querySelector throw; fall through to the browser's default nav.
+    let target: HTMLElement | null;
+    try {
+      target = document.querySelector<HTMLElement>(anchor.hash);
+    } catch {
+      return;
+    }
     if (!target) return;
     e.preventDefault();
     lenis?.scrollTo(target, { duration: 1.6 });
