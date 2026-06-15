@@ -342,12 +342,15 @@ for (const id of ['signal', 'atlas', 'storefront', 'practice', 'raw']) {
     root: !!document.querySelector('.' + d + '.sp-shell'),
     h1: (document.querySelector('.subpage-body h1') || {}).textContent || '',
     active: [...document.querySelectorAll('.ds-design[aria-current="page"]')].map((a) => a.getAttribute('href')),
+    mains: document.querySelectorAll('main').length,
   }), id);
   rec(
     `${id} privacy: renders in the ${id} design`,
     got.design === id && got.root === true && /plain language/i.test(got.h1),
     JSON.stringify({ design: got.design, root: got.root, h1: got.h1.slice(0, 30) }),
   );
+  // exactly one main landmark (SiteLayout's); the shell must not nest another.
+  rec(`${id} privacy: exactly one <main> landmark`, got.mains === 1, 'mains=' + got.mains);
   rec(
     `${id} privacy: switcher marks ${id} active`,
     got.active.length === 1 && got.active[0] === '/' + id,

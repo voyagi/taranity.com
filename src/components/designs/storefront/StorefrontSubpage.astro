@@ -16,8 +16,8 @@ import StorefrontFooter from './StorefrontFooter.astro';
   style="--sp-accent: var(--f-accent); --sp-line: var(--f-line); --sp-muted: var(--f-muted); --sp-display: var(--f-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
 >
   <StorefrontHeader subpage />
-  <main class="sp-main">
+  <div class="sp-main">
     <div class="subpage-body"><slot /></div>
-  </main>
+  </div>
   <StorefrontFooter />
 </div>

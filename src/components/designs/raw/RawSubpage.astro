@@ -16,8 +16,8 @@ import RawFooter from './RawFooter.astro';
   style="--sp-accent: var(--r-ink); --sp-line: var(--r-line); --sp-muted: var(--r-muted); --sp-display: var(--r-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
 >
   <RawHeader subpage />
-  <main class="sp-main">
+  <div class="sp-main">
     <div class="subpage-body"><slot /></div>
-  </main>
+  </div>
   <RawFooter />
 </div>

@@ -16,8 +16,8 @@ import SignalFooter from './SignalFooter.astro';
   style="--sp-accent: var(--s-accent); --sp-line: var(--s-line); --sp-muted: var(--s-muted); --sp-display: var(--s-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
 >
   <SignalHeader subpage />
-  <main class="sp-main">
+  <div class="sp-main">
     <div class="subpage-body"><slot /></div>
-  </main>
+  </div>
   <SignalFooter />
 </div>

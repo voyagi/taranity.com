@@ -16,8 +16,8 @@ import AtlasFooter from './AtlasFooter.astro';
   style="--sp-accent: var(--a-accent); --sp-line: var(--a-line); --sp-muted: var(--a-muted); --sp-display: var(--a-display); --sp-pad: clamp(1.25rem, 5vw, 4rem); --sp-pad-top: clamp(6rem, 11vh, 8rem);"
 >
   <AtlasHeader subpage />
-  <main class="sp-main">
+  <div class="sp-main">
     <div class="subpage-body"><slot /></div>
-  </main>
+  </div>
   <AtlasFooter />
 </div>
