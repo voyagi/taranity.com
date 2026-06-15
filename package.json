@@ -20,7 +20,8 @@
     "astro": "astro"
   },
   "overrides": {
-    "devalue": ">=5.8.1"
+    "devalue": ">=5.8.1",
+    "esbuild": ">=0.28.1"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
