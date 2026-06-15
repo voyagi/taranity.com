@@ -32,6 +32,14 @@ const { design } = Astro.props;
 const items = readyDesigns();
 const multi = items.length > 1;
 const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
+
+// On a subpage (privacy), switching designs should keep the visitor on the
+// equivalent subpage rather than dropping them on the target design's home.
+// Detected from the URL so no page has to pass a prop. Vitrine's privacy is at
+// /privacy; the other designs are at /<id>/privacy.
+const onPrivacy = Astro.url.pathname.replace(/\/$/, '').endsWith('/privacy');
+const hrefFor = (d: { id: string; route: string }) =>
+  onPrivacy ? (d.id === 'vitrine' ? '/privacy' : `/${d.id}/privacy`) : d.route;
 ---
 
 <div class="design-switcher" data-design-switcher>
@@ -67,7 +75,7 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
         {items.map((d) => (
           <a
             class="ds-design"
-            href={d.route}
+            href={hrefFor(d)}
             data-design-go={d.id}
             aria-current={d.id === design ? 'page' : undefined}
             title={`${d.tagline} for ${d.audience}`}
