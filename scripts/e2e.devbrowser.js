@@ -65,6 +65,12 @@ const pages200 = [
   ['/storefront', 'storefront'],
   ['/practice', 'practice'],
   ['/raw', 'raw'],
+  // Per-design privacy variants: each renders in its own design's look.
+  ['/atlas/privacy', 'atlas-privacy'],
+  ['/signal/privacy', 'signal-privacy'],
+  ['/storefront/privacy', 'storefront-privacy'],
+  ['/practice/privacy', 'practice-privacy'],
+  ['/raw/privacy', 'raw-privacy'],
 ];
 
 async function runAxe(label) {
@@ -318,6 +324,74 @@ rec(
   atlasActive.length === 1 && atlasActive[0] === '/atlas',
   JSON.stringify(atlasActive),
 );
+
+// ---- Per-design privacy: clicking Privacy keeps the visitor's design + mode ----
+// A chosen mode carries onto a dual-mode design's privacy (pre-paint applies it).
+await page.goto(BASE + '/signal', { waitUntil: 'load' });
+await page.evaluate(() => { try { localStorage.setItem('taranity-mode', 'dark'); } catch {} });
+await page.goto(BASE + '/signal/privacy', { waitUntil: 'load' });
+await settle(300);
+rec('signal privacy: chosen mode (dark) carries over', (await dattr('data-mode')) === 'dark', await dattr('data-mode'));
+await page.evaluate(() => { try { localStorage.removeItem('taranity-mode'); } catch {} });
+// Each design's privacy renders in that design (root class + data-design + copy).
+for (const id of ['signal', 'atlas', 'storefront', 'practice', 'raw']) {
+  await page.goto(BASE + '/' + id + '/privacy', { waitUntil: 'load' });
+  await settle(250);
+  const got = await page.evaluate((d) => ({
+    design: document.documentElement.getAttribute('data-design'),
+    root: !!document.querySelector('.' + d + '.sp-shell'),
+    h1: (document.querySelector('.subpage-body h1') || {}).textContent || '',
+    active: [...document.querySelectorAll('.ds-design[aria-current="page"]')].map((a) => a.getAttribute('href')),
+  }), id);
+  rec(
+    `${id} privacy: renders in the ${id} design`,
+    got.design === id && got.root === true && /plain language/i.test(got.h1),
+    JSON.stringify({ design: got.design, root: got.root, h1: got.h1.slice(0, 30) }),
+  );
+  rec(
+    `${id} privacy: switcher marks ${id} active`,
+    got.active.length === 1 && got.active[0] === '/' + id,
+    JSON.stringify(got.active),
+  );
+}
+
+// ---- The fixed switcher must not cover the footer Privacy link ----
+// The invite bubble floats ABOVE the pill, so measure the union of both and
+// assert it never intersects the footer's Privacy link, desktop and mobile.
+for (const [vw, vh, route] of [
+  [1280, 800, '/'],
+  [1280, 800, '/raw'],
+  [390, 844, '/'],
+  [390, 844, '/signal/privacy'],
+]) {
+  await page.setViewportSize({ width: vw, height: vh });
+  await page.goto(BASE + route, { waitUntil: 'load' });
+  await settle(300);
+  const clear = await page.evaluate(
+    () =>
+      new Promise((res) => {
+        window.scrollTo(0, document.body.scrollHeight);
+        setTimeout(() => {
+          const link = document.querySelector('footer a[href*="privacy"]');
+          const pill = document.querySelector('.design-switcher');
+          const nudge = document.querySelector('[data-design-nudge]');
+          if (!link || !pill) return res({ ok: false, why: 'missing link or switcher' });
+          const a = link.getBoundingClientRect();
+          const rects = [pill.getBoundingClientRect()];
+          if (nudge) rects.push(nudge.getBoundingClientRect());
+          const swTop = Math.min(...rects.map((r) => r.top));
+          const swLeft = Math.min(...rects.map((r) => r.left));
+          const swRight = Math.max(...rects.map((r) => r.right));
+          const swBottom = Math.max(...rects.map((r) => r.bottom));
+          const overlap = !(a.right <= swLeft || a.left >= swRight || a.bottom <= swTop || a.top >= swBottom);
+          res({ ok: !overlap, linkBottom: Math.round(a.bottom), swTop: Math.round(swTop) });
+        }, 350);
+      }),
+  );
+  rec(`layout: switcher clears the footer Privacy link (${vw}px ${route})`, clear.ok === true, JSON.stringify(clear));
+}
+// Restore a desktop viewport for the checks that follow.
+await page.setViewportSize({ width: 1440, height: 900 });
 
 // ---- Atlas (second design): registry exposure, dark-only controls, form ----
 // Still under reduced motion: these are content checks, the journey motion

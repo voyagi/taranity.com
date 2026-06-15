@@ -1,7 +1,7 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 import VitrinePage from '../components/designs/vitrine/VitrinePage.astro';
-import { contactEmail, site } from '../config/site';
+import PrivacyContent from '../components/PrivacyContent.astro';
 ---
 
 <SiteLayout
@@ -14,67 +14,7 @@ import { contactEmail, site } from '../config/site';
 >
   <VitrinePage>
     <section class="v-page" tabindex="-1">
-      <p class="v-label">Privacy</p>
-      <h1 class="v-page-title v-serif">Plain language, no dark patterns.</h1>
-      <p class="v-page-lead">
-        This site belongs to {site.name} ({site.url}). It sets <strong>no cookies</strong> and
-        shows no consent banner because it does not need one. Here is exactly what happens with
-        your data.
-      </p>
-
-      <section>
-        <h2>What we collect, and when</h2>
-        <ul>
-          <li>
-            <strong>The contact form.</strong> Only if you submit it: your name, email, and message.
-            It is delivered to us through <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer">Web3Forms</a>
-            (a form-to-email service acting as a processor) and used <em>solely</em> to reply. It is
-            never sold, shared for marketing, or added to any list.
-          </li>
-          <li>
-            <strong>Analytics.</strong> If analytics are enabled, the site uses
-            <a href="https://plausible.io/data-policy" target="_blank" rel="noopener noreferrer">Plausible</a>:
-            privacy-first, cookieless, fully aggregated, with no personal data and no cross-site
-            tracking. Nothing identifies you.
-          </li>
-          <li>
-            <strong>Hosting.</strong> The site is served by Cloudflare Pages. Like any web host, it
-            processes connection data (such as your IP) in transient server logs to deliver the site
-            and protect against abuse.
-          </li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>Cookies and local storage</h2>
-        <p>
-          No cookies, and nothing stored for tracking or advertising. The only thing kept on your
-          device is your <strong>theme preference</strong> (the light or dark mode and the design
-          you pick with the switcher), saved in your browser's local storage so the site remembers
-          how you like it. It never leaves your device, is not used to identify you, and clearing
-          your site data removes it.
-        </p>
-      </section>
-
-      <section>
-        <h2>Your rights</h2>
-        <p>
-          Under the GDPR you can ask to access, correct, or delete the personal data we hold about
-          you, or object to its processing. In practice the only data we ever hold is the message
-          you chose to send us, so a deletion request simply means we delete that email. Write to
-          <a href={`mailto:${contactEmail}`}>{contactEmail}</a> and we will handle it promptly.
-        </p>
-      </section>
-
-      <section>
-        <h2>Retention</h2>
-        <p>
-          Contact messages are kept only as long as needed to deal with your enquiry, then deleted.
-          Analytics data (if enabled) is aggregated and never tied to an individual.
-        </p>
-      </section>
-
-      <p class="v-page-meta">Last reviewed: June 2026 · Questions? {contactEmail}</p>
+      <PrivacyContent />
     </section>
   </VitrinePage>
 </SiteLayout>

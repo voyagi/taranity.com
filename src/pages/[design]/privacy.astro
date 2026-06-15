@@ -1,0 +1,81 @@
+---
+/**
+ * Per-design privacy pages: /signal/privacy, /atlas/privacy, etc. Each renders
+ * the shared PrivacyContent inside its design's subpage shell, so a visitor who
+ * clicks Privacy from a design stays in that design's look. Vitrine keeps the
+ * canonical /privacy (src/pages/privacy.astro), so it is excluded here; these
+ * variants are noindex to avoid duplicate content.
+ */
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import PrivacyContent from '../../components/PrivacyContent.astro';
+import AtlasSubpage from '../../components/designs/atlas/AtlasSubpage.astro';
+import SignalSubpage from '../../components/designs/signal/SignalSubpage.astro';
+import StorefrontSubpage from '../../components/designs/storefront/StorefrontSubpage.astro';
+import PracticeSubpage from '../../components/designs/practice/PracticeSubpage.astro';
+import RawSubpage from '../../components/designs/raw/RawSubpage.astro';
+import { readyDesigns, getDesign } from '../../config/designs';
+
+/**
+ * theme-color + LCP font preloads per design, mirroring each design's entry page
+ * in src/pages/, so the privacy variant matches its home.
+ */
+const META = {
+  atlas: {
+    shell: AtlasSubpage,
+    themeLight: '#05070d',
+    themeDark: '#05070d',
+    fonts: ['/fonts/space-grotesk-latin-var.woff2', '/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
+  },
+  signal: {
+    shell: SignalSubpage,
+    themeLight: '#f5f7fc',
+    themeDark: '#0a0f1d',
+    fonts: ['/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
+  },
+  storefront: {
+    shell: StorefrontSubpage,
+    themeLight: '#fff5ea',
+    themeDark: '#fff5ea',
+    fonts: ['/fonts/space-grotesk-latin-var.woff2', '/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
+  },
+  practice: {
+    shell: PracticeSubpage,
+    themeLight: '#f6f1e6',
+    themeDark: '#f6f1e6',
+    fonts: ['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
+  },
+  raw: {
+    shell: RawSubpage,
+    themeLight: '#efeee8',
+    themeDark: '#0a0a0b',
+    fonts: ['/fonts/jetbrains-mono-latin-700.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
+  },
+};
+
+export function getStaticPaths() {
+  // Vitrine keeps the canonical /privacy; build a variant for every other design.
+  return readyDesigns()
+    .filter((d) => d.id !== 'vitrine')
+    .map((d) => ({ params: { design: d.id } }));
+}
+
+const design = Astro.params.design as keyof typeof META;
+const d = getDesign(design);
+const meta = META[design];
+if (!d || !meta) throw new Error(`No privacy subpage metadata for design "${design}"`);
+const Shell = meta.shell;
+---
+
+<SiteLayout
+  design={design}
+  title="Privacy"
+  description="What taranity.com collects, how it is handled, and your rights, in plain language."
+  themeLight={meta.themeLight}
+  themeDark={meta.themeDark}
+  preloadFonts={meta.fonts}
+  noindex
+>
+  <Shell>
+    <PrivacyContent />
+  </Shell>
+</SiteLayout>

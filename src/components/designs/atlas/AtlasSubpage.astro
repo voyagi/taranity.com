@@ -1,0 +1,25 @@
+---
+/**
+ * Atlas subpage shell (privacy): the Atlas dark palette and type on a minimal,
+ * legible legal page (no WebGL globe). The root `.atlas` class supplies the
+ * background, colour, and font; the inline mappings expose Atlas's tokens to the
+ * shared --sp-* bridge variables consumed by subpage.css.
+ */
+import './atlas.css';
+import '../../../styles/subpage.css';
+import AtlasFooter from './AtlasFooter.astro';
+---
+
+<div
+  class="atlas sp-shell"
+  style="--sp-accent: var(--a-accent); --sp-line: var(--a-line); --sp-muted: var(--a-muted); --sp-display: var(--a-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
+>
+  <header class="sp-masthead">
+    <a class="sp-word" href="/atlas">Taranity</a>
+    <a class="sp-home" href="/atlas">Back to Atlas</a>
+  </header>
+  <main class="sp-main">
+    <div class="subpage-body"><slot /></div>
+  </main>
+  <AtlasFooter />
+</div>

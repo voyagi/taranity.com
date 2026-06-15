@@ -1,0 +1,26 @@
+---
+/**
+ * Raw subpage shell (privacy): the Raw brutalist monospace palette and type on a
+ * minimal legal page. The root `.raw` class supplies background, colour, and the
+ * mono font; the inline mappings expose Raw's tokens to the shared --sp-* bridge
+ * variables consumed by subpage.css. Raw has no single accent colour, so ink
+ * doubles as the accent to keep the page monochrome and high-contrast.
+ */
+import './raw.css';
+import '../../../styles/subpage.css';
+import RawFooter from './RawFooter.astro';
+---
+
+<div
+  class="raw sp-shell"
+  style="--sp-accent: var(--r-ink); --sp-line: var(--r-line); --sp-muted: var(--r-muted); --sp-display: var(--r-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
+>
+  <header class="sp-masthead">
+    <a class="sp-word" href="/raw">Taranity</a>
+    <a class="sp-home" href="/raw">Back to Raw</a>
+  </header>
+  <main class="sp-main">
+    <div class="subpage-body"><slot /></div>
+  </main>
+  <RawFooter />
+</div>

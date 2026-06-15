@@ -96,3 +96,18 @@ a {
     animation: none;
   }
 }
+
+/* The design switcher is fixed at the bottom-right and floats over the page, so
+   it can cover footer content there (e.g. the Privacy link). Reserve clearance
+   at the foot of every page so footer content always sits above it. The padding
+   lives inside the design root (the sole child of <main>), so the reserved band
+   keeps that design's own background. More room on small screens, where the
+   switcher wraps onto extra rows. */
+#main > * {
+  padding-bottom: 5rem;
+}
+@media (max-width: 640px) {
+  #main > * {
+    padding-bottom: 9rem;
+  }
+}
