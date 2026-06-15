@@ -278,14 +278,27 @@ html:not(.v-lenis) .v-progress {
 .v-page:focus {
   outline: none;
 }
-.v-page-title {
+.v-page-title,
+.v-page h1 {
   margin-block: clamp(1.2rem, 3vh, 1.8rem) clamp(1.6rem, 4vh, 2.4rem);
+  font-family: var(--v-serif);
+  font-optical-sizing: auto;
   font-size: clamp(2.4rem, 6vw, 4.4rem);
   font-weight: 380;
   line-height: 1.02;
   letter-spacing: -0.015em;
 }
-.v-page-lead {
+/* p.sp-kicker (not just .sp-kicker): the eyebrow is a <p>, and `.v-page p`
+   later in this file would otherwise win on source order and mute its colour. */
+.v-page p.sp-kicker {
+  font-size: 0.68rem;
+  font-weight: 560;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--v-accent);
+}
+.v-page-lead,
+.v-page .sp-lead {
   margin-bottom: clamp(2.2rem, 5vh, 3rem);
   font-size: 1.08rem;
   line-height: 1.7;
@@ -339,7 +352,8 @@ html:not(.v-lenis) .v-progress {
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
 }
-.v-page-meta {
+.v-page-meta,
+.v-page .sp-meta {
   margin-top: clamp(2.2rem, 5vh, 3rem);
   padding-top: 1.4rem;
   border-top: 1px solid var(--v-line);

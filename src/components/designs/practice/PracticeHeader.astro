@@ -7,6 +7,12 @@
  * step always reads as "send a message", never "book a call" (hard rule 1).
  * The floating DesignSwitcher carries the cross-design controls.
  */
+interface Props {
+  /** On subpages, the section anchors point back to the Practice home sections. */
+  subpage?: boolean;
+}
+const { subpage = false } = Astro.props;
+const prefix = subpage ? '/practice' : '';
 const links = [
   { label: 'Services', hash: '#crafts' },
   { label: 'Method', hash: '#method' },
@@ -46,9 +52,9 @@ const trust = ['Worldwide studio', 'Written replies within a day', 'We stay afte
       Taranity
     </a>
     <nav class="p-nav" aria-label="Page sections">
-      {links.map((l) => <a href={l.hash}>{l.label}</a>)}
+      {links.map((l) => <a href={`${prefix}${l.hash}`}>{l.label}</a>)}
     </nav>
-    <a class="p-cta p-cta-primary p-header-cta" href="#contact">
+    <a class="p-cta p-cta-primary p-header-cta" href={`${prefix}#contact`}>
       <svg class="p-letter" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"></rect>
         <path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>

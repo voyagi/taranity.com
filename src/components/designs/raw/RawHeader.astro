@@ -6,6 +6,12 @@
  * CTA right). The CTA always reads as "send a message", never "book a call"
  * (hard rule 1). The floating DesignSwitcher carries the cross-design controls.
  */
+interface Props {
+  /** On subpages, the section anchors point back to the Raw home sections. */
+  subpage?: boolean;
+}
+const { subpage = false } = Astro.props;
+const prefix = subpage ? '/raw' : '';
 const links = [
   { label: 'Services', hash: '#crafts' },
   { label: 'Method', hash: '#method' },
@@ -47,14 +53,14 @@ const statusRight = ['Worldwide', 'Written contact only'];
     <nav class="r-nav" aria-label="Page sections">
       {
         links.map((l) => (
-          <a href={l.hash}>
+          <a href={`${prefix}${l.hash}`}>
             <span class="r-nav-slash" aria-hidden="true">/</span>
             {l.label}
           </a>
         ))
       }
     </nav>
-    <a class="r-cta r-cta-primary r-header-cta" href="#contact">
+    <a class="r-cta r-cta-primary r-header-cta" href={`${prefix}#contact`}>
       <span class="r-bracket" aria-hidden="true">[</span>
       <span class="r-cta-label-full">Start a project</span>
       <span class="r-cta-label-short">Start</span>

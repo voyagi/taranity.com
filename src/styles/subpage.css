@@ -1,0 +1,110 @@
+/* ==========================================================================
+   Shared subpage chrome + article, used by the non-Vitrine design subpages
+   (privacy). Layout and rhythm live here; each design's shell carries its own
+   root class (which supplies background, text colour, and font) and maps its
+   palette/type tokens onto the --sp-* bridge variables below. So the legal copy
+   stays in one shared component while every page renders in its design's
+   language. Vitrine keeps its bespoke `.v-page` styling.
+   ========================================================================== */
+
+.sp-shell {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  /* contain a design's absolute header (e.g. Atlas) to the shell. */
+  position: relative;
+  /* background, color and font-family come from the design root class. */
+}
+
+.sp-main {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  /* --sp-pad-top lets a design with an absolute (overlapping) header reserve
+     extra top room; sticky-header designs use the modest default. */
+  padding: var(--sp-pad-top, clamp(2.5rem, 6vh, 4rem)) var(--sp-pad) clamp(2.5rem, 7vh, 4rem);
+}
+
+/* ---- the shared article ---- */
+.subpage-body .sp-kicker {
+  margin: 0 0 1rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  /* Ink, not accent: some design accents (e.g. Storefront coral) fall below
+     4.5:1 as text. Caps + tracking already mark it as an eyebrow. */
+  color: inherit;
+}
+.subpage-body h1 {
+  margin: 0 0 1.2rem;
+  font-family: var(--sp-display, inherit);
+  font-size: clamp(2rem, 5vw, 3.3rem);
+  line-height: 1.04;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.subpage-body .sp-lead {
+  margin: 0 0 2.6rem;
+  font-size: 1.06rem;
+  line-height: 1.7;
+}
+.subpage-body section {
+  margin-bottom: clamp(1.8rem, 5vh, 2.6rem);
+}
+.subpage-body h2 {
+  margin: 0 0 0.85rem;
+  font-family: var(--sp-display, inherit);
+  font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+  font-weight: 600;
+}
+.subpage-body p,
+.subpage-body li {
+  color: var(--sp-muted, inherit);
+  line-height: 1.75;
+}
+.subpage-body p {
+  margin: 0 0 0.8rem;
+}
+.subpage-body ul {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.subpage-body li {
+  position: relative;
+  padding-left: 1.2rem;
+}
+.subpage-body li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--sp-accent, currentColor);
+}
+.subpage-body strong {
+  color: inherit;
+  font-weight: 600;
+}
+.subpage-body a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.subpage-body a:hover {
+  color: var(--sp-accent, inherit);
+}
+.subpage-body .sp-meta {
+  margin-top: clamp(2.2rem, 6vh, 3rem);
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--sp-line);
+  font-size: 0.8rem;
+  color: var(--sp-muted, inherit);
+}

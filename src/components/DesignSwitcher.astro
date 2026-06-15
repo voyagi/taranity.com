@@ -178,7 +178,9 @@ const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
     font-weight: 700;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    opacity: 0.5;
+    /* 0.7, not lower: at 0.5 the composite over the light switcher pill drops
+       under 4.5:1 (axe). Still clearly subordinate via the divider + micro-caps. */
+    opacity: 0.7;
     white-space: nowrap;
   }
   .ds-design {

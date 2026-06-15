@@ -5,6 +5,12 @@
  * so the call to action follows the visitor down the page. The floating
  * DesignSwitcher carries the cross-design controls.
  */
+interface Props {
+  /** On subpages, the section anchors point back to the Signal home sections. */
+  subpage?: boolean;
+}
+const { subpage = false } = Astro.props;
+const prefix = subpage ? '/signal' : '';
 const links = [
   { label: 'Crafts', hash: '#crafts' },
   { label: 'Method', hash: '#method' },
@@ -20,9 +26,9 @@ const links = [
       Taranity
     </a>
     <nav class="s-nav" aria-label="Page sections">
-      {links.map((l) => <a href={l.hash}>{l.label}</a>)}
+      {links.map((l) => <a href={`${prefix}${l.hash}`}>{l.label}</a>)}
     </nav>
-    <a class="s-cta s-cta-primary s-header-cta" href="#contact">
+    <a class="s-cta s-cta-primary s-header-cta" href={`${prefix}#contact`}>
       Start a project
       <span class="s-cta-arrow" aria-hidden="true">→</span>
     </a>
