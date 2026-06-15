@@ -266,7 +266,9 @@ await page.goto(BASE + '/', { waitUntil: 'load' });
 await settle(400);
 const inviteShown = await page.evaluate(() => {
   const n = document.querySelector('[data-design-nudge]');
-  return !!n && !n.hidden;
+  if (!(n instanceof HTMLElement)) return false;
+  const cs = getComputedStyle(n);
+  return !n.hidden && cs.display !== 'none' && cs.visibility !== 'hidden' && n.getClientRects().length > 0;
 });
 rec('switcher: permanent invite is visible', inviteShown);
 const hasDismiss = (await page.$('[data-nudge-dismiss]')) !== null;
@@ -298,7 +300,9 @@ for (let i = 0; i < 25 && !/\/privacy/.test(page.url()); i++) await settle(200);
 await settle(300);
 const stillShownAfterSwap = await page.evaluate(() => {
   const n = document.querySelector('[data-design-nudge]');
-  return !!n && !n.hidden;
+  if (!(n instanceof HTMLElement)) return false;
+  const cs = getComputedStyle(n);
+  return !n.hidden && cs.display !== 'none' && cs.visibility !== 'hidden' && n.getClientRects().length > 0;
 });
 rec(
   'switcher: invite persists across a View-Transition swap',
