@@ -344,6 +344,7 @@ for (const id of ['signal', 'atlas', 'storefront', 'practice', 'raw']) {
     active: [...document.querySelectorAll('.ds-design[aria-current="page"]')].map((a) => a.getAttribute('href')),
     mains: document.querySelectorAll('main').length,
     pillHrefs: [...document.querySelectorAll('.ds-design')].map((a) => a.getAttribute('href')),
+    wordmark: document.querySelector('[aria-label="Taranity home"]')?.getAttribute('href'),
   }), id);
   rec(
     `${id} privacy: renders in the ${id} design`,
@@ -364,6 +365,9 @@ for (const id of ['signal', 'atlas', 'storefront', 'practice', 'raw']) {
     got.pillHrefs.length === 6 && got.pillHrefs.every((h) => h === '/privacy' || /^\/[a-z-]+\/privacy$/.test(h)),
     JSON.stringify(got.pillHrefs),
   );
+  // the logo links to THIS design's home, not the site root (which is Vitrine),
+  // so clicking it keeps the visitor in the selected design.
+  rec(`${id} privacy: logo links to the ${id} home`, got.wordmark === '/' + id, 'wordmark=' + got.wordmark);
 }
 // The reported path: switching designs FROM a privacy page must stay on privacy.
 await page.goto(BASE + '/signal/privacy', { waitUntil: 'load' });
@@ -374,6 +378,18 @@ await settle(300);
 rec(
   'switcher: switching design on a privacy page stays on privacy',
   /\/storefront\/privacy\/?$/.test(page.url()) && (await dattr('data-design')) === 'storefront',
+  `${await dattr('data-design')} @ ${page.url()}`,
+);
+// The reported path: clicking the logo must keep the selected design (go to the
+// design's own home, not the Vitrine site root).
+await page.goto(BASE + '/signal/privacy', { waitUntil: 'load' });
+await settle(300);
+await page.click('[aria-label="Taranity home"]');
+for (let i = 0; i < 25 && !/\/signal\/?$/.test(page.url()); i++) await settle(200);
+await settle(300);
+rec(
+  'switcher: clicking the logo keeps the selected design',
+  /\/signal\/?$/.test(page.url()) && (await dattr('data-design')) === 'signal',
   `${await dattr('data-design')} @ ${page.url()}`,
 );
 
