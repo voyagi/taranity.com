@@ -4,6 +4,12 @@
  * over the hero and scrolls away with it (single-page experience; the
  * floating DesignSwitcher carries the persistent controls).
  */
+interface Props {
+  /** On subpages, the section anchors point back to the Atlas home sections. */
+  subpage?: boolean;
+}
+const { subpage = false } = Astro.props;
+const prefix = subpage ? '/atlas' : '';
 const links = [
   { index: '01', label: 'Crafts', hash: '#crafts' },
   { index: '02', label: 'Method', hash: '#method' },
@@ -17,7 +23,7 @@ const links = [
   <nav class="a-nav" aria-label="Page sections">
     {
       links.map((l) => (
-        <a href={l.hash}>
+        <a href={`${prefix}${l.hash}`}>
           <span class="a-nav-index" aria-hidden="true">{l.index}</span>
           {l.label}
         </a>

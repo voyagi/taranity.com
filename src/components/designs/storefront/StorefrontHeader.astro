@@ -6,6 +6,12 @@
  * always reads as "start an order". The floating DesignSwitcher carries the
  * cross-design controls.
  */
+interface Props {
+  /** On subpages, the section anchors point back to the Storefront home sections. */
+  subpage?: boolean;
+}
+const { subpage = false } = Astro.props;
+const prefix = subpage ? '/storefront' : '';
 const links = [
   { label: 'Shelf', hash: '#crafts' },
   { label: 'Method', hash: '#method' },
@@ -46,9 +52,9 @@ const promo = [
       Taranity
     </a>
     <nav class="f-nav" aria-label="Page sections">
-      {links.map((l) => <a href={l.hash}>{l.label}</a>)}
+      {links.map((l) => <a href={`${prefix}${l.hash}`}>{l.label}</a>)}
     </nav>
-    <a class="f-cta f-cta-primary f-header-cta" href="#contact">
+    <a class="f-cta f-cta-primary f-header-cta" href={`${prefix}#contact`}>
       <svg class="f-bag" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path
           d="M6 8h12l-1 12H7L6 8Zm3 0V6a3 3 0 0 1 6 0v2"

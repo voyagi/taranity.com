@@ -1,12 +1,13 @@
 ---
 /**
- * Signal subpage shell (privacy): the Signal palette and type on a minimal,
- * legible legal page. The root `.signal` class supplies background, colour, and
- * font; the inline mappings expose Signal's tokens to the shared --sp-* bridge
- * variables consumed by subpage.css. The legal copy arrives via the slot.
+ * Signal subpage shell (privacy): the privacy content inside the full Signal
+ * experience — the real header (subpage-aware: its section links point back to
+ * the Signal home), the Signal palette/type, and the Signal footer. Signal's
+ * tokens are mapped onto the shared --sp-* bridge variables for the article.
  */
 import './signal.css';
 import '../../../styles/subpage.css';
+import SignalHeader from './SignalHeader.astro';
 import SignalFooter from './SignalFooter.astro';
 ---
 
@@ -14,10 +15,7 @@ import SignalFooter from './SignalFooter.astro';
   class="signal sp-shell"
   style="--sp-accent: var(--s-accent); --sp-line: var(--s-line); --sp-muted: var(--s-muted); --sp-display: var(--s-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
 >
-  <header class="sp-masthead">
-    <a class="sp-word" href="/signal">Taranity</a>
-    <a class="sp-home" href="/signal">Back to Signal</a>
-  </header>
+  <SignalHeader subpage />
   <main class="sp-main">
     <div class="subpage-body"><slot /></div>
   </main>

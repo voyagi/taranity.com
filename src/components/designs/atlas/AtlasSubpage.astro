@@ -1,23 +1,21 @@
 ---
 /**
- * Atlas subpage shell (privacy): the Atlas dark palette and type on a minimal,
- * legible legal page (no WebGL globe). The root `.atlas` class supplies the
- * background, colour, and font; the inline mappings expose Atlas's tokens to the
- * shared --sp-* bridge variables consumed by subpage.css.
+ * Atlas subpage shell (privacy): the privacy content inside the full Atlas
+ * experience — the real (subpage-aware) header, the Atlas dark palette/type, and
+ * the Atlas footer (no WebGL globe on a legal page). Atlas's tokens map onto the
+ * shared --sp-* bridge variables for the article.
  */
 import './atlas.css';
 import '../../../styles/subpage.css';
+import AtlasHeader from './AtlasHeader.astro';
 import AtlasFooter from './AtlasFooter.astro';
 ---
 
 <div
   class="atlas sp-shell"
-  style="--sp-accent: var(--a-accent); --sp-line: var(--a-line); --sp-muted: var(--a-muted); --sp-display: var(--a-display); --sp-pad: clamp(1.25rem, 5vw, 4rem);"
+  style="--sp-accent: var(--a-accent); --sp-line: var(--a-line); --sp-muted: var(--a-muted); --sp-display: var(--a-display); --sp-pad: clamp(1.25rem, 5vw, 4rem); --sp-pad-top: clamp(6rem, 11vh, 8rem);"
 >
-  <header class="sp-masthead">
-    <a class="sp-word" href="/atlas">Taranity</a>
-    <a class="sp-home" href="/atlas">Back to Atlas</a>
-  </header>
+  <AtlasHeader subpage />
   <main class="sp-main">
     <div class="subpage-body"><slot /></div>
   </main>
