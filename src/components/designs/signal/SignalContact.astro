@@ -340,7 +340,11 @@ const hasKey = Boolean(services.web3formsKey);
       const showSuccess = () => {
         form.hidden = true;
         successPanel.hidden = false;
-        successPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // A smooth scroll fights a reduced-motion preference; jump instantly then.
+        successPanel.scrollIntoView({
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          block: 'center',
+        });
         // Keyboard/SR users were focused on the now-hidden submit button:
         // move focus so the confirmation is announced and reachable.
         successPanel.focus({ preventScroll: true });

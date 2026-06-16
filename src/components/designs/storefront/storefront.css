@@ -226,11 +226,19 @@ html:not(.v-lenis) .f-progress {
   box-shadow: 0 4px 0 var(--f-accent-press), var(--f-shadow-soft);
 }
 .f-cta-primary:hover {
-  background: color-mix(in srgb, var(--f-accent-strong) 90%, white);
+  /* Darken on hover, never lighten: mixing white in dropped cream text to 4.40:1
+     (under AA). A darker coral keeps the label above 5:1. */
+  background: color-mix(in srgb, var(--f-accent-strong) 90%, black);
 }
 .f-cta-primary:active {
   transform: translateY(3px);
   box-shadow: 0 1px 0 var(--f-accent-press), var(--f-shadow-soft);
+}
+/* The shared focus ring (site.css) is `outline: 2px solid currentColor`; on a
+   filled CTA currentColor is cream, so the ring is invisible on the cream page.
+   Give the filled CTAs an explicit deep-coral ring (>=3:1 on cream). */
+.f-cta-primary:focus-visible {
+  outline-color: var(--f-accent-press);
 }
 .f-cta-ghost {
   background: var(--f-bg-raise);
@@ -238,8 +246,10 @@ html:not(.v-lenis) .f-progress {
   color: var(--f-ink);
 }
 .f-cta-ghost:hover {
+  /* Border is non-text (3:1 is enough), but the label must clear AA 4.5:1:
+     --f-accent (#ff4a23) is only 3.31:1 on cream, so use the AA-safe deep tone. */
   border-color: var(--f-accent);
-  color: var(--f-accent);
+  color: var(--f-accent-strong);
 }
 .f-cta-arrow {
   transition: transform 0.25s ease;

@@ -12,19 +12,19 @@ export const site = {
   name: 'Taranity',
   /**
    * Founder's name. Used only for the Organization's `founder` in structured
-   * data — never as a public byline. Taranity is presented as a studio ("we").
+   * data, never as a public byline. Taranity is presented as a studio ("we").
    */
   founder: 'Taran',
-  /** One-line studio descriptor (footer tagline + Organization description). */
-  role: 'A digital studio that builds AI systems, apps, and websites',
   /** Used in <title> templates and OG. */
   shortTagline: 'If you can describe it, we build it',
+  /**
+   * Organization description for structured data (JSON-LD). Leads with the
+   * outcome and lists intelligent systems last, with no em dash, to honour the
+   * hard rules (3: AI never leads; 4: no em dashes in copy or structured data).
+   */
   description:
-    'Taranity is a digital studio that builds AI systems, apps, and websites — from the impossible-looking to the production-ready. Based in the Netherlands.',
-  location: 'Eindhoven, Netherlands',
-  timezone: 'Europe/Amsterdam',
+    'Taranity is a digital studio that builds websites, apps, automation, and intelligent systems, from the impossible-looking to the production-ready. Based in the Netherlands.',
   url: env.PUBLIC_SITE_URL || 'https://taranity.com',
-  locale: 'en',
 } as const;
 
 export const services = {

@@ -34,7 +34,6 @@
   /* trust palette: pine leads, warm earth tones support, brass for the seal */
   --p-accent: #1f6f5c; /* pine green — decorative (seals, rules, chips, checks) */
   --p-accent-ink: #f4f7f0; /* warm off-white text on a filled accent surface */
-  --p-accent-2: #2a8f8f; /* teal, for gradients and the trust strip */
   --p-accent-strong: #14564a; /* deep pine for filled buttons (carries light text at AA) */
   --p-accent-press: #0e3f37; /* darker tone for active/press + the demo note */
   --p-accent-soft: rgba(31, 111, 92, 0.12);

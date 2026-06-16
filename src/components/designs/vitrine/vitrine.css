@@ -385,7 +385,6 @@ html:not(.v-lenis) .v-progress {
   html.js .vitrine [data-v-hero-fade] {
     opacity: 0;
   }
-  html.js .vitrine [data-v-rule],
   html.js .vitrine [data-v-hero-rule] {
     transform: scaleX(0);
   }

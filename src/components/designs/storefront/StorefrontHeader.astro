@@ -28,7 +28,7 @@ const promo = [
 ];
 ---
 
-<div class="f-promo" role="presentation">
+<div class="f-promo" role="group" tabindex="0" aria-label="Studio highlights">
   <div class="f-promo-track">
     {
       [0, 1].map((dup) => (
@@ -109,6 +109,16 @@ const promo = [
     .f-promo-track {
       animation: f-marquee 32s linear infinite;
     }
+    /* Pause/Stop (WCAG 2.2.2): hovering or focusing the strip stops the scroll.
+       The strip is focusable (tabindex) so keyboard users can pause it too. */
+    .f-promo:hover .f-promo-track,
+    .f-promo:focus-within .f-promo-track {
+      animation-play-state: paused;
+    }
+  }
+  /* Keep the keyboard focus ring inside the full-bleed bar so it is not clipped. */
+  .f-promo:focus-visible {
+    outline-offset: -3px;
   }
   @keyframes f-marquee {
     /* the track is two identical sets; sliding by exactly half loops seamlessly */

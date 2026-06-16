@@ -6,9 +6,18 @@ describe('site config', () => {
     expect(site.name).toBe('Taranity');
     // Studio voice: founder feeds the Organization `founder` in JSON-LD, not a public byline.
     expect(site.founder).toBeTruthy();
-    expect(site.role).toBeTruthy();
     expect(site.shortTagline).toBeTruthy();
     expect(site.url).toMatch(/^https?:\/\//);
+  });
+
+  it('Organization description honours the hard rules (no em dash, AI never leads)', () => {
+    expect(site.description).toBeTruthy();
+    // Rule 4: no em dashes (U+2014) in site copy or structured data.
+    expect(site.description).not.toContain('—');
+    // Rule 3: AI never leads — "intelligent systems" must trail the other crafts.
+    const desc = site.description.toLowerCase();
+    expect(desc).toContain('intelligent systems');
+    expect(desc.indexOf('intelligent systems')).toBeGreaterThan(desc.indexOf('websites'));
   });
 
   it('provides safe service fallbacks (runs with zero secrets)', () => {

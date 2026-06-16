@@ -269,6 +269,7 @@ export function createAtlasScene(root: HTMLElement): AtlasScene | null {
   let contextLost = false;
   let lastTime = 0;
   let elapsed = 0;
+  let resizeTimer = 0;
 
   const frame = (time: number) => {
     raf = requestAnimationFrame(frame);
@@ -276,6 +277,9 @@ export function createAtlasScene(root: HTMLElement): AtlasScene | null {
     lastTime = time;
     elapsed += dt;
 
+    // Read per frame on purpose: no DOM writes precede this in the loop, so
+    // layout is clean and the read is cheap, and it stays correct if the page
+    // height changes after load (late fonts/images) without a resize event.
     const limit = document.documentElement.scrollHeight - window.innerHeight;
     const progress = limit > 0 ? window.scrollY / limit : 0;
     poseAt(progress, targetPos, targetLook);
@@ -308,7 +312,7 @@ export function createAtlasScene(root: HTMLElement): AtlasScene | null {
   };
 
   // ---- listeners ----
-  const onResize = () => {
+  const applyResize = () => {
     // DPR can change mid-session (window moved between displays, device
     // rotation): refresh the renderer ratio and the point-size uniforms,
     // not just the canvas size, or the scene stays blurry until reload.
@@ -320,6 +324,12 @@ export function createAtlasScene(root: HTMLElement): AtlasScene | null {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+  };
+  // Debounce: a desktop window drag fires resize dozens of times/sec, and each
+  // setSize reallocates the GPU drawing buffer. Coalesce to the end of the drag.
+  const onResize = () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(applyResize, 150);
   };
   const onPointerMove = (e: PointerEvent) => {
     pointerX = (e.clientX / window.innerWidth) * 2 - 1;
@@ -350,6 +360,7 @@ export function createAtlasScene(root: HTMLElement): AtlasScene | null {
     if (destroyed) return;
     destroyed = true;
     stop();
+    clearTimeout(resizeTimer);
     window.removeEventListener('resize', onResize);
     if (finePointer) window.removeEventListener('pointermove', onPointerMove);
     document.removeEventListener('visibilitychange', onVisibility);
