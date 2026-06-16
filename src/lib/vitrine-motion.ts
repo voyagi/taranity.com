@@ -154,20 +154,6 @@ function setup() {
         ),
     });
 
-    // Hairlines draw themselves in.
-    gsap.utils.toArray<HTMLElement>('[data-v-rule]').forEach((line) => {
-      gsap.fromTo(
-        line,
-        { scaleX: 0 },
-        {
-          scaleX: 1,
-          duration: 1.3,
-          ease: 'power2.inOut',
-          scrollTrigger: { trigger: line, start: 'top 90%', once: true },
-        },
-      );
-    });
-
     // Plates wipe open bottom-up as they enter (initial clip in vitrine.css),
     // then the oversized art layer drifts as the plate crosses the viewport
     // (its -10% inset means edges never show).
