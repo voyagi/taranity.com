@@ -16,6 +16,9 @@ describe('site config', () => {
     expect(site.description).not.toContain('—');
     // Rule 3: AI never leads — "intelligent systems" must trail the other crafts.
     const desc = site.description.toLowerCase();
+    // Assert both terms exist first: without this, a missing "websites" makes
+    // indexOf return -1 and the ordering check below passes vacuously.
+    expect(desc).toContain('websites');
     expect(desc).toContain('intelligent systems');
     expect(desc.indexOf('intelligent systems')).toBeGreaterThan(desc.indexOf('websites'));
   });
