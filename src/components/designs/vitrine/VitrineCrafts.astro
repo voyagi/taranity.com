@@ -422,7 +422,14 @@ const arcRadii = [620, 780, 950, 1130, 1320];
       radial-gradient(55% 45% at 68% 28%, var(--pe) 0%, transparent 70%),
       conic-gradient(from 200deg at 28% 72%, transparent 0deg, var(--pd) 90deg, transparent 210deg),
       linear-gradient(160deg, var(--pc) 0%, var(--pd) 100%);
-    will-change: transform;
+  }
+  /* Promote to a GPU layer only when the parallax scrub actually runs (JS on and
+     motion allowed). Otherwise these six oversized composite fields would each
+     hold a backing store for no benefit on reduced-motion, no-JS, and idle pages. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .v-plate-art-inner {
+      will-change: transform;
+    }
   }
   :global(:root[data-mode='dark']) .v-plate-art-inner {
     --pa: var(--pa-d);
