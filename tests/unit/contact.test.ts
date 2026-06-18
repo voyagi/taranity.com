@@ -104,4 +104,19 @@ describe('contact /api/contact', () => {
     const res = await onRequestPost({ request: makeReq(validFields), env: ENV });
     expect(await res.json()).toEqual({ success: false });
   });
+
+  it('never trusts client from_name and drops an unknown subject (no injection)', async () => {
+    const fetchSpy = mockUpstreams({ verify: true, submit: true });
+    await onRequestPost({ request: makeReq({ ...validFields, subject: 'Spammy injected text', from_name: 'Evil Sender' }), env: ENV });
+    const submitData = fetchSpy.mock.calls.find(([u]) => String(u).includes('web3forms'))![1]!.body as FormData;
+    expect(submitData.get('from_name')).toBe('taranity.com');
+    expect(submitData.get('subject')).toBe('New enquiry via taranity.com');
+  });
+
+  it('keeps a recognized per-design subject', async () => {
+    const fetchSpy = mockUpstreams({ verify: true, submit: true });
+    await onRequestPost({ request: makeReq({ ...validFields, subject: 'New enquiry via taranity.com (Atlas)' }), env: ENV });
+    const submitData = fetchSpy.mock.calls.find(([u]) => String(u).includes('web3forms'))![1]!.body as FormData;
+    expect(submitData.get('subject')).toBe('New enquiry via taranity.com (Atlas)');
+  });
 });

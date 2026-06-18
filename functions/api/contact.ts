@@ -26,6 +26,16 @@ interface ContactContext {
 const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const WEB3FORMS = 'https://api.web3forms.com/submit';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// The subject is a fixed per-design label. Allowlist it so a crafted request
+// can't inject arbitrary text into the notification email (from_name is always us).
+const ALLOWED_SUBJECTS = new Set([
+  'New enquiry via taranity.com (Vitrine)',
+  'New enquiry via taranity.com (Atlas)',
+  'New enquiry via taranity.com (Signal)',
+  'New enquiry via taranity.com (Storefront)',
+  'New enquiry via taranity.com (Practice)',
+  'New enquiry via taranity.com (Raw)',
+]);
 
 const json = (body: unknown, status = 200): Response =>
   new Response(JSON.stringify(body), {
@@ -95,8 +105,12 @@ export async function onRequestPost(context: ContactContext): Promise<Response> 
   submitForm.append('name', name);
   submitForm.append('email', email);
   submitForm.append('message', message);
-  submitForm.append('subject', String(form.get('subject') ?? 'New enquiry via taranity.com'));
-  submitForm.append('from_name', String(form.get('from_name') ?? 'taranity.com'));
+  // Don't trust the client for subject/from_name — they'd otherwise let a crafted
+  // request inject arbitrary text into our inbox. from_name is always us; subject
+  // must match a known per-design label, else fall back to the generic one.
+  const rawSubject = String(form.get('subject') ?? '');
+  submitForm.append('subject', ALLOWED_SUBJECTS.has(rawSubject) ? rawSubject : 'New enquiry via taranity.com');
+  submitForm.append('from_name', 'taranity.com');
   try {
     const sr = await fetchWithTimeout(
       WEB3FORMS,
