@@ -8,7 +8,6 @@
  */
 import { services, socials, contactEmail } from '../../../config/site';
 
-const hasKey = Boolean(services.web3formsKey);
 const hasTurnstile = Boolean(services.turnstileSitekey);
 ---
 
@@ -44,19 +43,18 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
         class="f-form"
         data-f-form
         data-fallback-email={contactEmail}
-        action="https://api.web3forms.com/submit"
+        action="/api/contact"
         method="POST"
         novalidate
       >
-        <input type="hidden" name="access_key" value={services.web3formsKey} />
         <input type="hidden" name="subject" value="New enquiry via taranity.com (Storefront)" />
         <input type="hidden" name="from_name" value="taranity.com" />
         <!-- Honeypot -->
         <input type="checkbox" name="botcheck" class="f-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
         {
-          !hasKey && (
-            <p class="f-demo-note">Demo mode: add a Web3Forms key to send for real (see HUMAN-TODO).</p>
+          !hasTurnstile && (
+            <p class="f-demo-note">Demo mode: submissions are simulated in this preview.</p>
           )
         }
 
@@ -295,10 +293,6 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
     if (!form || form.dataset.bound) return;
     form.dataset.bound = '1';
 
-    // Read the key from the rendered hidden field (not import.meta.env) so this
-    // script's bytes, and thus its CSP hash, never change when a key is set.
-    const KEY = (form.querySelector<HTMLInputElement>('input[name="access_key"]')?.value || '').trim();
-
     const status = form.querySelector<HTMLElement>('[data-f-form-status]')!;
     const submitBtn = form.querySelector<HTMLButtonElement>('.f-submit')!;
     const submitLabel = form.querySelector<HTMLElement>('[data-f-submit-label]')!;
@@ -364,35 +358,15 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
 
       if ((form.querySelector('[name="botcheck"]') as HTMLInputElement)?.checked) return;
 
-      // Turnstile gate: a human-verified token must clear server-side (/api/verify)
-      // before the real submit runs. Only active when a widget rendered (sitekey set).
-      if (tsEl) {
-        const tsToken = (form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null)?.value || '';
-        const tsFail = (msg: string) => {
-          status.textContent = msg;
-          status.classList.add('is-error');
-          window.turnstile?.reset(tsEl);
-        };
-        if (!tsToken) {
-          const fallback = form.dataset.fallbackEmail || 'hello@taranity.com';
-          tsFail(`Please complete the verification above, or email us directly at ${fallback}.`);
-          return;
-        }
-        try {
-          const vr = await fetch('/api/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: tsToken }),
-          });
-          const vj = (await vr.json().catch(() => ({}))) as { success?: boolean };
-          if (!vj.success) {
-            tsFail('Verification failed. Please try again.');
-            return;
-          }
-        } catch {
-          tsFail('Could not verify you are human. Email us directly if this keeps happening.');
-          return;
-        }
+      // Require a Turnstile token before submitting. The token rides in the form
+      // data and is verified server-side by functions/api/contact.ts; the client
+      // only checks it is present so the user gets immediate feedback. Skipped in
+      // demo builds, where no widget renders.
+      if (tsEl && !(form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null)?.value) {
+        const fallback = form.dataset.fallbackEmail || 'hello@taranity.com';
+        status.textContent = `Please complete the verification above, or email us directly at ${fallback}.`;
+        status.classList.add('is-error');
+        return;
       }
 
       submitBtn.disabled = true;
@@ -411,8 +385,9 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
         successPanel.focus({ preventScroll: true });
       };
 
-      // Demo mode: no key, simulate success so the flow stays reviewable.
-      if (!KEY) {
+      // Demo / local: no Turnstile widget configured (no sitekey), so there is no
+      // verify endpoint to call — simulate success to keep the flow reviewable.
+      if (!tsEl) {
         await new Promise((r) => setTimeout(r, 700));
         showSuccess();
         return;
@@ -423,7 +398,7 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
       const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), 12000);
       try {
-        const res = await fetch('https://api.web3forms.com/submit', {
+        const res = await fetch('/api/contact', {
           method: 'POST',
           body: new FormData(form),
           headers: { Accept: 'application/json' },

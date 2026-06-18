@@ -22,7 +22,10 @@ import { contactEmail, site } from '../config/site';
   <ul>
     <li>
       <strong>The contact form.</strong> Only if you submit it: your name, email, and message.
-      It is delivered to us through <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer">Web3Forms</a>
+      Before it sends, a <a href="https://www.cloudflare.com/products/turnstile/" target="_blank" rel="noopener noreferrer">Cloudflare Turnstile</a>
+      check confirms you are human — a cookieless CAPTCHA alternative that processes minimal
+      technical signals (such as your IP) purely to tell people from bots. Your message is then
+      delivered to us through <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer">Web3Forms</a>
       (a form-to-email service acting as a processor) and used <em>solely</em> to reply. It is
       never sold, shared for marketing, or added to any list.
     </li>
