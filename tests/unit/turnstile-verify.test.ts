@@ -54,6 +54,12 @@ describe('turnstile /api/verify', () => {
     expect(await res.json()).toMatchObject({ success: false });
   });
 
+  it('fails closed when siteverify returns a non-200 / non-JSON response', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('upstream error', { status: 503 }));
+    const res = await onRequestPost({ request: makeReq({ token: 'good' }), env: { TURNSTILE_SECRET_KEY: 's' } });
+    expect(await res.json()).toMatchObject({ success: false });
+  });
+
   it('forwards the secret, token, and client IP to siteverify', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(JSON.stringify({ success: true }), { status: 200 }),

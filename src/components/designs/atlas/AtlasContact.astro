@@ -387,7 +387,8 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
           window.turnstile?.reset(tsEl);
         };
         if (!tsToken) {
-          tsFail('Please complete the verification, then send again.');
+          const fallback = form.dataset.fallbackEmail || 'hello@taranity.com';
+          tsFail(`Please complete the verification above, or email us directly at ${fallback}.`);
           return;
         }
         try {
