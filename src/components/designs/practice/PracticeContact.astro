@@ -9,6 +9,7 @@
 import { services, socials, contactEmail } from '../../../config/site';
 
 const hasKey = Boolean(services.web3formsKey);
+const hasTurnstile = Boolean(services.turnstileSitekey);
 ---
 
 <section class="p-section p-contact" id="contact" tabindex="-1">
@@ -77,6 +78,13 @@ const hasKey = Boolean(services.web3formsKey);
           <textarea id="p-message" name="message" rows="5" required maxlength="3000" aria-describedby="p-err-message"></textarea>
           <span class="p-field-err" id="p-err-message" data-p-err="message" role="alert"></span>
         </div>
+
+        {hasTurnstile && (
+          <Fragment>
+            <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+            <div class="cf-turnstile" data-sitekey={services.turnstileSitekey} data-action="turnstile-spin-v1" data-theme="auto" style="margin-bottom: 1.5rem"></div>
+          </Fragment>
+        )}
 
         <button type="submit" class="p-cta p-cta-primary p-submit">
           <span data-p-submit-label>Send your message</span>
@@ -300,6 +308,25 @@ const hasKey = Boolean(services.web3formsKey);
     // another form's panel.
     const successPanel = form.closest('.p-form-wrap')!.querySelector<HTMLElement>('[data-p-form-success]')!;
 
+    // Cloudflare Turnstile: render the widget explicitly so it survives Astro
+    // view-transition navigation (api.js does not auto-rescan on client nav).
+    // No widget when no sitekey is configured (demo builds) → the gate is skipped.
+    const tsEl = form.querySelector<HTMLElement>('.cf-turnstile');
+    if (tsEl) {
+      const renderTurnstile = () => {
+        if (!window.turnstile || tsEl.dataset.tsRendered) return false;
+        window.turnstile.render(tsEl);
+        tsEl.dataset.tsRendered = '1';
+        return true;
+      };
+      if (!renderTurnstile()) {
+        const iv = window.setInterval(() => {
+          if (renderTurnstile()) window.clearInterval(iv);
+        }, 150);
+        window.setTimeout(() => window.clearInterval(iv), 10000);
+      }
+    }
+
     const setErr = (name: string, msg: string) => {
       const field = form.querySelector(`[name="${name}"]`)?.closest('.p-field-row');
       const errEl = form.querySelector(`[data-p-err="${name}"]`);
@@ -337,6 +364,36 @@ const hasKey = Boolean(services.web3formsKey);
       if (!validate()) return;
 
       if ((form.querySelector('[name="botcheck"]') as HTMLInputElement)?.checked) return;
+
+      // Turnstile gate: a human-verified token must clear server-side (/api/verify)
+      // before the real submit runs. Only active when a widget rendered (sitekey set).
+      if (tsEl) {
+        const tsToken = (form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null)?.value || '';
+        const tsFail = (msg: string) => {
+          status.textContent = msg;
+          status.classList.add('is-error');
+          window.turnstile?.reset(tsEl);
+        };
+        if (!tsToken) {
+          tsFail('Please complete the verification, then send again.');
+          return;
+        }
+        try {
+          const vr = await fetch('/api/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: tsToken }),
+          });
+          const vj = (await vr.json().catch(() => ({}))) as { success?: boolean };
+          if (!vj.success) {
+            tsFail('Verification failed. Please try again.');
+            return;
+          }
+        } catch {
+          tsFail('Could not verify you are human. Email us directly if this keeps happening.');
+          return;
+        }
+      }
 
       submitBtn.disabled = true;
       submitLabel.textContent = 'Sending…';

@@ -30,6 +30,8 @@ export const site = {
 export const services = {
   /** Web3Forms public access key (hidden form field, not a secret). */
   web3formsKey: env.PUBLIC_WEB3FORMS_KEY || '',
+  /** Cloudflare Turnstile site key (public; renders the bot-check widget). Empty → no widget (demo). */
+  turnstileSitekey: env.PUBLIC_TURNSTILE_SITEKEY || '',
   /** Plausible domain; empty → no analytics script injected. */
   plausibleDomain: env.PUBLIC_PLAUSIBLE_DOMAIN || '',
 } as const;
