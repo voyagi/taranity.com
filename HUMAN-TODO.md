@@ -7,9 +7,17 @@ does not block on any of them.
 ## 1. Accounts & keys (free tiers)
 
 - [ ] **Web3Forms access key** — create one (no account needed) at https://web3forms.com →
-      enter your email → copy the access key. Put it in `.env` as `PUBLIC_WEB3FORMS_KEY`.
-      Until then the contact form runs in demo mode (validates + shows a success state but does
-      not send). The key is a *public* value (hidden form field), not a secret.
+      enter your email → copy the access key. Set it as `PUBLIC_WEB3FORMS_KEY`, a **Pages secret**
+      (Production): the form now submits server-side through `functions/api/contact.ts`, so the key
+      stays off the client. **(Already set.)** With no Turnstile sitekey configured (e.g. local dev)
+      the form simulates sending instead.
+- [ ] **Cloudflare Turnstile (bot protection)** — a widget is wired into all six contact forms and
+      verified and delivered server-side by the `functions/api/contact.ts` Pages Function. Two values activate it:
+      (1) `PUBLIC_TURNSTILE_SITEKEY` — the **public** site key, needed at *build* time (it is passed
+      on the deploy command, or add it to `.env`); (2) `TURNSTILE_SECRET_KEY` — the **secret** key,
+      set as an encrypted Secret on the Pages project (Workers & Pages → taranity → Settings →
+      Variables and Secrets → Production). Without the site key the widget does not render (demo mode);
+      the form keeps working. The secret never goes in the repo or the client bundle.
 - [ ] **Plausible** — add the `taranity.com` site at https://plausible.io (or self-host).
       Set `PUBLIC_PLAUSIBLE_DOMAIN=taranity.com`. Until set, no analytics script is injected.
 - [ ] **Cal.com or Calendly** — create an event type, copy your booking URL, set
