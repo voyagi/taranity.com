@@ -281,12 +281,14 @@ const hasKey = Boolean(services.web3formsKey);
    * honeypot, demo mode without a key, and a hardcoded endpoint (never trust a
    * DOM attribute for the POST target).
    */
-  const KEY = (import.meta.env.PUBLIC_WEB3FORMS_KEY as string) || '';
-
   function bindSignalForm() {
     const form = document.querySelector<HTMLFormElement>('[data-s-form]');
     if (!form || form.dataset.bound) return;
     form.dataset.bound = '1';
+
+    // Read the key from the rendered hidden field (not import.meta.env) so this
+    // script's bytes, and thus its CSP hash, never change when a key is set.
+    const KEY = (form.querySelector<HTMLInputElement>('input[name="access_key"]')?.value || '').trim();
 
     const status = form.querySelector<HTMLElement>('[data-s-form-status]')!;
     const submitBtn = form.querySelector<HTMLButtonElement>('.s-submit')!;
