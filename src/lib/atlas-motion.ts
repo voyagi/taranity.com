@@ -12,6 +12,7 @@
  * never double-drive the scroll.
  */
 import Lenis from 'lenis';
+import { resetScrollOnReload } from './scroll-reset';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { AtlasScene } from './atlas-gl';
@@ -105,6 +106,7 @@ function setup() {
   // the native scrollbar is hidden (dragging it fights the smoothing loop)
   // and the instrument rail takes over as the position indicator.
   lenis = new Lenis({ duration: 1.1, smoothWheel: true, touchMultiplier: 1.4 });
+  resetScrollOnReload(lenis);
   // Usually already set pre-paint by SiteLayout's inline script (data-smooth);
   // re-adding covers the mid-session "reduced motion turned off" path.
   document.documentElement.classList.add('v-lenis');
