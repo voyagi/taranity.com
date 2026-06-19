@@ -12,6 +12,7 @@
  * the JS lean (Lenis + GSAP only) so a vivid page still loads fast.
  */
 import Lenis from 'lenis';
+import { resetScrollOnReload } from './scroll-reset';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -58,6 +59,7 @@ function setup() {
   // floaty. While Lenis drives, the native scrollbar is hidden (dragging it
   // fights the smoothing loop) and the top progress bar takes over.
   lenis = new Lenis({ duration: 1, smoothWheel: true, touchMultiplier: 1.4 });
+  resetScrollOnReload(lenis);
   // Usually already set pre-paint by SiteLayout's inline script (data-smooth);
   // re-adding covers the mid-session "reduced motion turned off" path.
   document.documentElement.classList.add('v-lenis');

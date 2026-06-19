@@ -10,6 +10,7 @@
  * scroll.
  */
 import Lenis from 'lenis';
+import { resetScrollOnReload } from './scroll-reset';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -55,6 +56,7 @@ function setup() {
   // hidden (dragging it fights the smoothing loop) and the top hairline
   // takes over as the position indicator.
   lenis = new Lenis({ duration: 1.35, smoothWheel: true, touchMultiplier: 1.4 });
+  resetScrollOnReload(lenis);
   // Usually already set pre-paint by SiteLayout's inline script (data-smooth);
   // re-adding covers the mid-session "reduced motion turned off" path.
   document.documentElement.classList.add('v-lenis');
