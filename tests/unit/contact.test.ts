@@ -94,9 +94,20 @@ describe('contact /api/contact', () => {
     const submitCall = fetchSpy.mock.calls.find(([u]) => String(u).includes('web3forms'))!;
     expect((verifyCall[1]!.body as FormData).get('response')).toBe('tok');
     expect((verifyCall[1]!.body as FormData).get('remoteip')).toBe('1.2.3.4');
-    const submitData = submitCall[1]!.body as FormData;
-    expect(submitData.get('access_key')).toBe('wf-key');
-    expect(submitData.get('email')).toBe('ada@example.com');
+    const submitBody = JSON.parse(submitCall[1]!.body as string) as Record<string, string>;
+    expect(submitBody.access_key).toBe('wf-key'); // from env, never the client
+    expect(submitBody.email).toBe('ada@example.com');
+  });
+
+  it('treats a Web3Forms HTML success page as success (not a failure)', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      const u = String(url);
+      if (u.includes('siteverify')) return Promise.resolve(new Response(JSON.stringify({ success: true }), { status: 200 }));
+      if (u.includes('web3forms')) return Promise.resolve(new Response('<html><title>Form Submitted Successfully</title></html>', { status: 200 }));
+      return Promise.reject(new Error('unexpected'));
+    });
+    const res = await onRequestPost({ request: makeReq(validFields), env: ENV });
+    expect(await res.json()).toEqual({ success: true });
   });
 
   it('returns success:false when Web3Forms rejects the submission', async () => {
@@ -108,15 +119,15 @@ describe('contact /api/contact', () => {
   it('never trusts client from_name and drops an unknown subject (no injection)', async () => {
     const fetchSpy = mockUpstreams({ verify: true, submit: true });
     await onRequestPost({ request: makeReq({ ...validFields, subject: 'Spammy injected text', from_name: 'Evil Sender' }), env: ENV });
-    const submitData = fetchSpy.mock.calls.find(([u]) => String(u).includes('web3forms'))![1]!.body as FormData;
-    expect(submitData.get('from_name')).toBe('taranity.com');
-    expect(submitData.get('subject')).toBe('New enquiry via taranity.com');
+    const submitBody = JSON.parse(fetchSpy.mock.calls.find(([u]) => String(u).includes('web3forms'))![1]!.body as string) as Record<string, string>;
+    expect(submitBody.from_name).toBe('taranity.com');
+    expect(submitBody.subject).toBe('New enquiry via taranity.com');
   });
 
   it('keeps a recognized per-design subject', async () => {
     const fetchSpy = mockUpstreams({ verify: true, submit: true });
     await onRequestPost({ request: makeReq({ ...validFields, subject: 'New enquiry via taranity.com (Atlas)' }), env: ENV });
-    const submitData = fetchSpy.mock.calls.find(([u]) => String(u).includes('web3forms'))![1]!.body as FormData;
-    expect(submitData.get('subject')).toBe('New enquiry via taranity.com (Atlas)');
+    const submitBody = JSON.parse(fetchSpy.mock.calls.find(([u]) => String(u).includes('web3forms'))![1]!.body as string) as Record<string, string>;
+    expect(submitBody.subject).toBe('New enquiry via taranity.com (Atlas)');
   });
 });

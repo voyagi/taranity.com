@@ -100,25 +100,37 @@ export async function onRequestPost(context: ContactContext): Promise<Response> 
   // 2) Token is good → submit to Web3Forms with the server-held access key.
   const accessKey = env.PUBLIC_WEB3FORMS_KEY;
   if (!accessKey) return json({ success: false, error: 'web3forms-not-configured' }, 500);
-  const submitForm = new FormData();
-  submitForm.append('access_key', accessKey);
-  submitForm.append('name', name);
-  submitForm.append('email', email);
-  submitForm.append('message', message);
   // Don't trust the client for subject/from_name — they'd otherwise let a crafted
   // request inject arbitrary text into our inbox. from_name is always us; subject
   // must match a known per-design label, else fall back to the generic one.
   const rawSubject = String(form.get('subject') ?? '');
-  submitForm.append('subject', ALLOWED_SUBJECTS.has(rawSubject) ? rawSubject : 'New enquiry via taranity.com');
-  submitForm.append('from_name', 'taranity.com');
+  // Post JSON: Web3Forms returns a JSON result for an application/json request.
+  // A multipart post gets an HTML success page instead, which we'd misread as a
+  // failure ("Could not send" even though the email was actually delivered).
+  const payload = {
+    access_key: accessKey,
+    name,
+    email,
+    message,
+    subject: ALLOWED_SUBJECTS.has(rawSubject) ? rawSubject : 'New enquiry via taranity.com',
+    from_name: 'taranity.com',
+  };
   try {
     const sr = await fetchWithTimeout(
       WEB3FORMS,
-      { method: 'POST', body: submitForm, headers: { Accept: 'application/json' } },
+      { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) },
       12000,
     );
-    const sd = (await sr.json().catch(() => ({}))) as { success?: boolean };
-    return json({ success: sr.ok && sd.success === true });
+    // Trust parsed JSON when present; fall back to the 2xx status + a success
+    // marker if a non-JSON (HTML) body is ever returned, so success isn't lost.
+    const body = await sr.text();
+    let success = sr.ok;
+    try {
+      success = sr.ok && (JSON.parse(body) as { success?: boolean }).success === true;
+    } catch {
+      success = sr.ok && /success/i.test(body);
+    }
+    return json({ success });
   } catch {
     return json({ success: false, error: 'submit-failed' }, 502);
   }
