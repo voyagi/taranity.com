@@ -16,6 +16,10 @@
   Cross-Origin-Resource-Policy: same-origin
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   X-DNS-Prefetch-Control: off
+  # HTML must revalidate so the edge never serves a stale page that points at
+  # fingerprinted assets a newer deploy has replaced (the more-specific rules
+  # below keep the hashed assets themselves immutable).
+  Cache-Control: public, max-age=0, must-revalidate
 
 # Long-cache the fingerprinted build assets.
 /_astro/*
