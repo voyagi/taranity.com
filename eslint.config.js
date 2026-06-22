@@ -11,7 +11,7 @@ export default tseslint.config(
       'node_modules/',
       'design/',
       'public/',
-      // QuickJS sandbox scripts — run with non-standard globals, not part of the site.
+      // QuickJS sandbox scripts - run with non-standard globals, not part of the site.
       'scripts/*.devbrowser.js',
     ],
   },

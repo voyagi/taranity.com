@@ -7,7 +7,7 @@
  * as a Pages secret (`PUBLIC_WEB3FORMS_KEY`). Because the Web3Forms credential
  * and the final submit both live on the server, a bot can no longer skip
  * verification by posting straight to Web3Forms with a key scraped from the page
- * — the Turnstile check is now actually enforced.
+ * - the Turnstile check is now actually enforced.
  *
  * Fails CLOSED on every path (missing secret/key, bad request, unverified token,
  * upstream timeout or non-2xx). Plain types: this is type-checked by astro check
@@ -100,7 +100,7 @@ export async function onRequestPost(context: ContactContext): Promise<Response> 
   // 2) Token is good → submit to Web3Forms with the server-held access key.
   const accessKey = env.PUBLIC_WEB3FORMS_KEY;
   if (!accessKey) return json({ success: false, error: 'web3forms-not-configured' }, 500);
-  // Don't trust the client for subject/from_name — they'd otherwise let a crafted
+  // Don't trust the client for subject/from_name - they'd otherwise let a crafted
   // request inject arbitrary text into our inbox. from_name is always us; subject
   // must match a known per-design label, else fall back to the generic one.
   const rawSubject = String(form.get('subject') ?? '');

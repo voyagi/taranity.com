@@ -32,3 +32,19 @@ Thumbs.db
 
 # temp
 tmp-astro/
+
+# local logs and editor scratch
+*.log
+.vscode/
+
+# AI build-process artifacts (kept on disk, never shipped to the repo)
+DESIGN-BRIEF.md
+DESIGN-SYSTEM.md
+HUMAN-TODO.md
+PROJECT.md
+REDESIGN-PLAN.md
+REWORK-PLAN.md
+ROADMAP.md
+VERIFICATION.md
+.claude/
+.planning/

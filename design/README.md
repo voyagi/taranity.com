@@ -1,6 +1,6 @@
-# design/ — hi-fi artifacts
+# design/ - hi-fi artifacts
 
-These are **real rendered screenshots** of the built site (not Figma comps) — the strongest
+These are **real rendered screenshots** of the built site (not Figma comps) - the strongest
 possible proof of the design language, captured from the live dev server with the actual fonts
 and styles via `dev-browser` (Playwright). Regenerate any time with
 [`../scripts/capture.devbrowser.js`](../scripts/capture.devbrowser.js).
@@ -8,8 +8,6 @@ and styles via `dev-browser` (Playwright). Regenerate any time with
 > Captured with `prefers-reduced-motion: reduce` so every scroll-reveal section is fully visible
 > in the full-page shots. The live desktop experience adds the kinetic SplitText hero, the pinned
 > horizontal gallery, the magnetic cursor, and the holographic hover edges.
-
-The design language itself is specified in [../DESIGN-SYSTEM.md](../DESIGN-SYSTEM.md).
 
 ## Pages
 
@@ -24,19 +22,19 @@ The design language itself is specified in [../DESIGN-SYSTEM.md](../DESIGN-SYSTE
 
 ## Social
 
-- [og.png](og.png) — Open Graph image (1200×630), shipped at `public/og.png`.
+- [og.png](og.png) - Open Graph image (1200×630), shipped at `public/og.png`.
 
 ## Self-critique (what was checked against the "not-a-template" bar)
 
-- **Identity is legible in a screenshot** — HUD corner brackets, the `~/ taranity ●` shell
+- **Identity is legible in a screenshot** - HUD corner brackets, the `~/ taranity ●` shell
   wordmark, telemetry mono labels, and the live Currently console make every page unmistakably
   *this* site, not a generic dark SaaS page.
-- **Accent is rationed** — the violet→cyan gradient appears only on accent words, metric numbers,
+- **Accent is rationed** - the violet→cyan gradient appears only on accent words, metric numbers,
   and edges; backgrounds are near-black with light, never colour washes (avoids the "purple SaaS
   gradient" cliché).
-- **Hierarchy & rhythm** — Space Grotesk display vs. Inter body vs. JetBrains Mono "system voice";
+- **Hierarchy & rhythm** - Space Grotesk display vs. Inter body vs. JetBrains Mono "system voice";
   fluid type scale; one centred CTA per section.
-- **Real content** — every project is Problem→Solution→Result with a measurable number; copy is
+- **Real content** - every project is Problem→Solution→Result with a measurable number; copy is
   specific and human, no lorem.
-- **Responsive** — mobile stacks cleanly with no horizontal overflow; the horizontal gallery
+- **Responsive** - mobile stacks cleanly with no horizontal overflow; the horizontal gallery
   becomes a vertical card stack on small screens / reduced motion.

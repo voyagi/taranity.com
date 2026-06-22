@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Atlas — immersive dark 3D journey. Space Grotesk display, JetBrains Mono
+   Atlas - immersive dark 3D journey. Space Grotesk display, JetBrains Mono
    instrument labels, ion-blue accent over deep-space navy. A fixed Three.js
    particle globe travels behind the content as the page scrolls
    (src/lib/atlas-motion.ts orchestrates; src/lib/atlas-gl.ts is lazy-loaded
@@ -11,7 +11,7 @@
    ========================================================================== */
 
 /* INVARIANT: never declare transform, filter, perspective, contain, isolation,
-   or will-change on .atlas (or its ancestors) — any of them would turn it into
+   or will-change on .atlas (or its ancestors) - any of them would turn it into
    a containing block and re-pin the fixed .a-field / .a-gl / .a-track layers
    inside it instead of the viewport. Pinned by tests/unit/atlas-css.test.ts. */
 .atlas {

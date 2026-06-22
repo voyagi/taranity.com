@@ -1,5 +1,5 @@
 /* Self-hosted latin-subset fonts (copied from @fontsource into public/fonts).
-   Only the latin subset ships — drops cyrillic/greek/vietnamese/latin-ext that
+   Only the latin subset ships - drops cyrillic/greek/vietnamese/latin-ext that
    the site never uses, and gives stable paths we can <link rel=preload>.
    Non-latin glyphs (→ ⌘ ●) fall back to the system stack, by design. */
 

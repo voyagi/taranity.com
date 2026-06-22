@@ -24,8 +24,8 @@ describe('site config', () => {
   });
 
   it('provides safe service fallbacks (runs with zero secrets)', () => {
-    // demo mode: empty key is allowed and must not throw
-    expect(typeof services.web3formsKey).toBe('string');
+    // demo mode: empty keys are allowed and must not throw
+    expect(typeof services.turnstileSitekey).toBe('string');
     expect(typeof services.plausibleDomain).toBe('string');
   });
 

@@ -1,5 +1,5 @@
 // End-to-end + a11y suite, driven by dev-browser (Playwright Page API under a
-// Rust/QuickJS harness — this environment blocks raw Playwright by policy).
+// Rust/QuickJS harness - this environment blocks raw Playwright by policy).
 //
 // Run the built site first:  npm run build && npm run preview   (serves :4321)
 // Then:                      npm run e2e
@@ -12,7 +12,7 @@
 // Atlas journey (switcher swap, hero masks, waypoint wipes, lazy WebGL).
 
 // IPv4-explicit on purpose: serve-headers.mjs binds 127.0.0.1, while a stray
-// `astro preview` (no _headers applied) binds ::1 — and `localhost` resolves
+// `astro preview` (no _headers applied) binds ::1 - and `localhost` resolves
 // to ::1 first, silently swapping the server under the suite.
 const BASE = 'http://127.0.0.1:4321';
 // axe-core served from the site's own origin (copied into dist by prep-e2e.mjs)
@@ -38,7 +38,7 @@ page.on('console', (m) => {
 });
 page.on('pageerror', (e) => pageErrors.push(String(e)));
 page.on('response', (r) => {
-  // Only real failures — 304 (Not Modified) and other 3xx are normal.
+  // Only real failures - 304 (Not Modified) and other 3xx are normal.
   if (r.status() >= 400) failedResponses.push({ url: r.url(), status: r.status() });
 });
 page.on('requestfailed', (req) => failedRequests.push(req.url()));
@@ -285,7 +285,7 @@ const inviteText = await page.evaluate(() => {
 });
 rec(
   'switcher: invite copy is count-driven and em-dash-free',
-  /Same site, \d+ designs\. Take your pick\./.test(inviteText) && !inviteText.includes('—'),
+  /Same site, \d+ designs\. Take your pick\./.test(inviteText) && !inviteText.includes(String.fromCharCode(0x2014)),
   inviteText,
 );
 const hasLabel = (await page.$('.ds-label')) !== null;

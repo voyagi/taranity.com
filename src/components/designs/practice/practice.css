@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Practice — warm, trust-first, credibility-led design for the highest-paying
+   Practice - warm, trust-first, credibility-led design for the highest-paying
    local-service niches (medical, dental, med spa, law, home services, trades).
    Fraunces display serif (authority, the type of an established practice),
    Inter body, JetBrains Mono seal labels, over a warm linen canvas lit with
@@ -18,7 +18,7 @@
    ========================================================================== */
 
 /* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
-   contain, isolation, or will-change on .practice (or its ancestors) — any of
+   contain, isolation, or will-change on .practice (or its ancestors) - any of
    them would turn it into a containing block and re-pin the fixed .p-field /
    .p-progress layers inside it instead of the viewport. Pinned by
    tests/unit/practice-css.test.ts. */
@@ -32,7 +32,7 @@
   --p-line-strong: rgba(32, 48, 42, 0.2);
 
   /* trust palette: pine leads, warm earth tones support, brass for the seal */
-  --p-accent: #1f6f5c; /* pine green — decorative (seals, rules, chips, checks) */
+  --p-accent: #1f6f5c; /* pine green - decorative (seals, rules, chips, checks) */
   --p-accent-ink: #f4f7f0; /* warm off-white text on a filled accent surface */
   --p-accent-strong: #14564a; /* deep pine for filled buttons (carries light text at AA) */
   --p-accent-press: #0e3f37; /* darker tone for active/press + the demo note */
@@ -46,7 +46,7 @@
   --p-c6: #8a5a73; /* muted plum */
   --p-error: #b23b2e;
 
-  /* calm, premium shadows — soft drop, never a chunky offset edge */
+  /* calm, premium shadows - soft drop, never a chunky offset edge */
   --p-shadow: 0 1px 2px rgba(32, 48, 42, 0.05), 0 18px 40px -22px rgba(32, 48, 42, 0.3);
   --p-shadow-soft: 0 12px 30px -18px rgba(32, 48, 42, 0.26);
 
@@ -59,7 +59,7 @@
   --p-max: 1220px;
   --p-pad: max(var(--p-gutter), calc((100% - var(--p-max)) / 2));
   --p-section: clamp(5rem, 13vh, 9rem);
-  --p-radius: 16px; /* measured, calm rounding — never chunky, never hard */
+  --p-radius: 16px; /* measured, calm rounding - never chunky, never hard */
   --p-radius-sm: 10px;
 
   background: var(--p-bg);
@@ -95,7 +95,7 @@
   background-size: 100% 100%;
 }
 /* Warm light wash: a sand glow overhead, a pine pool low-left, a clay bloom
-   low-right. Calm and low-contrast — the page's warmth lives here. */
+   low-right. Calm and low-contrast - the page's warmth lives here. */
 .p-field i:first-child {
   background-image:
     radial-gradient(50% 44% at 50% -6%, rgba(255, 250, 240, 0.95), transparent 70%),
@@ -189,7 +189,7 @@ html:not(.v-lenis) .p-progress {
   text-transform: uppercase;
   color: var(--p-ink);
 }
-/* the engraved seal stamp — a brass ring with a pine core */
+/* the engraved seal stamp - a brass ring with a pine core */
 .p-label::before {
   content: '';
   width: 9px;

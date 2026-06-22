@@ -1,4 +1,4 @@
-// dev-browser capture script (QuickJS sandbox — no Node APIs).
+// dev-browser capture script (QuickJS sandbox - no Node APIs).
 // Captures full-page desktop + mobile screenshots of every page into
 // ~/.dev-browser/tmp, plus the 1200x630 OG image. Run:
 //   dev-browser --headless run scripts/capture.devbrowser.js

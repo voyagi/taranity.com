@@ -1,5 +1,5 @@
 // Minimal static server that serves dist/ AND applies the response headers from
-// dist/_headers — so the production CSP/security headers can be tested locally
+// dist/_headers - so the production CSP/security headers can be tested locally
 // (astro preview ignores _headers). Not for production; CF Pages serves the real site.
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync } from 'node:fs';
@@ -66,7 +66,7 @@ const send = (res, status, path, body, type) => {
 
 createServer((req, res) => {
   try {
-    // decodeURIComponent throws on malformed %-encoding — keep one bad request
+    // decodeURIComponent throws on malformed %-encoding - keep one bad request
     // from crashing the whole dev server.
     const reqPath = decodeURIComponent((req.url || '/').split('?')[0]);
     // Resolve to a file inside DIST (block traversal).
