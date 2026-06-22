@@ -7,18 +7,19 @@ Project documentation index.
 
 ## Architecture at a glance
 
-```
+```text
 src/
-  config/        site + about content (profile, socials, CTAs, story, skills)
-  content/       projects.ts - full case-study data
-  layouts/       BaseLayout.astro - head/SEO/JSON-LD/analytics + global shell
-  components/    Nav, Footer, Cursor, CommandPalette, Currently, ProjectCard, MetricTile, ...
-  lib/           motion.ts (Lenis+GSAP runtime), gh.ts (Currently data), util helpers
-  pages/         index, work, projects/[slug], about, contact, 404
-  styles/        global.css - Tailwind v4 @theme tokens + base + utilities
-public/          fonts are bundled via @fontsource; static assets, og.png, robots.txt
+  pages/         index (Vitrine flagship) + the five gallery designs, privacy,
+                 [design]/privacy, 404, og-preview
+  components/    designs/<id>/ (one folder per design) + DesignSwitcher, PrivacyContent
+  config/        site.ts (identity, services), designs.ts (the design registry)
+  layouts/       SiteLayout.astro - head/SEO/JSON-LD/analytics + per-design shell
+  lib/           <design>-motion.ts (GSAP + Lenis runtimes), atlas-gl.ts (Three.js)
+  styles/        Tailwind v4 @theme tokens + base
+functions/api/contact.ts  Pages Function: server-side Turnstile verify + Web3Forms submit
+public/          fonts, og.png, _headers (CSP), robots.txt, favicons
 ```
 
-Design decisions of note live in the ADR. The animation runtime is centralized
-in `src/lib/motion.ts` so every page shares one reduced-motion / touch / View-Transition-safe
+Design decisions of note live in the ADR. Each design owns its animation runtime in
+`src/lib/<design>-motion.ts`, each a reduced-motion / touch / View-Transition-safe
 ScrollTrigger lifecycle.

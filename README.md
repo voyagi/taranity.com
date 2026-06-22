@@ -20,8 +20,8 @@ npm run check      # astro type/diagnostics check
 ```
 
 The site runs in **demo mode with zero configuration**: the contact form simulates success and
-analytics stays off until configured. To wire the real services, copy `.env.example` to `.env`
-and fill in the `PUBLIC_*` values.
+analytics stays off until configured. To wire the real services, follow `.env.example`; the
+contact form additionally needs its Turnstile keys set on the Cloudflare Pages deployment.
 
 ## Project structure
 
