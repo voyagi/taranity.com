@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Signal — clean, light, conversion-focused product design for SaaS, fintech,
+   Signal - clean, light, conversion-focused product design for SaaS, fintech,
    and startups. Inter display and body, JetBrains Mono labels, indigo accent
    on a cool near-white canvas. The layout is structured and card-led; motion
    is restrained and fast (src/lib/signal-motion.ts: Lenis scroll + GSAP
@@ -13,7 +13,7 @@
    ========================================================================== */
 
 /* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
-   contain, isolation, or will-change on .signal (or its ancestors) — any of
+   contain, isolation, or will-change on .signal (or its ancestors) - any of
    them would turn it into a containing block and re-pin the fixed .s-field /
    .s-progress layers inside it instead of the viewport. Pinned by
    tests/unit/signal-css.test.ts. */
@@ -42,7 +42,7 @@
   --s-gutter: clamp(1.25rem, 5vw, 5.5rem);
   /* Composition frame: content capped and centred, symmetric margins on
      ultrawide. Sections use padding-inline: var(--s-pad). Slightly tighter
-     than the immersive designs — a product page reads better at a closer
+     than the immersive designs - a product page reads better at a closer
      measure. */
   --s-max: 1240px;
   --s-pad: max(var(--s-gutter), calc((100% - var(--s-max)) / 2));
@@ -56,7 +56,7 @@
 }
 
 /* Dark: a clean elevated-dashboard slate (distinct from Atlas's deep space).
-   Keep in sync with the no-JS duplicate below — pinned by the unit test. */
+   Keep in sync with the no-JS duplicate below - pinned by the unit test. */
 :root[data-mode='dark'] .signal {
   --s-bg: #0a0f1d;
   --s-bg-raise: #121a2e;
@@ -207,7 +207,7 @@ html:not(.v-lenis) .s-progress {
   text-transform: uppercase;
   color: var(--s-accent);
 }
-/* A small dot leads the eyebrow labels — the "signal" mark. */
+/* A small dot leads the eyebrow labels - the "signal" mark. */
 .s-label::before {
   content: '';
   width: 6px;

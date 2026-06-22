@@ -56,7 +56,7 @@ export function getStaticPaths() {
   // Derive from the design registry (Astro only exposes imports to getStaticPaths,
   // not the local META). Vitrine keeps the canonical /privacy, so it is excluded.
   // Every non-Vitrine ready design MUST have a META entry or the guard below
-  // fails the build loudly — that is the protection against the two drifting.
+  // fails the build loudly - that is the protection against the two drifting.
   return readyDesigns()
     .filter((d) => d.id !== 'vitrine')
     .map((d) => ({ params: { design: d.id } }));

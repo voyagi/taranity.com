@@ -386,7 +386,7 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
       };
 
       // Demo / local: no Turnstile widget configured (no sitekey), so there is no
-      // verify endpoint to call — simulate success to keep the flow reviewable.
+      // verify endpoint to call - simulate success to keep the flow reviewable.
       if (!tsEl) {
         await new Promise((r) => setTimeout(r, 700));
         showSuccess();

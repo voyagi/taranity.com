@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Vitrine — luxury editorial. Oversized Fraunces serif, hairline rules, warm
+   Vitrine - luxury editorial. Oversized Fraunces serif, hairline rules, warm
    paper / warm near-black, slow cinematic scroll (src/lib/vitrine-motion.ts).
 
    Tokens and cross-section primitives live here; section layout lives in each
@@ -9,7 +9,7 @@
    ========================================================================== */
 
 /* INVARIANT: never declare transform, filter, perspective, contain, isolation,
-   or will-change on .vitrine (or its ancestors) — any of them would turn it
+   or will-change on .vitrine (or its ancestors) - any of them would turn it
    into a containing block and re-pin the fixed .v-stars / .v-progress layers
    inside it instead of the viewport. Pinned by tests/unit/vitrine-css.test.ts. */
 .vitrine {

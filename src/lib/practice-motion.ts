@@ -10,7 +10,7 @@
  *
  * Like Signal and Storefront, Practice carries no WebGL: the atmosphere is pure
  * CSS, keeping the JS lean (Lenis + GSAP only) so a warm, rich page still loads
- * fast. The scroll is deliberately calm and measured — a trust-led page should
+ * fast. The scroll is deliberately calm and measured - a trust-led page should
  * feel reassuring, not floaty or hurried.
  */
 import Lenis from 'lenis';

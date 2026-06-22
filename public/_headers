@@ -1,7 +1,7 @@
 # Cloudflare Pages response headers (applied on deploy).
 #
 # CSP is delivered as a real response header (stronger than a <meta> tag and able
-# to set frame-ancestors). script-src is strict — 'self' plus the SHA-256 of each
+# to set frame-ancestors). script-src is strict - 'self' plus the SHA-256 of each
 # first-party inline script (NO 'unsafe-inline'); regenerate the hashes with
 # `node scripts/csp-hash.mjs` after changing any inline/component script. style-src
 # allows 'unsafe-inline' because GSAP applies dynamic inline styles via JS; style

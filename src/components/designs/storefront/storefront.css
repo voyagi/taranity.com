@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Storefront — vivid, product-forward, tactile commerce design for e-commerce
+   Storefront - vivid, product-forward, tactile commerce design for e-commerce
    and DTC brands (beauty, food, fashion retail). Space Grotesk display, Inter
    body, JetBrains Mono price-tag labels, a warm cream canvas lit with vivid
    coral, amber, mint, and berry pops. The layout is a "shelf" of product-like
@@ -16,7 +16,7 @@
    ========================================================================== */
 
 /* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
-   contain, isolation, or will-change on .storefront (or its ancestors) — any
+   contain, isolation, or will-change on .storefront (or its ancestors) - any
    of them would turn it into a containing block and re-pin the fixed .f-field /
    .f-progress layers inside it instead of the viewport. Pinned by
    tests/unit/storefront-css.test.ts. */
@@ -30,7 +30,7 @@
   --f-line-strong: rgba(42, 24, 16, 0.22);
 
   /* primary brand pop + the swatch set the product cards cycle through */
-  --f-accent: #ff4a23; /* vivid tomato/coral — decorative (chips, borders, rules, checks) */
+  --f-accent: #ff4a23; /* vivid tomato/coral - decorative (chips, borders, rules, checks) */
   --f-accent-ink: #fff7f0; /* warm text on a filled accent surface */
   --f-accent-2: #ff9a1f; /* warm amber, for gradients and the promo bar */
   --f-accent-strong: #c8300d; /* deep coral for filled buttons (carries light text at AA) */
@@ -57,7 +57,7 @@
   --f-max: 1280px;
   --f-pad: max(var(--f-gutter), calc((100% - var(--f-max)) / 2));
   --f-section: clamp(5rem, 13vh, 9rem);
-  --f-radius: 22px; /* generous, tactile rounding — never brutalist-hard */
+  --f-radius: 22px; /* generous, tactile rounding - never brutalist-hard */
   --f-radius-sm: 14px;
 
   background: var(--f-bg);

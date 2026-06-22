@@ -11,7 +11,7 @@
  * Like Signal, Storefront, and Practice, Raw carries no WebGL: the atmosphere is
  * pure CSS (the graph grid, scanlines, and glitch), keeping the JS lean (Lenis +
  * GSAP only) so a dense brutalist page still loads fast. The scroll is a touch
- * snappier than the trust-led designs — brutalist motion reads decisive.
+ * snappier than the trust-led designs - brutalist motion reads decisive.
  */
 import Lenis from 'lenis';
 import { resetScrollOnReload } from './scroll-reset';

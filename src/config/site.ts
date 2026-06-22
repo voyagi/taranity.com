@@ -3,7 +3,7 @@
  *
  * Service config reads PUBLIC_* env at build time with safe demo fallbacks, so
  * the site is fully functional and reviewable with zero secrets. Swap real
- * values in `.env` (see .env.example / HUMAN-TODO.md).
+ * values in `.env` (see .env.example).
  */
 
 const env = import.meta.env;
