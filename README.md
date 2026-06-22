@@ -1,12 +1,12 @@
 # taranity.com
 
-Personal portfolio of **Taran** - full-stack developer & automation architect. The site is built
-to be proof of skill, not just a list of work: dark operator-console glassmorphism, holographic
-motion, a command palette, a live "Currently" widget, and cinematic page transitions - all while
-staying static, fast, and accessible.
+The site for **Taranity**, a digital studio. It is proof of skill in itself: the same studio and
+the same content, rendered as **six genuinely different design languages** a visitor switches
+between live, from an editorial flagship to a brutalist terminal. Every one stays static, fast,
+and accessible, with motion that respects reduced-motion and a strict Content-Security-Policy.
 
-> **Stack:** Astro 6 (static) · Tailwind v4 · GSAP + ScrollTrigger + SplitText · Lenis ·
-> Cloudflare Pages · Plausible · Web3Forms.
+> **Stack:** Astro 6 (static) · Tailwind v4 · GSAP + ScrollTrigger · Lenis · Three.js (the Atlas
+> WebGL design) · Cloudflare Pages · Plausible · Web3Forms + Turnstile.
 > Rationale: [docs/adr/0001-stack.md](docs/adr/0001-stack.md).
 
 ## Quick start
@@ -19,22 +19,28 @@ npm run preview    # preview the production build locally
 npm run check      # astro type/diagnostics check
 ```
 
-The site runs in **demo mode with zero configuration** - the contact form, analytics, booking
-link, and "Currently" widget all have safe fallbacks. To wire the real services, copy
-`.env.example` to `.env` and fill in the `PUBLIC_*` values.
+The site runs in **demo mode with zero configuration**: the contact form simulates success and
+analytics stays off until configured. To wire the real services, copy `.env.example` to `.env`
+and fill in the `PUBLIC_*` values.
 
 ## Project structure
 
 ```text
 src/
-  config/      site.ts, about.ts - profile, socials, CTAs, story, skills
-  content/     projects.ts - full case-study data (Problem→Solution→Result)
-  layouts/     BaseLayout.astro - head, SEO, JSON-LD, analytics, global shell
-  components/  Nav, Footer, Cursor, CommandPalette, Currently, ProjectCard, ...
-  lib/         motion.ts, gh.ts - animation runtime + Currently data source
-  pages/       index, work, projects/[slug], about, contact, 404
-  styles/      global.css - Tailwind v4 @theme tokens + base
-public/        og.png, robots.txt, favicons
+  pages/       index (Vitrine flagship) + atlas/signal/storefront/practice/raw,
+               privacy, [design]/privacy, 404, og-preview
+  components/
+    designs/<id>/  one folder per design (Header, Hero, Crafts, Studio, Method,
+                   Manifesto, Contact, Footer, Subpage)
+    DesignSwitcher.astro, PrivacyContent.astro - shared across designs
+  config/      site.ts (identity, services, socials), designs.ts (the design registry)
+  layouts/     SiteLayout.astro - head, SEO, JSON-LD, analytics, per-design shell
+  lib/         <design>-motion.ts (GSAP + Lenis), atlas-gl.ts (Three.js),
+               design-theme.ts, scroll-reset.ts
+  styles/      Tailwind v4 @theme tokens + base
+functions/
+  api/contact.ts - Pages Function: server-side Turnstile verify + Web3Forms submit
+public/        fonts, og.png, _headers (CSP), robots.txt, favicons
 ```
 
 ## Documentation
