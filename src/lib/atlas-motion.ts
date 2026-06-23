@@ -15,6 +15,7 @@ import Lenis from 'lenis';
 import { resetScrollOnReload } from './scroll-reset';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { revealOnScrollReduced } from './rm-reveal';
 import type { AtlasScene } from './atlas-gl';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -34,6 +35,13 @@ let glGen = 0;
 let pageLoadFired = false;
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Reduced-motion fallback targets: everything the choreography below hides under
+// no-preference instead fades in (opacity only, no movement) as it enters the
+// viewport. See src/lib/rm-reveal.ts and the shared CSS block in site.css.
+const RM_FADE_TARGETS =
+  '.a-mask-inner, [data-a-fade], [data-a-hero-fade], [data-a-rule], [data-a-hero-rule], [data-a-card]';
+let rmReveal: (() => void) | null = null;
 
 async function bootGl(gen: number, root: HTMLElement) {
   try {
@@ -61,6 +69,8 @@ function scheduleGl(root: HTMLElement) {
 }
 
 function teardown() {
+  rmReveal?.();
+  rmReveal = null;
   glGen++; // orphan any in-flight GL boot
   if (glIdle !== null) {
     cancelIdleCallback(glIdle);
@@ -97,9 +107,14 @@ function teardown() {
 function setup() {
   teardown();
   const root = document.querySelector<HTMLElement>('[data-atlas]');
-  // Reduced motion: atlas.css never hides anything and the GL journey is
-  // skipped entirely (the .a-field backdrop is the whole atmosphere).
-  if (!root || reduceMotion()) return;
+  if (!root) return;
+  // Reduced motion: skip the kinetic choreography and the GL journey entirely;
+  // instead reveal each scroll section with a gentle opacity-only fade as it
+  // enters the viewport (the .a-field backdrop remains the atmosphere).
+  if (reduceMotion()) {
+    rmReveal = revealOnScrollReduced(root, RM_FADE_TARGETS);
+    return;
+  }
 
   // The journey scroll: a touch quicker than Vitrine's gallery glide, still
   // smooth enough that the camera path reads as travel. While Lenis drives,

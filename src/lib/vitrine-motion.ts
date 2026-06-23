@@ -13,6 +13,7 @@ import Lenis from 'lenis';
 import { resetScrollOnReload } from './scroll-reset';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { revealOnScrollReduced } from './rm-reveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,7 +27,16 @@ let pageLoadFired = false;
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Reduced-motion fallback targets: everything the choreography below hides under
+// no-preference instead fades in (opacity only, no movement) as it enters the
+// viewport. See src/lib/rm-reveal.ts and the shared CSS block in site.css.
+const RM_FADE_TARGETS =
+  '.v-mask-inner, [data-v-fade], [data-v-hero-fade], [data-v-hero-rule], [data-v-plate-art]';
+let rmReveal: (() => void) | null = null;
+
 function teardown() {
+  rmReveal?.();
+  rmReveal = null;
   ctx?.revert();
   ctx = null;
   removeAnchorHandler?.();
@@ -49,8 +59,13 @@ function teardown() {
 function setup() {
   teardown();
   const root = document.querySelector<HTMLElement>('[data-vitrine]');
-  // Reduced motion: vitrine.css never hides anything, so there is nothing to do.
-  if (!root || reduceMotion()) return;
+  if (!root) return;
+  // Reduced motion: skip the kinetic choreography and instead reveal each scroll
+  // section with a gentle opacity-only fade as it enters the viewport.
+  if (reduceMotion()) {
+    rmReveal = revealOnScrollReduced(root, RM_FADE_TARGETS);
+    return;
+  }
 
   // Slow, cinematic scroll. While Lenis drives, the native scrollbar is
   // hidden (dragging it fights the smoothing loop) and the top hairline

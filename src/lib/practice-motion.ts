@@ -17,6 +17,7 @@ import Lenis from 'lenis';
 import { resetScrollOnReload } from './scroll-reset';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { revealOnScrollReduced } from './rm-reveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -30,7 +31,16 @@ let pageLoadFired = false;
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Reduced-motion fallback targets: everything the choreography below hides under
+// no-preference instead fades in (opacity only, no movement) as it enters the
+// viewport. See src/lib/rm-reveal.ts and the shared CSS block in site.css.
+const RM_FADE_TARGETS =
+  '.p-mask-inner, [data-p-fade], [data-p-hero-fade], [data-p-rule], [data-p-hero-rule], [data-p-card]';
+let rmReveal: (() => void) | null = null;
+
 function teardown() {
+  rmReveal?.();
+  rmReveal = null;
   ctx?.revert();
   ctx = null;
   removeAnchorHandler?.();
@@ -53,9 +63,13 @@ function teardown() {
 function setup() {
   teardown();
   const root = document.querySelector<HTMLElement>('[data-practice]');
-  // Reduced motion: practice.css never hides anything and there is no scroll
-  // runtime; the CSS atmosphere is the whole experience.
-  if (!root || reduceMotion()) return;
+  if (!root) return;
+  // Reduced motion: skip the kinetic choreography and instead reveal each scroll
+  // section with a gentle opacity-only fade as it enters the viewport.
+  if (reduceMotion()) {
+    rmReveal = revealOnScrollReduced(root, RM_FADE_TARGETS);
+    return;
+  }
 
   // A calm, measured scroll: a trust-led page should feel steady and
   // reassuring. While Lenis drives, the native scrollbar is hidden (dragging it

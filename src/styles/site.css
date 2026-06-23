@@ -95,6 +95,24 @@ a {
   ::view-transition-new(root) {
     animation: none;
   }
+
+  /* Reduced-motion reveal. Each design's motion runtime skips its kinetic
+     choreography here and instead fades scroll sections in gently - opacity
+     only, never any movement - through the shared runtime in src/lib/rm-reveal.ts.
+     That runtime is the ONLY code that adds .rm-fade, and only once an
+     IntersectionObserver is armed to reveal it, so no-JS / no-IO visitors never
+     get a hidden element (content is visible by default). The transition is
+     enabled one frame later (html.rm-ready) so arming the hidden state and
+     revealing above-the-fold content are both instant - only scroll reveals fade. */
+  .rm-fade {
+    opacity: 0;
+  }
+  html.rm-ready .rm-fade {
+    transition: opacity 0.7s ease;
+  }
+  .rm-fade.is-revealed {
+    opacity: 1;
+  }
 }
 
 /* The design switcher is fixed at the bottom-right and floats over the page, so
