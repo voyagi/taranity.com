@@ -1,12 +1,12 @@
 // End-to-end + a11y suite, driven by dev-browser (Playwright Page API under a
 // Rust/QuickJS harness - this environment blocks raw Playwright by policy).
 //
-// Run the built site first:  npm run build && npm run preview   (serves :4321)
+// Run the built site first:  npm run build && npm run serve:test   (serves :4321)
 // Then:                      npm run e2e
 //
 // Covers: page status, single non-empty <h1>, <title>, console/page errors,
 // image loading, internal-link resolution, axe-core WCAG2A/AA per page,
-// contact form validation + success (demo mode, both designs), custom 404,
+// contact form validation + Turnstile verification gate, custom 404,
 // no horizontal overflow at mobile/tablet/desktop, theme persistence, the
 // Vitrine motion reveals (hero masks, statements, plate wipes), and the
 // Atlas journey (switcher swap, hero masks, waypoint wipes, lazy WebGL).
@@ -29,6 +29,53 @@ const settle = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const page = await browser.getPage('e2e');
 
+async function contactRequiresVerification(statusSelector, successSelector) {
+  const statusText = await page.$eval(statusSelector, (el) => el.textContent.trim()).catch(() => '');
+  const successVisible = await page.$eval(successSelector, (el) => !el.hidden).catch(() => false);
+  return {
+    ok: /verification did not complete/i.test(statusText) && /hello@taranity\.com/i.test(statusText) && !successVisible,
+    detail: JSON.stringify({ statusText, successVisible }),
+  };
+}
+
+async function contactSubmitsWithVerifiedToken(formSelector, submitSelector, successSelector) {
+  await page.evaluate(({ formSelector: selector }) => {
+    window.__contactFetchCalls = [];
+    window.fetch = async (input, init) => {
+      const body = init && init.body instanceof FormData ? init.body : null;
+      window.__contactFetchCalls.push({
+        url: String(input),
+        token: body ? String(body.get('cf-turnstile-response') || '') : '',
+      });
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    };
+    const form = document.querySelector(selector);
+    form.querySelectorAll('[name="cf-turnstile-response"]').forEach((el) => el.remove());
+    const token = document.createElement('input');
+    token.type = 'hidden';
+    token.name = 'cf-turnstile-response';
+    token.value = 'verified-test-token';
+    form.append(token);
+  }, { formSelector });
+  await page.click(submitSelector);
+  await settle(500);
+  const result = await page.evaluate(({ successSelector: selector }) => ({
+    successVisible: !document.querySelector(selector).hidden,
+    calls: window.__contactFetchCalls || [],
+  }), { successSelector });
+  return {
+    ok:
+      result.successVisible &&
+      result.calls.length === 1 &&
+      result.calls[0].url === '/api/contact' &&
+      result.calls[0].token === 'verified-test-token',
+    detail: JSON.stringify(result),
+  };
+}
+
 let consoleErrors = [];
 let pageErrors = [];
 let failedResponses = []; // HTTP responses with status >= 400
@@ -44,8 +91,16 @@ page.on('response', (r) => {
 page.on('requestfailed', (req) => failedRequests.push(req.url()));
 
 // Endpoints called best-effort and handled gracefully; a failure here is not a
-// site defect. plausible.io = analytics, only loaded when configured.
-const isBenign = (u) => /plausible\.io/.test(u);
+// site defect. plausible.io = analytics; challenges.cloudflare.com = Turnstile
+// local-dev challenge probes, which can 401/fail DNS without breaking our UI.
+const isBenign = (u) => /plausible\.io|challenges\.cloudflare\.com/.test(u);
+const isBenignConsoleLine = (text, firstPartyFailures) => {
+  const t = text.trim();
+  return (
+    (/Failed to load resource/i.test(t) && firstPartyFailures.length === 0) ||
+    /^%c%d font-size:0;color:transparent NaN$/.test(t)
+  );
+};
 
 // Deterministic checks: entrance animations caught mid-fade make axe's
 // contrast checks flaky, and reduced motion also exposes the reveal-gated
@@ -110,9 +165,7 @@ for (const [route, label] of pages200) {
   ];
   // Ignore the browser's generic "Failed to load resource" line when the only
   // failed responses are benign third-party calls we handle.
-  const realConsole = consoleErrors.filter(
-    (t) => !(/Failed to load resource/i.test(t) && firstPartyFailures.length === 0),
-  );
+  const realConsole = consoleErrors.filter((t) => !isBenignConsoleLine(t, firstPartyFailures));
   const benignNote = failedResponses.length
     ? ` (benign 3rd-party: ${JSON.stringify(failedResponses)})`
     : '';
@@ -185,7 +238,7 @@ rec('404: returns HTTP 404', r404 && r404.status() === 404, 'status=' + (r404 ? 
 const body404 = await page.evaluate(() => document.body.innerText);
 rec('404: shows custom not-found copy', /route was not found/i.test(body404));
 
-// ---- contact form (on the home experience): validation + success (demo mode) ----
+// ---- contact form (on the home experience): validation + Turnstile gate ----
 await page.setViewportSize({ width: 1440, height: 900 });
 await page.goto(BASE + '/', { waitUntil: 'load' });
 await settle(400);
@@ -198,13 +251,12 @@ await page.fill('#v-name', 'Jane Tester');
 await page.fill('#v-email', 'jane@example.com');
 await page.fill('#v-message', 'I would like to automate my client onboarding flow. Can we talk?');
 await page.click('.v-submit');
-await settle(1300); // demo-mode success has a ~700ms simulated delay
-const successVisible = await page.evaluate(() => {
-  const el = document.querySelector('[data-v-form-success]');
-  return el ? !el.hidden : false;
-});
-rec('contact: valid submit shows success panel (demo mode)', successVisible);
-const contactPath = await saveScreenshot(await page.screenshot(), 'e2e-contact-success.png');
+await settle(400);
+const vVerifyGate = await contactRequiresVerification('[data-v-form-status]', '[data-v-form-success]');
+rec('contact: valid submit requires Turnstile verification', vVerifyGate.ok, vVerifyGate.detail);
+const contactPath = await saveScreenshot(await page.screenshot(), 'e2e-contact-turnstile-gate.png');
+const vVerifiedSubmit = await contactSubmitsWithVerifiedToken('[data-v-form]', '.v-submit', '[data-v-form-success]');
+rec('contact: verified submit posts same-origin token and shows success', vVerifiedSubmit.ok, vVerifiedSubmit.detail);
 
 // ---- responsive: no horizontal overflow ----
 const viewports = [
@@ -461,12 +513,9 @@ await page.fill('#a-name', 'Jane Tester');
 await page.fill('#a-email', 'jane@example.com');
 await page.fill('#a-message', 'We are launching a product this autumn and need the works.');
 await page.click('.a-submit');
-await settle(1300); // demo-mode success has a ~700ms simulated delay
-const aSuccessVisible = await page.evaluate(() => {
-  const el = document.querySelector('[data-a-form-success]');
-  return el ? !el.hidden : false;
-});
-rec('atlas contact: valid submit shows success panel (demo mode)', aSuccessVisible);
+await settle(400);
+const aVerifyGate = await contactRequiresVerification('[data-a-form-status]', '[data-a-form-success]');
+rec('atlas contact: valid submit requires Turnstile verification', aVerifyGate.ok, aVerifyGate.detail);
 
 // ---- Signal (third design): registry exposure, dual-mode controls, form ----
 // Still under reduced motion: these are content checks; the reveal motion has
@@ -494,12 +543,9 @@ await page.fill('#s-name', 'Jane Tester');
 await page.fill('#s-email', 'jane@example.com');
 await page.fill('#s-message', 'We are launching a fintech dashboard and need it shipped well.');
 await page.click('.s-submit');
-await settle(1300); // demo-mode success has a ~700ms simulated delay
-const sSuccessVisible = await page.evaluate(() => {
-  const el = document.querySelector('[data-s-form-success]');
-  return el ? !el.hidden : false;
-});
-rec('signal contact: valid submit shows success panel (demo mode)', sSuccessVisible);
+await settle(400);
+const sVerifyGate = await contactRequiresVerification('[data-s-form-status]', '[data-s-form-success]');
+rec('signal contact: valid submit requires Turnstile verification', sVerifyGate.ok, sVerifyGate.detail);
 
 // ---- Storefront (fourth design): registry exposure, light-only controls, form ----
 // Still under reduced motion: these are content checks; the reveal motion has
@@ -525,12 +571,9 @@ await page.fill('#f-name', 'Jane Tester');
 await page.fill('#f-email', 'jane@example.com');
 await page.fill('#f-message', 'We are launching a beauty brand store and want it to convert.');
 await page.click('.f-submit');
-await settle(1300); // demo-mode success has a ~700ms simulated delay
-const fSuccessVisible = await page.evaluate(() => {
-  const el = document.querySelector('[data-f-form-success]');
-  return el ? !el.hidden : false;
-});
-rec('storefront contact: valid submit shows success panel (demo mode)', fSuccessVisible);
+await settle(400);
+const fVerifyGate = await contactRequiresVerification('[data-f-form-status]', '[data-f-form-success]');
+rec('storefront contact: valid submit requires Turnstile verification', fVerifyGate.ok, fVerifyGate.detail);
 
 // ---- Practice (fifth design): registry exposure, light-only controls, form ----
 // Still under reduced motion: these are content checks; the reveal motion has
@@ -556,12 +599,9 @@ await page.fill('#p-name', 'Jane Tester');
 await page.fill('#p-email', 'jane@example.com');
 await page.fill('#p-message', 'We run a dental practice and need a website that wins new patients.');
 await page.click('.p-submit');
-await settle(1300); // demo-mode success has a ~700ms simulated delay
-const pSuccessVisible = await page.evaluate(() => {
-  const el = document.querySelector('[data-p-form-success]');
-  return el ? !el.hidden : false;
-});
-rec('practice contact: valid submit shows success panel (demo mode)', pSuccessVisible);
+await settle(400);
+const pVerifyGate = await contactRequiresVerification('[data-p-form-status]', '[data-p-form-success]');
+rec('practice contact: valid submit requires Turnstile verification', pVerifyGate.ok, pVerifyGate.detail);
 
 // ---- Raw (sixth design): registry exposure, dual-mode controls, form ----
 // Still under reduced motion: these are content checks; the reveal motion has
@@ -589,12 +629,9 @@ await page.fill('#r-name', 'Jane Tester');
 await page.fill('#r-email', 'jane@example.com');
 await page.fill('#r-message', 'We run a record label and need a site that looks like nothing else.');
 await page.click('.r-submit');
-await settle(1300); // demo-mode success has a ~700ms simulated delay
-const rSuccessVisible = await page.evaluate(() => {
-  const el = document.querySelector('[data-r-form-success]');
-  return el ? !el.hidden : false;
-});
-rec('raw contact: valid submit shows success panel (demo mode)', rSuccessVisible);
+await settle(400);
+const rVerifyGate = await contactRequiresVerification('[data-r-form-status]', '[data-r-form-success]');
+rec('raw contact: valid submit requires Turnstile verification', rVerifyGate.ok, rVerifyGate.detail);
 
 // evidence: the privacy subpage (desktop, motion on) + a mobile home
 try {
@@ -739,9 +776,7 @@ const atlasFirstParty = [
 ];
 // Same benign-noise filter as the page-level checks: the browser's generic
 // "Failed to load resource" line is ignored when no first-party request failed.
-const atlasRealConsole = consoleErrors.filter(
-  (t) => !(/Failed to load resource/i.test(t) && atlasFirstParty.length === 0),
-);
+const atlasRealConsole = consoleErrors.filter((t) => !isBenignConsoleLine(t, atlasFirstParty));
 rec(
   'atlas motion: no first-party console/page errors across the journey',
   atlasRealConsole.length === 0 && pageErrors.length === 0 && atlasFirstParty.length === 0,
@@ -809,9 +844,7 @@ const signalFirstParty = [
   ...failedResponses.filter((f) => !isBenign(f.url)),
   ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
 ];
-const signalRealConsole = consoleErrors.filter(
-  (t) => !(/Failed to load resource/i.test(t) && signalFirstParty.length === 0),
-);
+const signalRealConsole = consoleErrors.filter((t) => !isBenignConsoleLine(t, signalFirstParty));
 rec(
   'signal motion: no first-party console/page errors across the journey',
   signalRealConsole.length === 0 && pageErrors.length === 0 && signalFirstParty.length === 0,
@@ -875,9 +908,7 @@ const storefrontFirstParty = [
   ...failedResponses.filter((f) => !isBenign(f.url)),
   ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
 ];
-const storefrontRealConsole = consoleErrors.filter(
-  (t) => !(/Failed to load resource/i.test(t) && storefrontFirstParty.length === 0),
-);
+const storefrontRealConsole = consoleErrors.filter((t) => !isBenignConsoleLine(t, storefrontFirstParty));
 rec(
   'storefront motion: no first-party console/page errors across the journey',
   storefrontRealConsole.length === 0 && pageErrors.length === 0 && storefrontFirstParty.length === 0,
@@ -941,9 +972,7 @@ const practiceFirstParty = [
   ...failedResponses.filter((f) => !isBenign(f.url)),
   ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
 ];
-const practiceRealConsole = consoleErrors.filter(
-  (t) => !(/Failed to load resource/i.test(t) && practiceFirstParty.length === 0),
-);
+const practiceRealConsole = consoleErrors.filter((t) => !isBenignConsoleLine(t, practiceFirstParty));
 rec(
   'practice motion: no first-party console/page errors across the journey',
   practiceRealConsole.length === 0 && pageErrors.length === 0 && practiceFirstParty.length === 0,
@@ -1007,9 +1036,7 @@ const rawFirstParty = [
   ...failedResponses.filter((f) => !isBenign(f.url)),
   ...failedRequests.filter((u) => !isBenign(u)).map((u) => ({ url: u, status: 'failed' })),
 ];
-const rawRealConsole = consoleErrors.filter(
-  (t) => !(/Failed to load resource/i.test(t) && rawFirstParty.length === 0),
-);
+const rawRealConsole = consoleErrors.filter((t) => !isBenignConsoleLine(t, rawFirstParty));
 rec(
   'raw motion: no first-party console/page errors across the journey',
   rawRealConsole.length === 0 && pageErrors.length === 0 && rawFirstParty.length === 0,

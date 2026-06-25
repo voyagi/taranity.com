@@ -24,8 +24,9 @@ describe('site config', () => {
   });
 
   it('provides safe service fallbacks (runs with zero secrets)', () => {
-    // demo mode: empty keys are allowed and must not throw
-    expect(typeof services.turnstileSitekey).toBe('string');
+    // Turnstile's site key is public config, so zero-secret production builds
+    // should still render the bot-check widget instead of falling into demo mode.
+    expect(services.turnstileSitekey).toMatch(/^0x[a-zA-Z0-9]+$/);
     expect(typeof services.plausibleDomain).toBe('string');
   });
 
