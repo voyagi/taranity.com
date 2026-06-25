@@ -38,4 +38,11 @@ describe('contact form runtime wiring', () => {
     expect(read('functions/api/contact.ts')).toContain('PUBLIC_WEB3FORMS_KEY');
     expect(read('.env.example')).toContain('WEB3FORMS_ACCESS_KEY');
   });
+
+  it('documents no-widget contact demo mode as an explicit opt-out', () => {
+    const envExample = read('.env.example');
+
+    expect(envExample).toContain('set PUBLIC_TURNSTILE_SITEKEY=off');
+    expect(envExample).not.toContain('without a Turnstile site key');
+  });
 });
