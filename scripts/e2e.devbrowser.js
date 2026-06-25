@@ -45,6 +45,7 @@ async function contactSubmitsWithVerifiedToken(formSelector, submitSelector, suc
       const body = init && init.body instanceof FormData ? init.body : null;
       window.__contactFetchCalls.push({
         url: String(input),
+        method: String((init && init.method) || 'GET').toUpperCase(),
         token: body ? String(body.get('cf-turnstile-response') || '') : '',
       });
       return new Response(JSON.stringify({ success: true }), {
@@ -71,6 +72,7 @@ async function contactSubmitsWithVerifiedToken(formSelector, submitSelector, suc
       result.successVisible &&
       result.calls.length === 1 &&
       result.calls[0].url === '/api/contact' &&
+      result.calls[0].method === 'POST' &&
       result.calls[0].token === 'verified-test-token',
     detail: JSON.stringify(result),
   };

@@ -1,10 +1,9 @@
 ---
 /**
  * Written contact only (hard rule 1: no booking, no calls): a short form and a
- * direct email address, framed as the page's primary conversion. Submission
- * uses the same-origin contact API, which verifies Turnstile server-side before
- * forwarding to Web3Forms; the client keeps a hardcoded endpoint, honeypot, and
- * inline validation, restyled for Signal.
+ * direct email address, framed as the page's primary conversion. Runtime
+ * validation, Turnstile handling, and same-origin submission live in the shared
+ * bindContactForm() helper; this component owns the Signal markup and labels.
  */
 import { services, socials, contactEmail } from '../../../config/site';
 

@@ -1,9 +1,9 @@
 /**
  * Site-wide configuration: identity, navigation, CTAs, and third-party services.
  *
- * Service config reads PUBLIC_* env at build time with safe demo fallbacks, so
- * the site is fully functional and reviewable with zero secrets. Swap real
- * values in `.env` (see .env.example).
+ * Service config reads PUBLIC_* env at build time. The contact form renders the
+ * public Turnstile widget by default; set PUBLIC_TURNSTILE_SITEKEY=off only for
+ * intentional local/demo no-widget builds.
  */
 
 const env = import.meta.env;
