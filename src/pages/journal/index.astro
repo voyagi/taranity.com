@@ -1,0 +1,48 @@
+---
+/**
+ * Journal index: an editorial listing of the studio's long-form articles,
+ * rendered in the flagship Vitrine language (same shell as the privacy
+ * subpage). Sorted by the frontmatter `order`. Studio "we" voice, no byline.
+ */
+import { getCollection } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import VitrinePage from '../../components/designs/vitrine/VitrinePage.astro';
+import '../../styles/journal.css';
+
+const posts = (await getCollection('journal', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<SiteLayout
+  design="vitrine"
+  title="Journal"
+  description="Long-form notes from the Taranity studio on web performance, ecommerce conversion, business automation, and building intelligent systems that last."
+  themeLight="#f4f0e8"
+  themeDark="#110f0c"
+  preloadFonts={['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2']}
+>
+  <VitrinePage>
+    <section class="v-page v-journal v-journal-index" tabindex="-1">
+      <p class="sp-kicker">Journal</p>
+      <h1>Notes on the craft</h1>
+      <p class="v-page-lead">
+        How we think about the work: performance, commerce, automation, and the careful end
+        of intelligent systems. Plain, opinionated, and written by the people who build it.
+      </p>
+      <ul class="v-journal-list">
+        {
+          posts.map((post) => (
+            <li>
+              <a href={`/journal/${post.id}`}>
+                <span class="v-journal-list-kicker">{post.data.kicker}</span>
+                <span class="v-journal-list-title">{post.data.title}</span>
+                <span class="v-journal-list-desc">{post.data.description}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </VitrinePage>
+</SiteLayout>

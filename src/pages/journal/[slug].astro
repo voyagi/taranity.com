@@ -1,0 +1,101 @@
+---
+/**
+ * Journal article: renders one collection entry in the Vitrine subpage shell.
+ * SEO (title, description, canonical, OG) is handled by SiteLayout; this route
+ * supplies the Article + BreadcrumbList + FAQPage structured data via the
+ * layout's `jsonLd` prop. The visible FAQ and the FAQPage JSON-LD both read the
+ * frontmatter `faqs`, so they cannot drift. Studio "we" voice, no byline.
+ */
+import { getCollection, render } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import VitrinePage from '../../components/designs/vitrine/VitrinePage.astro';
+import { site } from '../../config/site';
+import '../../styles/journal.css';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('journal', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, lead, kicker, pubDate, updatedDate, faqs } = post.data;
+
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const modified = updatedDate ?? pubDate;
+const dateLabel = pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  dateModified: modified.toISOString(),
+  inLanguage: 'en',
+  author: { '@type': 'Organization', name: site.name, url: site.url },
+  publisher: {
+    '@type': 'Organization',
+    name: site.name,
+    url: site.url,
+    logo: { '@type': 'ImageObject', url: new URL('/apple-touch-icon.png', site.url).href },
+  },
+  url: canonical,
+  mainEntityOfPage: canonical,
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Journal', item: new URL('/journal', site.url).href },
+    { '@type': 'ListItem', position: 2, name: title, item: canonical },
+  ],
+};
+const faqLd =
+  faqs.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqs.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      }
+    : null;
+const jsonLd = faqLd ? [articleLd, breadcrumbLd, faqLd] : [articleLd, breadcrumbLd];
+---
+
+<SiteLayout
+  design="vitrine"
+  title={title}
+  description={description}
+  themeLight="#f4f0e8"
+  themeDark="#110f0c"
+  preloadFonts={['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2']}
+  jsonLd={jsonLd}
+>
+  <VitrinePage>
+    <article class="v-page v-journal" tabindex="-1">
+      <a class="v-journal-back" href="/journal">&larr; Journal</a>
+      <p class="sp-kicker">{kicker}</p>
+      <h1>{title}</h1>
+      <p class="v-page-lead">{lead ?? description}</p>
+      <Content />
+      {
+        faqs.length > 0 && (
+          <section class="v-journal-faq">
+            <h2>Frequently asked questions</h2>
+            {faqs.map((f) => (
+              <div class="v-journal-faq-item">
+                <h3>{f.q}</h3>
+                <p>{f.a}</p>
+              </div>
+            ))}
+          </section>
+        )
+      }
+      <p class="sp-meta">Published {dateLabel} &middot; Taranity</p>
+    </article>
+  </VitrinePage>
+</SiteLayout>
