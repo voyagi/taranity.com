@@ -1,0 +1,83 @@
+---
+/**
+ * Per-design journal index: /atlas/journal, /signal/journal, etc. Each renders the
+ * same article listing inside its design's subpage shell, so a visitor who switched
+ * design stays in that design on the journal. The edge middleware serves these at the
+ * canonical /journal; they are noindex (canonical -> /journal) to avoid duplicate
+ * content. Vitrine keeps the canonical /journal (src/pages/journal/index.astro).
+ */
+import { getCollection } from 'astro:content';
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import AtlasSubpage from '../../../components/designs/atlas/AtlasSubpage.astro';
+import SignalSubpage from '../../../components/designs/signal/SignalSubpage.astro';
+import StorefrontSubpage from '../../../components/designs/storefront/StorefrontSubpage.astro';
+import PracticeSubpage from '../../../components/designs/practice/PracticeSubpage.astro';
+import RawSubpage from '../../../components/designs/raw/RawSubpage.astro';
+import { readyDesigns, getDesign } from '../../../config/designs';
+import { subpageMeta } from '../../../config/subpage-meta';
+import '../../../styles/journal-shared.css';
+
+// `satisfies` ties SHELLS to the keys of subpageMeta, so adding a design to one without
+// the other is a compile-time error rather than a runtime build failure.
+const SHELLS = {
+  atlas: AtlasSubpage,
+  signal: SignalSubpage,
+  storefront: StorefrontSubpage,
+  practice: PracticeSubpage,
+  raw: RawSubpage,
+} satisfies Record<keyof typeof subpageMeta, unknown>;
+
+export function getStaticPaths() {
+  // Every non-Vitrine ready design gets a journal index. Vitrine keeps the canonical
+  // /journal. A missing SHELLS/subpageMeta entry fails the build loudly (guard below).
+  return readyDesigns()
+    .filter((d) => d.id !== 'vitrine')
+    .map((d) => ({ params: { design: d.id } }));
+}
+
+const design = Astro.params.design as keyof typeof SHELLS;
+const d = getDesign(design);
+const meta = subpageMeta[design];
+const Shell = SHELLS[design];
+if (!d || !meta || !Shell) throw new Error(`No journal-index shell/meta for design "${design}"`);
+
+const posts = (await getCollection('journal', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<SiteLayout
+  design={design}
+  canonicalPath="/journal"
+  title="Journal"
+  description="Long-form notes from the Taranity studio on web performance, ecommerce conversion, business automation, and building intelligent systems that last."
+  themeLight={meta.themeLight}
+  themeDark={meta.themeDark}
+  preloadFonts={meta.fonts}
+  noindex
+>
+  <Shell>
+    {/* The shell already wraps the slot in .subpage-body; .sp-journal adds the journal chrome. */}
+    <section class="sp-journal sp-journal-index" tabindex="-1">
+      <p class="sp-kicker">Journal</p>
+      <h1>Notes on the craft</h1>
+      <p class="sp-lead">
+        How we think about the work: performance, commerce, automation, and the careful end
+        of intelligent systems. Plain, opinionated, and written by the people who build it.
+      </p>
+      <ul class="sp-journal-list">
+        {
+          posts.map((post) => (
+            <li>
+              <a href={`/journal/${post.id}`}>
+                <span class="sp-journal-list-kicker">{post.data.kicker}</span>
+                <span class="sp-journal-list-title">{post.data.title}</span>
+                <span class="sp-journal-list-desc">{post.data.description}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </Shell>
+</SiteLayout>

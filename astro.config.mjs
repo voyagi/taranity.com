@@ -17,6 +17,14 @@ export default defineConfig({
       filter: (page) =>
         !page.includes('/og-preview') &&
         !/\/(atlas|signal|storefront|practice|raw)(\/|$)/.test(page),
+      // Emit slash-free URLs (except root) so the sitemap matches each page's
+      // <link rel=canonical> and the site's internal links (Astro's directory
+      // format would otherwise add a trailing slash the canonicals don't have).
+      serialize: (item) => {
+        const u = new URL(item.url);
+        if (u.pathname !== '/') u.pathname = u.pathname.replace(/\/$/, '');
+        return { ...item, url: u.href };
+      },
     }),
   ],
   prefetch: {

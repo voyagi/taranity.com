@@ -1,0 +1,123 @@
+/* ==========================================================================
+   Shared journal chrome for the NON-Vitrine designs. Layered on .subpage-body
+   (subpage.css) and scoped to .sp-journal so privacy's subpage styling stays
+   untouched. Uses the --sp-* bridge variables each design's *Subpage shell maps
+   from its own palette/type tokens, exactly as PrivacyContent renders in every
+   design. Vitrine keeps its bespoke .v-journal styling (styles/journal.css).
+   ========================================================================== */
+
+/* Markdown bodies render flat headings (no <section> wrapper), so restore the
+   section rhythm on the headings themselves. */
+.sp-journal h2 {
+  margin-top: clamp(2.4rem, 6vh, 3.2rem);
+}
+
+/* Ordered lists: subpage.css styles only <ul> (custom bullets). Give <ol> real
+   numbers and cancel the inherited bullet dot on its items. */
+.sp-journal ol {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0 0 0.8rem;
+  padding-left: 1.5rem;
+  list-style: decimal;
+  color: var(--sp-muted, inherit);
+  line-height: 1.75;
+}
+.sp-journal ol li {
+  padding-left: 0.35rem;
+}
+.sp-journal ol li::before {
+  content: none;
+}
+
+/* Back link above the article header. */
+.sp-journal-back {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 540;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sp-muted, inherit);
+  text-decoration: none;
+}
+.sp-journal-back:hover {
+  color: inherit;
+}
+
+/* FAQ block: questions are display sub-heads; answers reuse .subpage-body p. */
+.sp-journal-faq {
+  margin-top: clamp(2.6rem, 6vh, 3.4rem);
+  padding-top: clamp(1.8rem, 4vh, 2.4rem);
+  border-top: 1px solid var(--sp-line);
+}
+.sp-journal-faq h2 {
+  margin-top: 0;
+}
+.sp-journal-faq-item + .sp-journal-faq-item {
+  margin-top: 1.6rem;
+}
+.sp-journal-faq h3 {
+  margin-bottom: 0.4rem;
+  font-family: var(--sp-display, inherit);
+  font-weight: 600;
+  font-size: 1.08rem;
+  line-height: 1.3;
+}
+
+/* ---- index listing ---- */
+.sp-journal-list {
+  display: grid;
+  gap: 0;
+  margin: clamp(1.6rem, 4vh, 2.4rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+/* Cancel the inherited .subpage-body li bullet + indent on listing rows. */
+.sp-journal-list > li {
+  padding-left: 0;
+  border-top: 1px solid var(--sp-line);
+}
+.sp-journal-list > li::before {
+  content: none;
+}
+.sp-journal-list > li:last-child {
+  border-bottom: 1px solid var(--sp-line);
+}
+.sp-journal-list a {
+  display: grid;
+  gap: 0.4rem;
+  padding-block: clamp(1.4rem, 3.2vh, 2rem);
+  text-decoration: none;
+  color: inherit;
+}
+/* Inherit (not --sp-accent): some design accents fall below 4.5:1 as text; caps
+   + tracking already mark it as an eyebrow (same rule as subpage.css .sp-kicker). */
+.sp-journal-list-kicker {
+  font-size: 0.66rem;
+  font-weight: 560;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: inherit;
+}
+.sp-journal-list-title {
+  font-family: var(--sp-display, inherit);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.sp-journal-list-desc {
+  color: var(--sp-muted, inherit);
+  line-height: 1.6;
+  max-width: 60ch;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sp-journal-list-title,
+  .sp-journal-back {
+    transition: color 0.25s;
+  }
+}
+.sp-journal-list a:hover .sp-journal-list-title {
+  color: var(--sp-accent, inherit);
+}

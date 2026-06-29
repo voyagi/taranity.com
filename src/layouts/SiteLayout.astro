@@ -32,6 +32,8 @@ interface Props {
   themeDark: string;
   /** OG image path relative to site root. */
   image?: string;
+  /** og:type for the page; defaults to "website", journal articles pass "article". */
+  ogType?: string;
   noindex?: boolean;
   /** Extra JSON-LD injected for this page (object or array of objects). */
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
@@ -55,6 +57,7 @@ const {
   themeLight,
   themeDark,
   image = '/og.png',
+  ogType = 'website',
   noindex = false,
   jsonLd,
   preloadFonts = ['/fonts/inter-latin-var.woff2'],
@@ -116,7 +119,7 @@ const orgLd = {
     <!-- Open Graph. og/twitter titles use the clean page title (no " · Taranity"
          suffix) so social cards and Medium imports come in clean; the brand is
          still carried by og:site_name, and <title> above keeps the suffix for SEO. -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
