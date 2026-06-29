@@ -114,10 +114,18 @@ const current = await page.$$eval('.ds-design[aria-current="page"]', (els) => el
 rec('a11y: exactly the current design is aria-current', current.length === 1 && current[0] === 'vitrine', JSON.stringify(current));
 const pillsAreLinks = await page.$$eval('.ds-design', (els) => els.every((e) => e.tagName === 'A' && (e.getAttribute('href') || '').startsWith('/switch?')));
 rec('a11y: pills are real links to /switch (no-JS works, focusable)', pillsAreLinks);
-// keyboard: focus the atlas pill and activate with Enter -> switches in place
+// keyboard: focus the atlas pill, verify focus, then press Enter and confirm the design switches
 await page.evaluate(() => document.querySelector('.ds-design[data-design-go="atlas"]').focus());
 const focused = await page.evaluate(() => document.activeElement?.getAttribute('data-design-go'));
 rec('a11y: a design pill can take keyboard focus', focused === 'atlas', String(focused));
+await page.keyboard.press('Enter');
+const kbStart = Date.now();
+let kbDesign = null;
+while (Date.now() - kbStart < 9000) {
+  await settle(250);
+  try { kbDesign = await dattr('data-design'); if (kbDesign === 'atlas') break; } catch {}
+}
+rec('a11y: Enter activates the focused design pill', kbDesign === 'atlas', String(kbDesign));
 await clearState();
 
 // ---- axe on a variant page (the journal rendered in a non-vitrine design) ----
