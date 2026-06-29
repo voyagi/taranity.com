@@ -10,6 +10,18 @@
 // no horizontal overflow at mobile/tablet/desktop, theme persistence, the
 // Vitrine motion reveals (hero masks, statements, plate wipes), and the
 // Atlas journey (switcher swap, hero masks, waypoint wipes, lazy WebGL).
+//
+// WARNING - in-place design-switch re-architecture: DO NOT treat this legacy suite as a
+// passing gate as-is. Its switcher-INTERACTION assertions (pills navigating to /atlas,
+// logo -> /<design>, switching via route links, "active pill follows the route") assert the
+// REMOVED route-navigation model and WILL fail; the design-arrival steps in the motion
+// blocks click `.ds-design[href="/atlas"]` selectors that no longer exist and HALT the run.
+// The switcher coverage is now in scripts/e2e-switch.devbrowser.js (the cookie + reload
+// in-place model, run under the Functions runtime: `npm run serve:fn` then
+// `npm run e2e:switch`). The per-design rendering/motion/form/a11y checks here are still
+// valuable but need an update pass: clear the design cookie at start, change design-arrival
+// to a direct `page.goto('/<design>')`, and delete the obsolete switcher blocks. Tracked as
+// a follow-up in the in-place-design-switch PR.
 
 // IPv4-explicit on purpose: serve-headers.mjs binds 127.0.0.1, while a stray
 // `astro preview` (no _headers applied) binds ::1 - and `localhost` resolves
