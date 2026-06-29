@@ -1,5 +1,28 @@
+# taranity.com - search and AI crawlers are welcome.
+# The site is static, server-rendered HTML; the journal ships with Article and
+# FAQ structured data so AI search engines can read, extract, and cite it.
+
 User-agent: *
 Allow: /
 Disallow: /og-preview
 
+# Major AI crawlers, allowed explicitly (both the training and the search/RAG
+# family per provider, since search visibility needs the search bot too).
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: anthropic-ai
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+Allow: /
+Disallow: /og-preview
+
+# Points AI models at the curated index of the best content.
+# llms.txt: https://taranity.com/llms.txt
 Sitemap: https://taranity.com/sitemap-index.xml
