@@ -91,11 +91,24 @@ export function initDesignTheme() {
     }
     const go = target.closest<HTMLElement>('[data-design-go]');
     if (go) {
+      // Switching design is in-place: the choice is stored in a cookie that the Cloudflare
+      // edge reads to serve the chosen design's prebuilt HTML at THIS same URL. Set it and
+      // reload. No URL change, and the visitor stays on the page they're on.
+      e.preventDefault();
+      const id = go.dataset.designGo || DEFAULT_DESIGN;
       try {
-        localStorage.setItem(KEY_DESIGN, go.dataset.designGo || DEFAULT_DESIGN);
+        localStorage.setItem(KEY_DESIGN, id);
       } catch {
-        /* not fatal: the link still navigates to the design route */
+        /* not fatal: the cookie below is the source of truth the edge reads */
       }
+      // No HttpOnly on purpose: the switcher reads/writes this cookie client-side, so it
+      // must stay JS-visible (adding HttpOnly would silently break switching). The value is
+      // a non-sensitive design id. Omit Secure on http (local `wrangler pages dev`) so the
+      // cookie persists there; the production site is https-only (HSTS preload) so it is
+      // Secure in prod.
+      const secure = location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = `${KEY_DESIGN}=${encodeURIComponent(id)}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
+      location.reload();
     }
   });
 }
