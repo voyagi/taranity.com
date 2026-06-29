@@ -1,12 +1,14 @@
 /**
  * Site-wide configuration: identity, navigation, CTAs, and third-party services.
  *
- * Service config reads PUBLIC_* env at build time with safe demo fallbacks, so
- * the site is fully functional and reviewable with zero secrets. Swap real
- * values in `.env` (see .env.example).
+ * Service config reads PUBLIC_* env at build time. The contact form renders the
+ * public Turnstile widget by default; set PUBLIC_TURNSTILE_SITEKEY=off only for
+ * intentional local/demo no-widget builds.
  */
 
 const env = import.meta.env;
+const PROD_TURNSTILE_SITEKEY = '0x4AAAAAADnP2Jb2wFHK9aNW';
+const turnstileOverride = env.PUBLIC_TURNSTILE_SITEKEY?.trim();
 
 export const site = {
   name: 'Taranity',
@@ -28,8 +30,13 @@ export const site = {
 } as const;
 
 export const services = {
-  /** Cloudflare Turnstile site key (public; renders the bot-check widget). Empty → no widget (demo). */
-  turnstileSitekey: env.PUBLIC_TURNSTILE_SITEKEY?.trim() || '',
+  /**
+   * Cloudflare Turnstile site key (public; renders the bot-check widget).
+   * A public fallback keeps direct Pages uploads from accidentally shipping a
+   * no-widget form when local env is empty. Set PUBLIC_TURNSTILE_SITEKEY=off
+   * for local/demo builds that intentionally omit Turnstile.
+   */
+  turnstileSitekey: turnstileOverride === 'off' ? '' : turnstileOverride || PROD_TURNSTILE_SITEKEY,
   /** Plausible domain; empty → no analytics script injected. */
   plausibleDomain: env.PUBLIC_PLAUSIBLE_DOMAIN || '',
 } as const;

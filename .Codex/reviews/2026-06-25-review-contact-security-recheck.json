@@ -1,0 +1,64 @@
+{
+  "reviewedAt": "2026-06-25T20:39:42.3350132+02:00",
+  "tool": "review recheck",
+  "target": "reconfirmation of 2026-06-25 contact security audit findings",
+  "verdict": "confirmed with one narrowed finding",
+  "confirmed": [
+    {
+      "id": "api-input-limits",
+      "status": "confirmed",
+      "evidence": [
+        "functions/api/contact.ts parses request.formData() at line 65 before any Content-Length guard.",
+        "Server validation at lines 78-82 checks only presence/email format/message minimum; no server max lengths are enforced.",
+        "Client maxlength attributes exist in all contact forms, but those are bypassable by direct POST."
+      ]
+    },
+    {
+      "id": "turnstile-action-hostname",
+      "status": "confirmed",
+      "evidence": [
+        "All six forms set data-action=\"turnstile-spin-v1\".",
+        "functions/api/contact.ts line 94 types Siteverify response as { success?: boolean } and line 95 checks only success.",
+        "Cloudflare docs include action/hostname response checks as enhanced validation and recommend checking additional fields when specified."
+      ]
+    },
+    {
+      "id": "turnstile-reset-after-failure",
+      "status": "confirmed",
+      "evidence": [
+        "All six forms render Turnstile and catch failed /api/contact submissions, then re-enable the submit button.",
+        "Repo search found no turnstile.reset, expired-callback, error-callback, or timeout-callback usage.",
+        "Cloudflare docs state tokens are single-use, expire after 300 seconds, and used/expired tokens must be replaced with fresh challenges."
+      ]
+    },
+    {
+      "id": "missing-sitekey-false-success",
+      "status": "confirmed",
+      "evidence": [
+        "All six forms branch on if (!tsEl) and simulate success instead of POSTing /api/contact.",
+        "The Turnstile widget only renders when services.turnstileSitekey is truthy.",
+        "Therefore a production build missing PUBLIC_TURNSTILE_SITEKEY will show a success state without sending the message."
+      ]
+    },
+    {
+      "id": "public-web3forms-key-name",
+      "status": "confirmed-but-narrowed",
+      "evidence": [
+        "src/env.d.ts declares PUBLIC_WEB3FORMS_KEY in ImportMetaEnv.",
+        ".env.example instructs use of PUBLIC_WEB3FORMS_KEY for the Web3Forms access key.",
+        "Astro docs state PUBLIC_ variables are made available to client-side code.",
+        "Current dist search found no PUBLIC_WEB3FORMS_KEY/access_key leak, so this is a naming/config footgun rather than an active leak today."
+      ]
+    }
+  ],
+  "verification": {
+    "focusedContactTests": "13 passed",
+    "distSecretSearch": "no PUBLIC_WEB3FORMS_KEY, WEB3FORMS, wf-key, or access_key matches in dist",
+    "currentGitState": "pre-existing untracked .agents plus untracked .Codex review artifacts"
+  },
+  "sources": [
+    "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/",
+    "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/",
+    "https://docs.astro.build/en/guides/environment-variables/"
+  ]
+}

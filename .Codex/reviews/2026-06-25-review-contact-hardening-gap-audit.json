@@ -1,0 +1,89 @@
+{
+  "reviewedAt": "2026-06-25T19:58:00Z",
+  "tool": "review",
+  "target": "contact hardening gap and assumption audit after production deploy",
+  "files": [
+    ".env.example",
+    "functions/api/contact.ts",
+    "public/_headers",
+    "scripts/e2e.devbrowser.js",
+    "src/components/designs/atlas/AtlasContact.astro",
+    "src/components/designs/practice/PracticeContact.astro",
+    "src/components/designs/raw/RawContact.astro",
+    "src/components/designs/signal/SignalContact.astro",
+    "src/components/designs/storefront/StorefrontContact.astro",
+    "src/components/designs/vitrine/VitrineContact.astro",
+    "src/config/site.ts",
+    "src/env.d.ts",
+    "src/lib/contact-form.ts",
+    "tests/unit/config.test.ts",
+    "tests/unit/contact-form-runtime.test.ts",
+    "tests/unit/contact.test.ts"
+  ],
+  "verdict": "needs changes",
+  "findings": [
+    {
+      "severity": "critical",
+      "category": "deployment-durability",
+      "file": "git state / Cloudflare Pages deployment",
+      "description": "Production deployment ca9d838f-6723-455f-ad35-2e634fbf26a9 was uploaded from a dirty worktree while HEAD still points at origin/main commit ab45782, so a normal Git-backed rebuild can overwrite the live fix.",
+      "fixed": false
+    },
+    {
+      "severity": "high",
+      "category": "request-size-limit",
+      "file": "functions/api/contact.ts:93",
+      "description": "The body size cap only uses Content-Length. Multipart requests created without a Content-Length are parsed by request.formData() before any byte cap is enforced, so large chunked/unknown-length bodies can still consume runtime memory/CPU.",
+      "fixed": false
+    },
+    {
+      "severity": "medium",
+      "category": "live-verification-gap",
+      "file": "functions/api/contact.ts:157",
+      "description": "Live smoke verified missing-token fail-closed behavior and confirmed TURNSTILE_SECRET_KEY exists, but did not prove the legacy PUBLIC_WEB3FORMS_KEY value is present/valid or that a solved Turnstile token results in a delivered Web3Forms submission.",
+      "fixed": false
+    },
+    {
+      "severity": "medium",
+      "category": "hostname-assumption",
+      "file": "functions/api/contact.ts:32",
+      "description": "Default Turnstile hostname validation allows taranity.com and www.taranity.com only. The Cloudflare deployment URL was shared as a verification URL, but a token solved on ca9d838f.taranity.pages.dev would be rejected unless the Turnstile widget/domain config and TURNSTILE_ALLOWED_HOSTNAMES include that host.",
+      "fixed": false
+    },
+    {
+      "severity": "medium",
+      "category": "test-coverage-gap",
+      "file": "scripts/e2e.devbrowser.js:29",
+      "description": "The browser suite verifies static Turnstile markup and the missing-token gate, but it does not prove the Turnstile iframe renders successfully, a token is produced, or a real positive contact submission succeeds.",
+      "fixed": false
+    },
+    {
+      "severity": "low",
+      "category": "secret-migration",
+      "file": "functions/api/contact.ts:157",
+      "description": "The temporary PUBLIC_WEB3FORMS_KEY fallback keeps production working, but it preserves a confusing secret name and should be removed after Cloudflare receives WEB3FORMS_ACCESS_KEY.",
+      "fixed": false
+    },
+    {
+      "severity": "low",
+      "category": "ux-edge-case",
+      "file": "src/lib/contact-form.ts:113",
+      "description": "If the Turnstile script is blocked or fails to render, the form asks the visitor to complete the verification above even when no usable challenge is visible.",
+      "fixed": false
+    },
+    {
+      "severity": "nit",
+      "category": "defensive-client-state",
+      "file": "src/lib/contact-form.ts:23",
+      "description": "form.dataset.bound is set before required child elements are validated, so a malformed or partially swapped form would be marked bound and skipped on a later retry.",
+      "fixed": false
+    }
+  ],
+  "summary": {
+    "critical": 1,
+    "high": 1,
+    "medium": 3,
+    "low": 2,
+    "nit": 1
+  }
+}

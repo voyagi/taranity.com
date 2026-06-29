@@ -1,10 +1,10 @@
 ---
 /**
  * Written contact only (hard rule 1: no booking, no calls): a short form and a
- * direct email address, framed as the page's primary conversion. Submission
- * posts to Web3Forms with the same hardened pattern as the other designs
- * (hardcoded endpoint, honeypot, demo mode without a key, inline validation),
- * restyled for Storefront.
+ * direct email address, framed as the page's primary conversion. Runtime
+ * validation, Turnstile handling, and same-origin submission live in the shared
+ * bindContactForm() helper; this component owns the Storefront markup and
+ * labels.
  */
 import { services, socials, contactEmail } from '../../../config/site';
 
@@ -283,152 +283,19 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
 </style>
 
 <script>
-  /**
-   * Same hardened submit flow as the other designs' forms: client validation,
-   * honeypot, demo mode without a key, and a hardcoded endpoint (never trust a
-   * DOM attribute for the POST target).
-   */
-  function bindStorefrontForm() {
-    const form = document.querySelector<HTMLFormElement>('[data-f-form]');
-    if (!form || form.dataset.bound) return;
-    form.dataset.bound = '1';
+  import { bindContactForm } from '../../../lib/contact-form';
 
-    const status = form.querySelector<HTMLElement>('[data-f-form-status]')!;
-    const submitBtn = form.querySelector<HTMLButtonElement>('.f-submit')!;
-    const submitLabel = form.querySelector<HTMLElement>('[data-f-submit-label]')!;
-    // The success panel is the form's sibling inside .f-form-wrap; scope the
-    // lookup there so a second instance of this component could never grab
-    // another form's panel.
-    const successPanel = form.closest('.f-form-wrap')!.querySelector<HTMLElement>('[data-f-form-success]')!;
-
-    // Cloudflare Turnstile: render the widget explicitly so it survives Astro
-    // view-transition navigation (api.js does not auto-rescan on client nav).
-    // No widget when no sitekey is configured (demo builds) → the gate is skipped.
-    const tsEl = form.querySelector<HTMLElement>('.cf-turnstile');
-    if (tsEl) {
-      const renderTurnstile = () => {
-        if (!window.turnstile || tsEl.dataset.tsRendered) return false;
-        window.turnstile.render(tsEl);
-        tsEl.dataset.tsRendered = '1';
-        return true;
-      };
-      if (!renderTurnstile()) {
-        const iv = window.setInterval(() => {
-          if (renderTurnstile()) window.clearInterval(iv);
-        }, 150);
-        window.setTimeout(() => window.clearInterval(iv), 10000);
-      }
-    }
-
-    const setErr = (name: string, msg: string) => {
-      const field = form.querySelector(`[name="${name}"]`)?.closest('.f-field-row');
-      const errEl = form.querySelector(`[data-f-err="${name}"]`);
-      if (field) field.classList.toggle('invalid', Boolean(msg));
-      if (errEl) errEl.textContent = msg;
-    };
-
-    const validate = () => {
-      let ok = true;
-      const data = new FormData(form);
-      const name = String(data.get('name') || '').trim();
-      const email = String(data.get('email') || '').trim();
-      const message = String(data.get('message') || '').trim();
-
-      setErr('name', name ? '' : 'Tell us your name.');
-      if (!name) ok = false;
-
-      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      setErr('email', email ? (emailOk ? '' : 'That email looks off.') : 'We need an email to reply.');
-      if (!emailOk) ok = false;
-
-      setErr('message', message.length >= 10 ? '' : 'A sentence or two, please (10+ characters).');
-      if (message.length < 10) ok = false;
-
-      if (!ok) {
-        form.querySelector<HTMLElement>('.f-field-row.invalid input, .f-field-row.invalid textarea')?.focus();
-      }
-      return ok;
-    };
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      status.textContent = '';
-      status.classList.remove('is-error');
-      if (!validate()) return;
-
-      if ((form.querySelector('[name="botcheck"]') as HTMLInputElement)?.checked) return;
-
-      // Require a Turnstile token before submitting. The token rides in the form
-      // data and is verified server-side by functions/api/contact.ts; the client
-      // only checks it is present so the user gets immediate feedback. Skipped in
-      // demo builds, where no widget renders.
-      if (tsEl && !(form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null)?.value) {
-        const fallback = form.dataset.fallbackEmail || 'hello@taranity.com';
-        status.textContent = `Please complete the verification above, or email us directly at ${fallback}.`;
-        status.classList.add('is-error');
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitLabel.textContent = 'Sending…';
-
-      const showSuccess = () => {
-        form.hidden = true;
-        successPanel.hidden = false;
-        // A smooth scroll fights a reduced-motion preference; jump instantly then.
-        successPanel.scrollIntoView({
-          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-          block: 'center',
-        });
-        // Keyboard/SR users were focused on the now-hidden submit button:
-        // move focus so the confirmation is announced and reachable.
-        successPanel.focus({ preventScroll: true });
-      };
-
-      // Demo / local: no Turnstile widget configured (no sitekey), so there is no
-      // verify endpoint to call - simulate success to keep the flow reviewable.
-      if (!tsEl) {
-        await new Promise((r) => setTimeout(r, 700));
-        showSuccess();
-        return;
-      }
-
-      // Abort a stalled request: without this a hung endpoint leaves the form
-      // stuck on the sending label with no way to retry.
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 12000);
-      try {
-        const res = await fetch('/api/contact', {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { Accept: 'application/json' },
-          signal: controller.signal,
-        });
-        const json = await res.json().catch(() => ({}));
-        if (res.ok && json.success) {
-          showSuccess();
-        } else {
-          throw new Error(json.message || 'Send failed');
-        }
-      } catch {
-        const fallbackEmail = form.dataset.fallbackEmail || 'hello@taranity.com';
-        status.textContent = `Could not send. Email ${fallbackEmail} directly?`;
-        status.classList.add('is-error');
-        submitBtn.disabled = false;
-        submitLabel.textContent = 'Try again';
-      } finally {
-        clearTimeout(timeout);
-      }
-    });
-
-    // Clear an error as soon as the visitor edits the field.
-    form.querySelectorAll('input, textarea').forEach((el) => {
-      el.addEventListener('input', () => {
-        const name = (el as HTMLInputElement).name;
-        if (el.closest('.f-field-row')?.classList.contains('invalid')) setErr(name, '');
-      });
-    });
-  }
-
-  document.addEventListener('astro:page-load', bindStorefrontForm);
+  document.addEventListener('astro:page-load', () =>
+    bindContactForm({
+      formSelector: '[data-f-form]',
+      statusSelector: '[data-f-form-status]',
+      submitButtonSelector: '.f-submit',
+      submitLabelSelector: '[data-f-submit-label]',
+      successSelector: '[data-f-form-success]',
+      wrapperSelector: '.f-form-wrap',
+      fieldRowSelector: '.f-field-row',
+      errorAttr: 'data-f-err',
+      sendingLabel: 'Sending…',
+    }),
+  );
 </script>
