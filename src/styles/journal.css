@@ -1,0 +1,122 @@
+/* ---- journal: layered on .v-page (vitrine.css), scoped to .v-journal so the
+   shared subpage styles for privacy/404 stay untouched. Used by the journal
+   index and article routes under src/pages/journal/. ---- */
+
+/* Markdown bodies render flat headings (no <section> wrapper), so the section
+   rhythm .v-page gives privacy must be restored on the headings themselves. */
+.v-journal h2 {
+  margin-top: clamp(2.4rem, 6vh, 3.2rem);
+}
+
+/* Ordered lists: .v-page styles only <ul> (custom bullets, no markers). Give
+   <ol> real numbers and cancel the inherited bullet dot on its items. */
+.v-journal ol {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0 0 0.8rem;
+  padding-left: 1.5rem;
+  list-style: decimal;
+}
+.v-journal ol li {
+  padding-left: 0.35rem;
+}
+.v-journal ol li::before {
+  content: none;
+}
+
+/* Back link above the article header. */
+.v-journal-back {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 540;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--v-muted);
+  text-decoration: none;
+}
+.v-journal-back:hover {
+  color: var(--v-ink);
+}
+
+/* FAQ block. Questions are serif sub-heads; answers reuse .v-page p. */
+.v-journal-faq {
+  margin-top: clamp(2.6rem, 6vh, 3.4rem);
+  padding-top: clamp(1.8rem, 4vh, 2.4rem);
+  border-top: 1px solid var(--v-line);
+}
+/* The section already carries its own top spacing; cancel the catch-all
+   .v-journal h2 margin so the FAQ heading is not double-spaced. */
+.v-journal-faq h2 {
+  margin-top: 0;
+}
+.v-journal-faq-item + .v-journal-faq-item {
+  margin-top: 1.6rem;
+}
+.v-journal-faq h3 {
+  margin-bottom: 0.4rem;
+  font-family: var(--v-serif);
+  font-optical-sizing: auto;
+  font-weight: 440;
+  font-size: 1.08rem;
+  line-height: 1.3;
+}
+
+/* ---- index listing ---- */
+.v-journal-list {
+  display: grid;
+  gap: 0;
+  margin: clamp(1.6rem, 4vh, 2.4rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+/* Cancel the inherited .v-page li bullet + indent on listing rows. */
+.v-journal-list > li {
+  padding-left: 0;
+}
+.v-journal-list > li::before {
+  content: none;
+}
+.v-journal-list > li {
+  border-top: 1px solid var(--v-line);
+}
+.v-journal-list > li:last-child {
+  border-bottom: 1px solid var(--v-line);
+}
+.v-journal-list a {
+  display: grid;
+  gap: 0.4rem;
+  padding-block: clamp(1.4rem, 3.2vh, 2rem);
+  text-decoration: none;
+  color: inherit;
+}
+.v-journal-list-kicker {
+  font-size: 0.66rem;
+  font-weight: 560;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--v-accent);
+}
+.v-journal-list-title {
+  font-family: var(--v-serif);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--v-ink);
+}
+.v-journal-list-desc {
+  color: var(--v-muted);
+  line-height: 1.6;
+  max-width: 60ch;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .v-journal-list-title,
+  .v-journal-back {
+    transition: color 0.25s;
+  }
+}
+.v-journal-list a:hover .v-journal-list-title {
+  color: var(--v-accent);
+}

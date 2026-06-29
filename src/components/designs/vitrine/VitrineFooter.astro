@@ -9,7 +9,10 @@ const year = new Date().getFullYear();
 <footer class="v-footer">
   <p>© {year} Taranity</p>
   <p class="v-footer-note" aria-hidden="true">Vitrine · a Taranity design language</p>
-  <a href="/privacy">Privacy</a>
+  <nav class="v-footer-links" aria-label="More from Taranity">
+    <a href="/journal">Journal</a>
+    <a href="/privacy">Privacy</a>
+  </nav>
 </footer>
 
 <style>
@@ -24,6 +27,10 @@ const year = new Date().getFullYear();
     border-top: 1px solid var(--v-line);
     font-size: 0.78rem;
     color: var(--v-muted);
+  }
+  .v-footer-links {
+    display: flex;
+    gap: 1.4rem;
   }
   .v-footer a {
     color: inherit;
