@@ -1,28 +1,28 @@
-# taranity.com - search and AI crawlers are welcome.
+# taranity.com - search and AI answer engines are welcome.
 # The site is static, server-rendered HTML; the journal ships with Article and
 # FAQ structured data so AI search engines can read, extract, and cite it.
+#
+# AI *training* crawlers (GPTBot, ClaudeBot, Google-Extended, CCBot, etc.) are
+# governed by Cloudflare's managed robots.txt block, which disallows them
+# (Content-Signal ai-train=no). We allow AI search/citation but not training,
+# so this file only adds explicit allows for the search/RAG crawlers and does
+# not contradict that policy.
 
 User-agent: *
 Allow: /
 Disallow: /og-preview
 
-# Major AI crawlers, allowed explicitly (both the training and the search/RAG
-# family per provider, since search visibility needs the search bot too).
-User-agent: GPTBot
+# AI search / answer-engine crawlers: they read pages to cite them in answers,
+# and are distinct from the training crawlers Cloudflare blocks above.
 User-agent: OAI-SearchBot
 User-agent: ChatGPT-User
-User-agent: ClaudeBot
 User-agent: Claude-SearchBot
 User-agent: Claude-User
-User-agent: anthropic-ai
 User-agent: PerplexityBot
 User-agent: Perplexity-User
-User-agent: Google-Extended
-User-agent: Applebot-Extended
-User-agent: CCBot
 Allow: /
 Disallow: /og-preview
 
-# Points AI models at the curated index of the best content.
+# Curated plain-text index of the best content for AI models.
 # llms.txt: https://taranity.com/llms.txt
 Sitemap: https://taranity.com/sitemap-index.xml
