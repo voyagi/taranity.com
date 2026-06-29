@@ -99,7 +99,10 @@ remaining cross-link pointing at an already-live article.
    `faqs`, set a unique `order`.
 3. Body starts at the intro paragraph (no `# H1`; the title comes from frontmatter). Use
    `##` for sections. No em dashes. Internal-link to `/#crafts`, `/#contact`, and a sibling.
-4. `npm run check && npm run build` to validate, then deploy.
+4. **Optional social image:** drop a 1200x630 image at `public/journal/<slug>.png` and set
+   `heroImage: /journal/<slug>.png` in the frontmatter. It becomes the article's og:image and
+   the image Medium/LinkedIn pull. Without it the page falls back to the brand `/og.png`.
+5. `npm run check && npm run build` to validate, then deploy.
 
 ## Not done by tooling
 

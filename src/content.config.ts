@@ -24,6 +24,9 @@ const journal = defineCollection({
     /** Primary + secondary keywords. Kept for reference and internal linking,
      * not rendered as meta keywords (Google ignores those). */
     keywords: z.array(z.string()).default([]),
+    /** Optional per-article social image (og:image): a path under public/, e.g.
+     * /journal/<slug>.png, ideally 1200x630. Falls back to the brand /og.png. */
+    heroImage: z.string().optional(),
     /** FAQ pairs: rendered on the page AND emitted as FAQPage JSON-LD. */
     faqs: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
     /** Ascending listing order on the journal index. */
