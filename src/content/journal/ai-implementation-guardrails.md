@@ -32,10 +32,10 @@ real, and the gap between them is where most "AI strategy" actually lives, which
 nowhere useful.
 
 So here is how we think about implementing AI in a business once you strip out the keynote
-energy. AI is a capable, confident, sometimes-wrong intern. You would give that intern real
-work. You would not give them the company credit card and your customers' inbox with no
-supervision on day one. That single mental model answers most of the questions people
-overcomplicate.
+energy. The intern framing carries further than it looks: you would let an intern draft,
+summarise, and triage all day, but you would not hand them the company credit card and your
+customers' inbox unsupervised on day one. That single mental model answers most of the
+questions people overcomplicate.
 
 ## Start from a problem, not from "AI"
 

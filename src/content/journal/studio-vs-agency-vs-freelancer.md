@@ -27,9 +27,8 @@ faqs:
 
 We will declare our bias up front: we run a boutique studio, so of course we think there is
 a case for one. But we have also worked alongside big agencies and next to plenty of
-freelancers, and the honest truth is that none of the three is best. They are best at
-different things, and most of the frustration people have with whoever they hired comes
-from picking the wrong shape for the job, not from the people being bad at it.
+freelancers, and the choice is rarely about who is good. Each of the three is built for a
+different kind of job, and the regret usually traces back to a mismatch, not to bad work.
 
 So if you are weighing a boutique studio against an agency and a freelancer to build your
 website, app, or software, here is the real trade-off, without the part where everyone
