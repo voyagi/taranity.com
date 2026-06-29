@@ -11,6 +11,7 @@ keywords:
   - checkout optimization
   - product page conversion
 order: 2
+draft: true
 faqs:
   - q: What is ecommerce conversion rate optimisation?
     a: "It is the practice of increasing the percentage of store visitors who buy, by removing friction and doubt across checkout, product pages, trust signals, speed, and copy, rather than driving more traffic."

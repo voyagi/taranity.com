@@ -11,6 +11,7 @@ keywords:
   - small business automation tools
   - automate repetitive tasks
 order: 3
+draft: true
 faqs:
   - q: What should a small business automate first?
     a: "Start with a task that is frequent, rule-based, boring, and low-risk if it glitches, most often the copy-pasting of data between tools. Prove it works before automating anything that touches money or customers."
@@ -111,7 +112,7 @@ the boring is to buy back attention for the parts of the business that actually 
 human.
 
 Start with one frequent, rule-based, low-risk task. Make it boringly reliable. Then do the
-next one. When you reach the work that wants real judgement, that is usually where
-[adding AI carefully](/journal/ai-implementation-guardrails) comes in, and it is the kind of
-thing we [map and build](/#crafts) once the plumbing is solid. If you are not sure what to
-automate first, [that is a good first conversation](/#contact).
+next one. When you reach the work that wants real judgement rather than repetition, that is
+usually where carefully scoped AI comes in, and it is the kind of thing we
+[map and build](/#crafts) once the plumbing is solid. If you are not sure what to automate
+first, [that is a good first conversation](/#contact).

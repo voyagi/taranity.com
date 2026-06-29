@@ -11,6 +11,7 @@ keywords:
   - web development studio
   - software development partner
 order: 5
+draft: true
 faqs:
   - q: Should I hire a freelancer, agency, or studio to build my software?
     a: "It depends on the project's size, lifespan, and the cost of it breaking. A freelancer suits bounded one-off work, a large agency suits big multi-team programmes with the budget for it, and a boutique studio suits serious in-between projects where craft, senior attention, and continuity matter more than raw headcount."

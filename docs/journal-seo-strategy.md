@@ -62,8 +62,35 @@ months** for the easier keywords to move into striking range, longer for competi
 3. **Distribute as a studio.** A short native LinkedIn post per article drives the first
    readers and links while Google indexes.
 4. **Cadence.** One per 1-2 weeks rather than all at once, so each gets its own indexing and
-   social window. To stage, set `draft: true` on the not-yet-published entries and flip them
-   live on schedule.
+   social window. This is implemented now: article 1 is live and articles 2 to 5 are
+   `draft: true`. See the release schedule below.
+
+## Release schedule (live state)
+
+Articles are dripped roughly every two weeks. Only `draft: false` entries build, list on the
+index, and enter the sitemap, so drafted ones are invisible to Google until flipped.
+
+| Order | Slug | Status | Target publish |
+|---|---|---|---|
+| 1 | `website-speed-conversions` | **live** | 2026-06-29 |
+| 2 | `ecommerce-conversion-fixes` | draft | ~2026-07-13 |
+| 3 | `what-to-automate-first` | draft | ~2026-07-27 |
+| 4 | `ai-implementation-guardrails` | draft | ~2026-08-10 |
+| 5 | `studio-vs-agency-vs-freelancer` (pillar) | draft | ~2026-08-24 |
+
+To avoid 404s while siblings are drafted, two forward cross-links were softened: article 1
+to article 2, and article 3 to article 4. Restore them when the target goes live (optional;
+the index and the pillar already interlink the cluster). Publishing in order keeps every
+remaining cross-link pointing at an already-live article.
+
+### Flip one live
+
+1. In the article's frontmatter, delete `draft: true` (or set `draft: false`).
+2. Set `pubDate` to the real date so the "Published" line and the Article schema are accurate.
+3. If its sibling target is now live, restore the cross-link (article 1 to ecommerce once
+   article 2 ships; article 3 to AI once article 4 ships).
+4. `npm run check && npm run build`, then commit, push, merge, and deploy.
+5. Post the native LinkedIn summary and syndicate with a canonical tag back to the article.
 
 ## Adding a new article
 

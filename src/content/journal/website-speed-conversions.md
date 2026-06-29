@@ -112,6 +112,6 @@ that is most measurable, most often broken, and cheapest to fix relative to what
 
 If your numbers feel soft and you cannot explain it, measure your LCP on a phone before you
 touch the copy. The answer is there more often than people expect. It is the kind of thing
-we look at first in [the work we do](/#crafts), and if your store is the thing that feels
-slow, the [seven ecommerce fixes that beat a redesign](/journal/ecommerce-conversion-fixes)
-are the natural next read. Either way, [tell us what you are seeing](/#contact).
+we look at first in [the work we do](/#crafts), and the same logic holds for a store: fix
+the load before you reach for a redesign budget. Either way,
+[tell us what you are seeing](/#contact).

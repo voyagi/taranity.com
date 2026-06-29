@@ -11,6 +11,7 @@ keywords:
   - responsible AI
   - GDPR AI
 order: 4
+draft: true
 faqs:
   - q: How do I start implementing AI in my business?
     a: "Start from a real, repetitive problem, not from a wish to use AI. Pick one low-stakes task involving messy language or lots of unstructured input, ground the model in your own data, keep a human approving the output, and run it as a one-month pilot before expanding."
