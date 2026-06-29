@@ -9,11 +9,14 @@ export default defineConfig({
   output: 'static',
   integrations: [
     sitemap({
-      // Drop the OG preview and the noindex per-design privacy variants
-      // (/<design>/privacy); Vitrine's canonical /privacy stays in the sitemap.
+      // Drop the OG preview and the ENTIRE per-design variant tree
+      // (/<design>, /<design>/journal, /<design>/privacy, ...). Those are noindex
+      // alternate renderings the edge serves at the canonical URL; only the clean
+      // canonical URLs (Vitrine at "/", "/journal", "/journal/<slug>", "/privacy")
+      // belong in the sitemap, so there is one canonical URL per piece of content.
       filter: (page) =>
         !page.includes('/og-preview') &&
-        !/\/(atlas|signal|storefront|practice|raw)\/privacy\/?$/.test(page),
+        !/\/(atlas|signal|storefront|practice|raw)(\/|$)/.test(page),
     }),
   ],
   prefetch: {

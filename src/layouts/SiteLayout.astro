@@ -18,6 +18,13 @@ import { site, services, socials, contactEmail } from '../config/site';
 interface Props {
   /** Design id from src/config/designs.ts; sets data-design on <html>. */
   design: string;
+  /**
+   * Clean canonical path for this content (defaults to the request path). Design VARIANT
+   * pages (served at a canonical URL by the edge middleware) pass the clean canonical path
+   * so the <link rel=canonical>, og:url, and the switcher's no-JS links all point at the
+   * one canonical URL rather than the internal /<design>/... build path.
+   */
+  canonicalPath?: string;
   title: string;
   description: string;
   /** theme-color per mode; the pre-paint script and mode toggle read these. */
@@ -42,6 +49,7 @@ interface Props {
 
 const {
   design,
+  canonicalPath = Astro.url.pathname,
   title,
   description,
   themeLight,
@@ -53,7 +61,7 @@ const {
   smooth = false,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, site.url);
+const canonical = new URL(canonicalPath, site.url);
 const ogImage = new URL(image, site.url);
 const fullTitle = title.includes(site.name) ? title : `${title} · ${site.name}`;
 
@@ -185,7 +193,7 @@ const orgLd = {
     <main id="main">
       <slot />
     </main>
-    <DesignSwitcher design={design} />
+    <DesignSwitcher design={design} canonicalPath={canonicalPath} />
 
     <script>
       import { initDesignTheme } from '../lib/design-theme';
