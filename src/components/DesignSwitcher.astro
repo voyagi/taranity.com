@@ -80,6 +80,7 @@ const switchHref = (id: string) => `/switch?to=${id}&next=${encodeURIComponent(c
             class="ds-design"
             href={switchHref(d.id)}
             rel="nofollow"
+            data-astro-prefetch="false"
             data-design-go={d.id}
             aria-current={d.id === design ? 'page' : undefined}
             title={`${d.tagline} for ${d.audience}`}

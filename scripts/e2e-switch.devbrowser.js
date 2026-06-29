@@ -70,11 +70,14 @@ for (const [route, label] of pageTypes) {
   rec(`${label}: switch -> ${want} in place`, got === want, String(got));
   rec(`${label}: URL unchanged after switch`, path() === route, page.url());
   rec(`${label}: no CSP violation on switch`, cspErrors.length === 0, cspErrors.join(' | ').slice(0, 160));
-  // Persistence across reload is the switch mechanism itself (a switch IS a cookie-set +
-  // reload that serves the chosen design), and is verified end-to-end on the real edge in
-  // the repo's node/preview checks. Not re-asserted here: dev-browser's persistent profile
-  // races a prior run's design cookie back in on the same host, which is a tooling quirk,
-  // not product behaviour.
+  // Persistence: the switch set the cookie; an explicit reload must still serve the chosen design.
+  // Regression guard for the prefetch bug: `data-astro-prefetch="false"` on switcher pills
+  // prevents the /switch endpoint from firing silently on viewport prefetch, which was
+  // clobbering the design cookie before any user interaction. If this check fails, the
+  // prefetch guard has regressed.
+  await page.reload({ waitUntil: 'load' });
+  await settle(400);
+  rec(`${label}: persists across reload`, (await dattr('data-design')) === want, await dattr('data-design'));
   await clearState();
 }
 

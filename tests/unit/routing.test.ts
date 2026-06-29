@@ -54,6 +54,8 @@ describe('cloudflare pages _routes.json', () => {
     // and "/" is handled by the root _middleware.
     expect(existsSync(resolve(root, 'functions/api/contact.ts'))).toBe(true);
     expect(existsSync(resolve(root, 'functions/_middleware.ts'))).toBe(true);
+    // The no-JS switch endpoint that "/switch" in the include list routes to.
+    expect(existsSync(resolve(root, 'functions/switch.ts'))).toBe(true);
   });
 });
 

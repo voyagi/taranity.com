@@ -117,6 +117,9 @@ export function initDesignTheme() {
     }
     const go = target.closest<HTMLElement>('[data-design-go]');
     if (go) {
+      // Let modified / non-left clicks fall through to the real /switch link (e.g. a
+      // Cmd/Ctrl-click opens the switched design in a new tab) instead of hijacking them.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       // Switching design is in-place: the choice is stored in a cookie that the Cloudflare
       // edge reads to serve the chosen design's prebuilt HTML at THIS same URL. Set it and
       // reload. No URL change, and the visitor stays on the page they're on.
