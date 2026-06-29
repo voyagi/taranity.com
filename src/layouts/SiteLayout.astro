@@ -105,11 +105,13 @@ const orgLd = {
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
 
-    <!-- Open Graph -->
+    <!-- Open Graph. og/twitter titles use the clean page title (no " · Taranity"
+         suffix) so social cards and Medium imports come in clean; the brand is
+         still carried by og:site_name, and <title> above keeps the suffix for SEO. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:title" content={fullTitle} />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
@@ -118,7 +120,7 @@ const orgLd = {
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
