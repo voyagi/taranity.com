@@ -30,9 +30,9 @@ business"), which sets you up to either do nothing because it is overwhelming, o
 the wrong thing first and conclude it does not work. Both are common. Neither is necessary.
 
 After building automation for a lot of small companies, we have landed on a boring but
-reliable way to decide business process automation for small business. Do not start with
-the tool, and do not start with the most painful task. Start with a list and a simple
-filter.
+reliable way to approach business process automation. The instinct is to reach for a tool,
+or to attack the most painful task first. Both are the wrong place to begin. Start with a
+list and a simple filter instead.
 
 ## The filter: frequent, rule-based, and boring
 

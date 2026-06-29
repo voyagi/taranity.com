@@ -31,7 +31,8 @@ you do not notice when it is missing. You just leave.
 
 We design and build these sites for a living, and website speed and conversion rate are
 joined at the hip more tightly than almost anything else we touch. Not because speed is
-glamorous. Because it is the tax every visitor pays before they ever see your offer.
+glamorous, but because it is the first impression a visitor forms, made before a single
+line of your copy is read.
 
 ## The number that should bother you
 

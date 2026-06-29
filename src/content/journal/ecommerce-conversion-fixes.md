@@ -25,15 +25,16 @@ faqs:
     a: "Start at the checkout. It is where motivated buyers leak out. Add guest checkout, show all costs early, and cut unnecessary form fields before touching anything else."
 ---
 
-When sales dip, the first instinct is almost always "we need a redesign". It is the most
-expensive instinct in ecommerce, and usually the wrong one. A redesign takes three months,
+When sales dip, the first instinct is almost always "we need a redesign". It is also the
+slowest and most expensive way to react, and usually the wrong one. A redesign takes three months,
 costs a fortune, resets everything you have learned about your current store, and (the part
 nobody tells you) frequently lowers conversions for the first few weeks while the new
 layout settles and you re-find what worked.
 
-We would rather you keep the money. Most stores leak sales through a handful of specific,
-boring, fixable spots. Here is where we look first when a brand asks for ecommerce
-conversion rate optimisation, in the order we would actually do the work.
+We would rather you keep the money. The truth is that most stores bleed sales in a few
+specific, unglamorous places, and you can seal them one at a time. Here is where we look
+first when a brand asks us to lift its conversion rate, in the order we would actually do
+the work.
 
 ## 1. Fix the checkout before anything else
 
