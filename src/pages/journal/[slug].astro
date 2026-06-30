@@ -10,6 +10,7 @@ import { getCollection, render } from 'astro:content';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import VitrinePage from '../../components/designs/vitrine/VitrinePage.astro';
 import { site } from '../../config/site';
+import { relatedPosts } from '../../lib/related-posts';
 import '../../styles/journal.css';
 
 export async function getStaticPaths() {
@@ -19,18 +20,11 @@ export async function getStaticPaths() {
   // Pass up to three other published articles for the "Keep reading" footer.
   // Internal links between articles help readers and crawlers find the rest of
   // the journal; the block self-populates as drip-scheduled drafts go live and
-  // renders nothing while this is the only published piece. Rotate the window so
-  // each article surfaces the three that FOLLOW it (wrapping around), instead of
-  // every article linking the same lowest-order three.
+  // renders nothing while this is the only published piece. relatedPosts rotates
+  // the window so each article surfaces a different set (see src/lib/related-posts.ts).
   return posts.map((post, index) => ({
     params: { slug: post.id },
-    props: {
-      post,
-      related: posts
-        .slice(index + 1)
-        .concat(posts.slice(0, index))
-        .slice(0, 3),
-    },
+    props: { post, related: relatedPosts(posts, index) },
   }));
 }
 
