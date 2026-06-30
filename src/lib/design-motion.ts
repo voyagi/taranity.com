@@ -71,6 +71,11 @@ export function initDesignMotion(config: DesignMotionConfig): void {
   let rafCb: ((time: number) => void) | null = null;
   let ctx: gsap.Context | null = null;
   let removeAnchorHandler: (() => void) | null = null;
+  // True only while THIS design owns the SHARED, global scroll state (the
+  // `v-lenis` <html> class and its progress transform). Every loaded design
+  // module hears astro:page-load, so an inactive one (root absent on the current
+  // page) must not strip the active design's shared state in its no-op teardown.
+  let active = false;
   // Guards the window-load fallback only; `load` fires once per full page load,
   // so this never needs to reset across View-Transition navigations.
   let pageLoadFired = false;
@@ -94,9 +99,19 @@ export function initDesignMotion(config: DesignMotionConfig): void {
       // no getter for it, so restore the documented defaults.
       gsap.ticker.lagSmoothing(500, 33);
     }
-    // Native scrollbar comes back the moment Lenis stops driving.
-    document.documentElement.classList.remove('v-lenis');
-    document.querySelector<HTMLElement>(config.progress.fillSelector)?.style.removeProperty('transform');
+    // Only clear the SHARED/global scroll state if this design actually owned it.
+    // teardown() runs from every loaded module's astro:page-load (via setup), and
+    // an inactive module must not strip the active design's `v-lenis` class or
+    // progress transform - otherwise, after visiting 2+ designs in one session, a
+    // later-registered inactive module's teardown could run after the active
+    // module's setup and clobber it. (The local lenis/ctx/anchor cleanup above is
+    // null-safe, so it stays unconditional.)
+    if (active) {
+      active = false;
+      // Native scrollbar comes back the moment Lenis stops driving.
+      document.documentElement.classList.remove('v-lenis');
+      document.querySelector<HTMLElement>(config.progress.fillSelector)?.style.removeProperty('transform');
+    }
   }
 
   function setup() {
@@ -124,6 +139,7 @@ export function initDesignMotion(config: DesignMotionConfig): void {
     // re-adding covers the mid-session "reduced motion turned off" path. The
     // 'v-lenis' class is shared across all designs.
     document.documentElement.classList.add('v-lenis');
+    active = true;
 
     const fill = document.querySelector<HTMLElement>(config.progress.fillSelector);
     const pct = config.progress.pctSelector
