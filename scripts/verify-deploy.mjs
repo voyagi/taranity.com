@@ -6,28 +6,24 @@
 //      must stay scoped via public/_routes.json so native Pages serving handles them;
 //      a too-broad worker scope 404s them.
 //   2. Legacy paths still redirect home (public/_redirects).
-//   3. The in-place design switch actually works: with a `taranity-design` cookie, the
-//      canonical content paths must serve THAT design's variant at the same URL, and the
-//      prebuilt variant assets must exist. This is the regression guard for the
-//      2026-06-30 failure where the Pages project had no build command, so `astro build`
-//      never ran, the variant subpages 404'd, and the switch silently fell back to vitrine.
+//   3. The in-place design switch actually works for EVERY design: with a
+//      `taranity-design` cookie, the canonical content paths must serve that design's
+//      variant at the same URL. This is the regression guard for the 2026-06-30 failure
+//      where the Pages project had no build command, so `astro build` never ran, the
+//      per-design subpages 404'd, and the switch silently fell back to vitrine.
+//
+// The article slug is discovered from the live journal index, not hardcoded, so renaming
+// or replacing a post does not make this check fail or test a stale path.
 //
 // Override the host with VERIFY_BASE for previews.
 const base = (process.env.VERIFY_BASE || 'https://taranity.com').replace(/\/$/, '');
 
-// Exactly as the in-app switcher links them: no trailing slash.
-const themeRoutes = ['/', '/atlas', '/signal', '/storefront', '/practice', '/raw', '/privacy'];
+// Every non-default (non-Vitrine) design. The switch must serve each one's variant in place.
+const DESIGNS = ['atlas', 'signal', 'storefront', 'practice', 'raw'];
+// Exactly as the in-app switcher links them: no trailing slash. Covers each design's home.
+const themeRoutes = ['/', ...DESIGNS.map((d) => `/${d}`), '/privacy'];
 // Legacy paths that must redirect to the home experience (public/_redirects).
 const legacyRedirects = ['/about', '/contact', '/work', '/projects/x'];
-// In-place switch: [canonical path, cookie design] -> the served HTML must carry that design.
-const switchChecks = [
-  ['/', 'atlas'],
-  ['/journal', 'atlas'],
-  ['/journal/website-speed-conversions', 'atlas'],
-  ['/privacy', 'signal'],
-];
-// Prebuilt variant assets that 404 if the build skipped the per-design subpages.
-const variantAssets = ['/atlas/journal/', '/atlas/privacy/', '/signal/journal/', '/signal/privacy/'];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const get = (path, cookie) =>
@@ -40,7 +36,32 @@ const designOf = (html) => {
   return m ? m[1] : 'unknown';
 };
 
-async function checkOnce() {
+// Discover a real article slug from the live journal index so the article-route check
+// follows the actual content instead of a hardcoded slug that drifts. Null if none found.
+async function discoverArticleSlug() {
+  try {
+    const html = await (await get('/journal')).text();
+    const m = html.match(/\/journal\/([a-z0-9][a-z0-9-]+)/i);
+    return m ? m[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+// Build the switch checks: every design on the two subpage routes (journal index +
+// privacy), plus the article route proven once (its [slug] getStaticPaths expands over the
+// same design list, so one design proves the per-design expansion built).
+function buildSwitchChecks(articleSlug) {
+  const checks = [];
+  for (const d of DESIGNS) {
+    checks.push(['/journal', d]);
+    checks.push(['/privacy', d]);
+  }
+  if (articleSlug) checks.push([`/journal/${articleSlug}`, 'atlas']);
+  return checks;
+}
+
+async function checkOnce(switchChecks) {
   const failures = [];
   for (const p of themeRoutes) {
     try {
@@ -67,20 +88,13 @@ async function checkOnce() {
       const r = await get(p, `taranity-design=${design}`);
       const body = await r.text();
       if (r.status !== 200) failures.push(`switch ${p} [${design}] -> HTTP ${r.status}`);
+      else if (/route was not found/i.test(body)) failures.push(`switch ${p} [${design}] -> served the custom 404 page`);
       else {
         const served = designOf(body);
         if (served !== design) failures.push(`switch ${p} [${design}] -> served "${served}" (cookie ignored: variant missing or middleware bypassed)`);
       }
     } catch (e) {
       failures.push(`switch ${p} [${design}] -> ${String(e).slice(0, 70)}`);
-    }
-  }
-  for (const p of variantAssets) {
-    try {
-      const r = await get(p);
-      if (r.status !== 200) failures.push(`variant asset ${p} -> HTTP ${r.status} (build may have skipped per-design subpages)`);
-    } catch (e) {
-      failures.push(`variant asset ${p} -> ${String(e).slice(0, 70)}`);
     }
   }
   return failures;
@@ -90,12 +104,21 @@ async function checkOnce() {
 // and a false-fail here only blocks the deploy command (re-check with
 // `npm run verify:deploy`), it never lets a genuinely broken deploy pass.
 const MAX = 10;
+let noArticleNoted = false;
 for (let attempt = 1; attempt <= MAX; attempt++) {
-  const failures = await checkOnce();
+  // Rediscover the slug every attempt: a transient stale/empty /journal on the first
+  // try must not skip the article-route check for the whole retry budget.
+  const articleSlug = await discoverArticleSlug();
+  if (!articleSlug && !noArticleNoted) {
+    console.log('verify-deploy: note - no journal article found on the live index; skipping the article-route switch check.');
+    noArticleNoted = true;
+  }
+  const switchChecks = buildSwitchChecks(articleSlug);
+  const failures = await checkOnce(switchChecks);
   if (failures.length === 0) {
     console.log(
       `verify-deploy: PASS - ${themeRoutes.length} theme routes, ${legacyRedirects.length} legacy redirects, ` +
-        `${switchChecks.length} in-place switches, ${variantAssets.length} variant assets resolve on ${base}`
+        `${switchChecks.length} in-place switches (${DESIGNS.length} designs) resolve on ${base}`
     );
     process.exit(0);
   }
@@ -107,7 +130,7 @@ for (let attempt = 1; attempt <= MAX; attempt++) {
     for (const f of failures) console.error('  - ' + f);
     console.error('\nLikely causes:');
     console.error('  - theme/legacy fail: the Pages Functions worker scope (public/_routes.json) regressed.');
-    console.error('  - switch/variant fail: the build skipped per-design subpages (check the Pages project');
+    console.error('  - switch fail: the build skipped per-design subpages (check the Pages project');
     console.error('    build command is set to "npm run build" so astro build actually runs).');
     process.exit(1);
   }
