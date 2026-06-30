@@ -36,7 +36,7 @@ subpage while the homepage still switched. See the project memory
 
 ## Verify after every deploy
 
-```
+```sh
 npm run verify:deploy
 ```
 

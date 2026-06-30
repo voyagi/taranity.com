@@ -88,6 +88,7 @@ async function checkOnce(switchChecks) {
       const r = await get(p, `taranity-design=${design}`);
       const body = await r.text();
       if (r.status !== 200) failures.push(`switch ${p} [${design}] -> HTTP ${r.status}`);
+      else if (/route was not found/i.test(body)) failures.push(`switch ${p} [${design}] -> served the custom 404 page`);
       else {
         const served = designOf(body);
         if (served !== design) failures.push(`switch ${p} [${design}] -> served "${served}" (cookie ignored: variant missing or middleware bypassed)`);
@@ -99,15 +100,20 @@ async function checkOnce(switchChecks) {
   return failures;
 }
 
-const articleSlug = await discoverArticleSlug();
-if (!articleSlug) console.log('verify-deploy: note - no journal article found on the live index; skipping the article-route switch check.');
-const switchChecks = buildSwitchChecks(articleSlug);
-
 // ~60s budget: CF Pages edge propagation on a fresh deploy can lag on cold PoPs,
 // and a false-fail here only blocks the deploy command (re-check with
 // `npm run verify:deploy`), it never lets a genuinely broken deploy pass.
 const MAX = 10;
+let noArticleNoted = false;
 for (let attempt = 1; attempt <= MAX; attempt++) {
+  // Rediscover the slug every attempt: a transient stale/empty /journal on the first
+  // try must not skip the article-route check for the whole retry budget.
+  const articleSlug = await discoverArticleSlug();
+  if (!articleSlug && !noArticleNoted) {
+    console.log('verify-deploy: note - no journal article found on the live index; skipping the article-route switch check.');
+    noArticleNoted = true;
+  }
+  const switchChecks = buildSwitchChecks(articleSlug);
   const failures = await checkOnce(switchChecks);
   if (failures.length === 0) {
     console.log(
