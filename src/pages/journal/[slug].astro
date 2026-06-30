@@ -11,6 +11,7 @@ import SiteLayout from '../../layouts/SiteLayout.astro';
 import VitrinePage from '../../components/designs/vitrine/VitrinePage.astro';
 import { site } from '../../config/site';
 import { relatedPosts } from '../../lib/related-posts';
+import { orgId as makeOrgId } from '../../lib/structured-data';
 import '../../styles/journal.css';
 
 export async function getStaticPaths() {
@@ -34,9 +35,9 @@ const { title, description, lead, kicker, pubDate, updatedDate, faqs, heroImage 
 
 // Slash-free canonical (matches <link rel=canonical>, the sitemap, and internal links).
 const canonical = new URL(`/journal/${post.id}`, site.url).href;
-// Same Organization entity the layout emits sitewide; referencing its @id keeps
-// the Article's author/publisher tied to one org node, not an anonymous copy.
-const orgId = new URL('/#organization', site.url).href;
+// Same Organization @id the layout emits sitewide (one shared helper, so the
+// Article's author/publisher references can never drift from the org node).
+const orgId = makeOrgId(site.url);
 const modified = updatedDate ?? pubDate;
 const dateLabel = pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
 

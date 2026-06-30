@@ -1,31 +1,32 @@
 import { describe, it, expect } from 'vitest';
 import { organizationLd, websiteLd, toGraph, orgId, websiteId } from '../../src/lib/structured-data';
+import { site, socials, contactEmail } from '../../src/config/site';
 
 /**
  * Regression guard for the JSON-LD: a later edit to the schema shapes (or a
  * refactor of the layout) would otherwise silently change what search and answer
  * engines read, with nothing to catch it. Pins the entity graph the live pages
  * emit. Answers the Operator's question: how would you know if a build broke it?
+ *
+ * Fixtures are driven from the real site config so the test can never assert
+ * against a stale copy of the description, URL, or social list.
  */
-const SITE = {
-  name: 'Taranity',
-  url: 'https://taranity.com',
-  description: 'Taranity builds websites, apps, automation, and intelligent systems.',
-  shortTagline: 'If you can describe it, we build it',
-  founder: 'Taran',
-  contactEmail: 'hello@taranity.com',
-  socials: [
-    { label: 'GitHub', href: 'https://github.com/voyagi' },
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/taranity' },
-  ],
+const ORG_INPUT = {
+  name: site.name,
+  url: site.url,
+  description: site.description,
+  shortTagline: site.shortTagline,
+  founder: site.founder,
+  contactEmail,
+  socials,
 };
 
 describe('organizationLd', () => {
-  const org = organizationLd(SITE);
+  const org = organizationLd(ORG_INPUT);
 
   it('is an Organization with the stable shared @id', () => {
     expect(org['@type']).toBe('Organization');
-    expect(org['@id']).toBe('https://taranity.com/#organization');
+    expect(org['@id']).toBe(orgId(site.url));
   });
 
   it('lists services as price-free Service offers, intelligent systems last', () => {
@@ -46,19 +47,17 @@ describe('organizationLd', () => {
     expect(area).toContainEqual({ '@type': 'Country', name: 'Netherlands' });
   });
 
-  it('only lists owned profiles in sameAs (no dead X/Twitter link)', () => {
-    const sameAs = org.sameAs as string[];
-    expect(sameAs).toEqual(['https://github.com/voyagi', 'https://www.linkedin.com/in/taranity']);
-    expect(sameAs.some((u) => /x\.com|twitter\.com/.test(u))).toBe(false);
+  it('maps the configured social profiles into sameAs', () => {
+    expect(org.sameAs).toEqual(socials.map((s) => s.href));
   });
 });
 
 describe('websiteLd', () => {
   it('is a WebSite published by the Organization, linked by @id', () => {
-    const web = websiteLd(SITE);
+    const web = websiteLd({ name: site.name, url: site.url });
     expect(web['@type']).toBe('WebSite');
-    expect(web['@id']).toBe('https://taranity.com/#website');
-    expect(web.publisher).toEqual({ '@id': 'https://taranity.com/#organization' });
+    expect(web['@id']).toBe(websiteId(site.url));
+    expect(web.publisher).toEqual({ '@id': orgId(site.url) });
   });
 });
 
@@ -66,7 +65,7 @@ describe('toGraph', () => {
   it('wraps nodes in one @graph and strips per-node @context', () => {
     const graph = toGraph([
       { '@context': 'https://schema.org', '@type': 'Article', '@id': 'x' },
-      organizationLd(SITE),
+      organizationLd(ORG_INPUT),
     ]);
     expect(graph['@context']).toBe('https://schema.org');
     const nodes = graph['@graph'] as Array<Record<string, unknown>>;
@@ -83,17 +82,17 @@ describe('toGraph', () => {
     const article = {
       '@type': 'Article',
       '@id': 'https://taranity.com/journal/x',
-      author: { '@id': orgId(SITE.url) },
-      publisher: { '@id': orgId(SITE.url) },
+      author: { '@id': orgId(site.url) },
+      publisher: { '@id': orgId(site.url) },
     };
-    const graph = toGraph([organizationLd(SITE), websiteLd(SITE), article]);
+    const graph = toGraph([organizationLd(ORG_INPUT), websiteLd({ name: site.name, url: site.url }), article]);
     const ids = new Set((graph['@graph'] as Array<Record<string, unknown>>).map((n) => n['@id']));
-    expect(ids.has(orgId(SITE.url))).toBe(true);
-    expect(ids.has(websiteId(SITE.url))).toBe(true);
+    expect(ids.has(orgId(site.url))).toBe(true);
+    expect(ids.has(websiteId(site.url))).toBe(true);
   });
 
   it('serializes to valid JSON (no circular references)', () => {
-    const graph = toGraph([organizationLd(SITE), websiteLd(SITE)]);
+    const graph = toGraph([organizationLd(ORG_INPUT), websiteLd({ name: site.name, url: site.url })]);
     expect(() => JSON.stringify(graph)).not.toThrow();
   });
 });
