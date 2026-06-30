@@ -92,6 +92,21 @@ remaining cross-link pointing at an already-live article.
 4. `npm run check && npm run build`, then commit, push, merge, and deploy.
 5. Post the native LinkedIn summary and syndicate with a canonical tag back to the article.
 
+## Automated reminder (so the drip does not depend on memory)
+
+A fortnightly reminder runs outside this repo, in the general-claude workspace
+(`scripts/taranity-journal-reminder.ps1`, a Windows Task Scheduler task named "Taranity Journal
+Reminder", first fire 2026-07-13, every 14 days). Each run probes production to find the next
+`draft: true` article that is not yet live, then sends a Telegram message with a ready prompt to
+publish it. Once all five are live it switches to a "write a new one" prompt. It reads slugs from
+`src/content/journal/`, so renaming or reordering an article here is picked up automatically with
+no edit to the reminder.
+
+The reminder is watched by the general-claude live-health monitor, which raises an alert if it
+silently stops firing (a stale heartbeat). To stop the drip permanently, disable that scheduled
+task: the monitor reads the task state and treats a deliberate disable as an intentional pause,
+so it does not false-alarm.
+
 ## Adding a new article
 
 1. Drop a `.md` file in `src/content/journal/`. The filename is the slug.
