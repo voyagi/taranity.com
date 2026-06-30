@@ -1,0 +1,88 @@
+---
+/**
+ * Per-design journal article: /atlas/journal/<slug>, etc. Renders the SAME collection
+ * entry body (<Content />, the one source) inside each design's subpage shell, so a
+ * visitor who switched design stays in it on an article. The edge middleware serves
+ * these at the canonical /journal/<slug>; they are noindex (canonical -> the clean URL),
+ * so the Article/Breadcrumb/FAQ JSON-LD is emitted only by the canonical Vitrine route
+ * (src/pages/journal/[slug].astro), never duplicated here.
+ */
+import { getCollection, render } from 'astro:content';
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import AtlasSubpage from '../../../components/designs/atlas/AtlasSubpage.astro';
+import SignalSubpage from '../../../components/designs/signal/SignalSubpage.astro';
+import StorefrontSubpage from '../../../components/designs/storefront/StorefrontSubpage.astro';
+import PracticeSubpage from '../../../components/designs/practice/PracticeSubpage.astro';
+import RawSubpage from '../../../components/designs/raw/RawSubpage.astro';
+import { readyDesigns, getDesign } from '../../../config/designs';
+import { subpageMeta } from '../../../config/subpage-meta';
+import '../../../styles/journal-shared.css';
+
+// `satisfies` ties SHELLS to the keys of subpageMeta, so adding a design to one without
+// the other is a compile-time error rather than a runtime build failure.
+const SHELLS = {
+  atlas: AtlasSubpage,
+  signal: SignalSubpage,
+  storefront: StorefrontSubpage,
+  practice: PracticeSubpage,
+  raw: RawSubpage,
+} satisfies Record<keyof typeof subpageMeta, unknown>;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('journal', ({ data }) => !data.draft);
+  const designs = readyDesigns().filter((d) => d.id !== 'vitrine');
+  // One page per (design, article). Vitrine keeps the canonical /journal/<slug>.
+  return designs.flatMap((d) =>
+    posts.map((post) => ({ params: { design: d.id, slug: post.id }, props: { post } })),
+  );
+}
+
+const design = Astro.params.design as keyof typeof SHELLS;
+const { post } = Astro.props;
+const d = getDesign(design);
+const meta = subpageMeta[design];
+const Shell = SHELLS[design];
+if (!d || !meta || !Shell) throw new Error(`No journal-article shell/meta for design "${design}"`);
+
+const { Content } = await render(post);
+const { title, description, lead, kicker, pubDate, faqs, heroImage } = post.data;
+const dateLabel = pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<SiteLayout
+  design={design}
+  canonicalPath={`/journal/${post.id}`}
+  title={title}
+  description={description}
+  image={heroImage}
+  ogType="article"
+  themeLight={meta.themeLight}
+  themeDark={meta.themeDark}
+  preloadFonts={meta.fonts}
+  noindex
+>
+  <Shell>
+    {/* The shell already wraps the slot in .subpage-body; .sp-journal adds the journal chrome. */}
+    <article class="sp-journal" tabindex="-1">
+      <a class="sp-journal-back" href="/journal">&larr; Journal</a>
+      <p class="sp-kicker">{kicker}</p>
+      <h1>{title}</h1>
+      <p class="sp-lead">{lead ?? description}</p>
+      <Content />
+      {
+        faqs.length > 0 && (
+          <section class="sp-journal-faq">
+            <h2>Frequently asked questions</h2>
+            {faqs.map((f) => (
+              <div class="sp-journal-faq-item">
+                <h3>{f.q}</h3>
+                <p>{f.a}</p>
+              </div>
+            ))}
+          </section>
+        )
+      }
+      <p class="sp-meta">Published {dateLabel} &middot; Taranity</p>
+    </article>
+  </Shell>
+</SiteLayout>

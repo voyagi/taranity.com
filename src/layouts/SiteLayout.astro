@@ -18,6 +18,13 @@ import { site, services, socials, contactEmail } from '../config/site';
 interface Props {
   /** Design id from src/config/designs.ts; sets data-design on <html>. */
   design: string;
+  /**
+   * Clean canonical path for this content (defaults to the request path). Design VARIANT
+   * pages (served at a canonical URL by the edge middleware) pass the clean canonical path
+   * so the <link rel=canonical>, og:url, and the switcher's no-JS links all point at the
+   * one canonical URL rather than the internal /<design>/... build path.
+   */
+  canonicalPath?: string;
   title: string;
   description: string;
   /** theme-color per mode; the pre-paint script and mode toggle read these. */
@@ -25,6 +32,8 @@ interface Props {
   themeDark: string;
   /** OG image path relative to site root. */
   image?: string;
+  /** og:type for the page; defaults to "website", journal articles pass "article". */
+  ogType?: string;
   noindex?: boolean;
   /** Extra JSON-LD injected for this page (object or array of objects). */
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
@@ -42,18 +51,20 @@ interface Props {
 
 const {
   design,
+  canonicalPath = Astro.url.pathname,
   title,
   description,
   themeLight,
   themeDark,
   image = '/og.png',
+  ogType = 'website',
   noindex = false,
   jsonLd,
   preloadFonts = ['/fonts/inter-latin-var.woff2'],
   smooth = false,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, site.url);
+const canonical = new URL(canonicalPath, site.url);
 const ogImage = new URL(image, site.url);
 const fullTitle = title.includes(site.name) ? title : `${title} · ${site.name}`;
 
@@ -108,7 +119,7 @@ const orgLd = {
     <!-- Open Graph. og/twitter titles use the clean page title (no " · Taranity"
          suffix) so social cards and Medium imports come in clean; the brand is
          still carried by og:site_name, and <title> above keeps the suffix for SEO. -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
@@ -185,7 +196,7 @@ const orgLd = {
     <main id="main">
       <slot />
     </main>
-    <DesignSwitcher design={design} />
+    <DesignSwitcher design={design} canonicalPath={canonicalPath} />
 
     <script>
       import { initDesignTheme } from '../lib/design-theme';

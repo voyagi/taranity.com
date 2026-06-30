@@ -14,63 +14,37 @@ import StorefrontSubpage from '../../components/designs/storefront/StorefrontSub
 import PracticeSubpage from '../../components/designs/practice/PracticeSubpage.astro';
 import RawSubpage from '../../components/designs/raw/RawSubpage.astro';
 import { readyDesigns, getDesign } from '../../config/designs';
+import { subpageMeta } from '../../config/subpage-meta';
 
-/**
- * theme-color + LCP font preloads per design, mirroring each design's entry page
- * in src/pages/, so the privacy variant matches its home.
- */
-const META = {
-  atlas: {
-    shell: AtlasSubpage,
-    themeLight: '#05070d',
-    themeDark: '#05070d',
-    fonts: ['/fonts/space-grotesk-latin-var.woff2', '/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
-  },
-  signal: {
-    shell: SignalSubpage,
-    themeLight: '#f5f7fc',
-    themeDark: '#0a0f1d',
-    fonts: ['/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
-  },
-  storefront: {
-    shell: StorefrontSubpage,
-    themeLight: '#fff5ea',
-    themeDark: '#fff5ea',
-    fonts: ['/fonts/space-grotesk-latin-var.woff2', '/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
-  },
-  practice: {
-    shell: PracticeSubpage,
-    themeLight: '#f6f1e6',
-    themeDark: '#f6f1e6',
-    fonts: ['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
-  },
-  raw: {
-    shell: RawSubpage,
-    themeLight: '#efeee8',
-    themeDark: '#0a0a0b',
-    fonts: ['/fonts/jetbrains-mono-latin-700.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
-  },
-};
+// Map each non-Vitrine design to its subpage shell. `satisfies` ties this to the keys of
+// subpageMeta (theme-colour + LCP fonts), so adding a design to one without the other is a
+// compile-time error. The journal variant routes use the same subpageMeta source.
+const SHELLS = {
+  atlas: AtlasSubpage,
+  signal: SignalSubpage,
+  storefront: StorefrontSubpage,
+  practice: PracticeSubpage,
+  raw: RawSubpage,
+} satisfies Record<keyof typeof subpageMeta, unknown>;
 
 export function getStaticPaths() {
-  // Derive from the design registry (Astro only exposes imports to getStaticPaths,
-  // not the local META). Vitrine keeps the canonical /privacy, so it is excluded.
-  // Every non-Vitrine ready design MUST have a META entry or the guard below
-  // fails the build loudly - that is the protection against the two drifting.
+  // Vitrine keeps the canonical /privacy, so it is excluded. A non-Vitrine ready design
+  // with no SHELLS/subpageMeta entry fails the build loudly via the guard below.
   return readyDesigns()
     .filter((d) => d.id !== 'vitrine')
     .map((d) => ({ params: { design: d.id } }));
 }
 
-const design = Astro.params.design as keyof typeof META;
+const design = Astro.params.design as keyof typeof subpageMeta;
 const d = getDesign(design);
-const meta = META[design];
-if (!d || !meta) throw new Error(`No privacy subpage metadata for design "${design}"`);
-const Shell = meta.shell;
+const meta = subpageMeta[design];
+const Shell = SHELLS[design];
+if (!d || !meta || !Shell) throw new Error(`No privacy subpage shell/meta for design "${design}"`);
 ---
 
 <SiteLayout
   design={design}
+  canonicalPath="/privacy"
   title="Privacy"
   description="What taranity.com collects, how it is handled, and your rights, in plain language."
   themeLight={meta.themeLight}

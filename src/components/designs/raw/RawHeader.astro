@@ -11,7 +11,9 @@ interface Props {
   subpage?: boolean;
 }
 const { subpage = false } = Astro.props;
-const prefix = subpage ? '/raw' : '';
+// Subpages link section anchors back to the canonical home (served in the visitor's chosen
+// design by the edge), not the /raw variant URL, so the address bar stays clean.
+const prefix = subpage ? '/' : '';
 const links = [
   { label: 'Services', hash: '#crafts' },
   { label: 'Method', hash: '#method' },
@@ -47,7 +49,7 @@ const statusRight = ['Worldwide', 'Written contact only'];
 
 <header class="r-header">
   <div class="r-header-inner">
-    <a class="r-wordmark" href="/raw" aria-label="Taranity home">
+    <a class="r-wordmark" href="/" aria-label="Taranity home">
       Taranity<span class="r-cursor" aria-hidden="true"></span>
     </a>
     <nav class="r-nav" aria-label="Page sections">

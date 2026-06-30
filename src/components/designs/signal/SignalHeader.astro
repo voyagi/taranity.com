@@ -10,7 +10,9 @@ interface Props {
   subpage?: boolean;
 }
 const { subpage = false } = Astro.props;
-const prefix = subpage ? '/signal' : '';
+// Subpages link section anchors back to the canonical home (served in the visitor's
+// chosen design by the edge), not the /signal variant URL, so the address bar stays clean.
+const prefix = subpage ? '/' : '';
 const links = [
   { label: 'Crafts', hash: '#crafts' },
   { label: 'Method', hash: '#method' },
@@ -21,7 +23,7 @@ const links = [
 
 <header class="s-header">
   <div class="s-header-inner">
-    <a class="s-wordmark" href="/signal" aria-label="Taranity home">
+    <a class="s-wordmark" href="/" aria-label="Taranity home">
       <span class="s-wordmark-dot" aria-hidden="true"></span>
       Taranity
     </a>

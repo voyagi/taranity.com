@@ -21,7 +21,8 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const { title, description, lead, kicker, pubDate, updatedDate, faqs, heroImage } = post.data;
 
-const canonical = new URL(Astro.url.pathname, site.url).href;
+// Slash-free canonical (matches <link rel=canonical>, the sitemap, and internal links).
+const canonical = new URL(`/journal/${post.id}`, site.url).href;
 const modified = updatedDate ?? pubDate;
 const dateLabel = pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -69,11 +70,13 @@ const jsonLd = faqLd ? [articleLd, breadcrumbLd, faqLd] : [articleLd, breadcrumb
 
 <SiteLayout
   design="vitrine"
+  canonicalPath={`/journal/${post.id}`}
   title={title}
   description={description}
   themeLight="#f4f0e8"
   themeDark="#110f0c"
   image={heroImage}
+  ogType="article"
   preloadFonts={['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2']}
   jsonLd={jsonLd}
 >

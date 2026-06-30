@@ -2,6 +2,8 @@
 dist/
 # generated types
 .astro/
+# wrangler local dev state (pages dev / functions)
+.wrangler/
 
 # test coverage reports
 coverage/

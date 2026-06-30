@@ -8,7 +8,10 @@ const year = new Date().getFullYear();
 <footer class="f-footer">
   <p>© {year} Taranity</p>
   <p class="f-footer-note" aria-hidden="true">Storefront · a Taranity design language</p>
-  <a href="/storefront/privacy">Privacy</a>
+  <nav class="f-footer-links" aria-label="More from Taranity">
+    <a href="/journal">Journal</a>
+    <a href="/privacy">Privacy</a>
+  </nav>
 </footer>
 
 <style>
@@ -30,6 +33,10 @@ const year = new Date().getFullYear();
     font-size: 0.62rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+  }
+  .f-footer-links {
+    display: flex;
+    gap: 1.4rem;
   }
   .f-footer a {
     color: inherit;

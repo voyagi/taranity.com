@@ -27,19 +27,22 @@ import { readyDesigns, getDesign } from '../config/designs';
 interface Props {
   /** Active design id; decides whether the mode toggle is offered. */
   design: string;
+  /**
+   * The CLEAN canonical path of the current content (e.g. "/", "/journal/x",
+   * "/privacy"). Switching keeps the visitor on this exact URL: with JS the click is
+   * intercepted (cookie + reload, see design-theme.ts); without JS the pill is a real
+   * link to /switch?next=<this>, which sets the cookie and 302s straight back here.
+   */
+  canonicalPath: string;
 }
-const { design } = Astro.props;
+const { design, canonicalPath } = Astro.props;
 const items = readyDesigns();
 const multi = items.length > 1;
 const hasModes = (getDesign(design)?.modes.length ?? 2) > 1;
 
-// On a subpage (privacy), switching designs should keep the visitor on the
-// equivalent subpage rather than dropping them on the target design's home.
-// Detected from the URL so no page has to pass a prop. Vitrine's privacy is at
-// /privacy; the other designs are at /<id>/privacy.
-const onPrivacy = Astro.url.pathname.replace(/\/$/, '').endsWith('/privacy');
-const hrefFor = (d: { id: string; route: string }) =>
-  onPrivacy ? (d.id === 'vitrine' ? '/privacy' : `/${d.id}/privacy`) : d.route;
+// No-JS fallback target: the server switch endpoint returns to this same canonical URL,
+// so design switching never changes the address bar even without JavaScript.
+const switchHref = (id: string) => `/switch?to=${id}&next=${encodeURIComponent(canonicalPath)}`;
 ---
 
 <div class="design-switcher" data-design-switcher>
@@ -75,7 +78,9 @@ const hrefFor = (d: { id: string; route: string }) =>
         {items.map((d) => (
           <a
             class="ds-design"
-            href={hrefFor(d)}
+            href={switchHref(d.id)}
+            rel="nofollow"
+            data-astro-prefetch="false"
             data-design-go={d.id}
             aria-current={d.id === design ? 'page' : undefined}
             title={`${d.tagline} for ${d.audience}`}

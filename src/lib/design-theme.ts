@@ -3,14 +3,15 @@
  *
  * Light or dark follows the visitor's system setting (prefers-color-scheme) until
  * they pick one with the toggle, after which their choice is remembered. Storage is
- * crash-safe (private mode / quota). The chosen design id is remembered too; the
- * switcher links navigate between design routes.
+ * crash-safe (private mode / quota). The chosen design id is stored in a cookie the edge
+ * reads to serve that design in place; switching sets the cookie and reloads (no URL change).
  *
  * The very first paint is handled by a tiny inline <head> script in SiteLayout (so
  * there is no flash); this module wires the controls and re-applies after a
  * View-Transition swap, where the incoming static HTML carries the build-time attr.
  */
 import { DEFAULT_DESIGN } from '../config/designs';
+import { SWITCH_SCROLL_KEY } from './scroll-reset';
 
 const KEY_MODE = 'taranity-mode';
 const KEY_DESIGN = 'taranity-design';
@@ -66,9 +67,34 @@ function chooseMode(mode: 'light' | 'dark') {
   applyMode(mode);
 }
 
+/**
+ * After a design-switch reload, restore the reader's scroll position on native-scroll pages
+ * (the subpages). Motion (Lenis) pages leave it to resetScrollOnReload (scroll-reset.ts),
+ * which restores through Lenis so the native value is not overridden by the smooth runtime.
+ * Whichever path owns the page clears the key, so it never lingers into a later reload.
+ */
+function restoreSwitchScroll() {
+  const willUseLenis =
+    document.documentElement.hasAttribute('data-smooth') &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (willUseLenis) return; // the design's motion module restores it through Lenis
+  try {
+    const v = sessionStorage.getItem(SWITCH_SCROLL_KEY);
+    sessionStorage.removeItem(SWITCH_SCROLL_KEY);
+    if (v === null) return;
+    const y = parseInt(v, 10);
+    if (Number.isFinite(y)) window.scrollTo(0, y);
+  } catch {
+    /* sessionStorage blocked: nothing to restore */
+  }
+}
+
 export function initDesignTheme() {
   if (bound) return;
   bound = true;
+
+  // Restore the reading position after a design-switch reload (native-scroll subpages).
+  restoreSwitchScroll();
 
   // The pre-paint script set data-mode but cannot see the toggle; label it now.
   syncToggleLabel(effectiveMode());
@@ -91,11 +117,34 @@ export function initDesignTheme() {
     }
     const go = target.closest<HTMLElement>('[data-design-go]');
     if (go) {
+      // Let modified / non-left clicks fall through to the real /switch link (e.g. a
+      // Cmd/Ctrl-click opens the switched design in a new tab) instead of hijacking them.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      // Switching design is in-place: the choice is stored in a cookie that the Cloudflare
+      // edge reads to serve the chosen design's prebuilt HTML at THIS same URL. Set it and
+      // reload. No URL change, and the visitor stays on the page they're on.
+      e.preventDefault();
+      const id = go.dataset.designGo || DEFAULT_DESIGN;
       try {
-        localStorage.setItem(KEY_DESIGN, go.dataset.designGo || DEFAULT_DESIGN);
+        localStorage.setItem(KEY_DESIGN, id);
       } catch {
-        /* not fatal: the link still navigates to the design route */
+        /* not fatal: the cookie below is the source of truth the edge reads */
       }
+      // No HttpOnly on purpose: the switcher reads/writes this cookie client-side, so it
+      // must stay JS-visible (adding HttpOnly would silently break switching). The value is
+      // a non-sensitive design id. Omit Secure on http (local `wrangler pages dev`) so the
+      // cookie persists there; the production site is https-only (HSTS preload) so it is
+      // Secure in prod.
+      const secure = location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = `${KEY_DESIGN}=${encodeURIComponent(id)}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
+      // Stash the scroll position so the reload restores the reader's place (best-effort,
+      // approximate across designs) instead of jumping to the top. See scroll-reset.ts.
+      try {
+        sessionStorage.setItem(SWITCH_SCROLL_KEY, String(Math.round(window.scrollY)));
+      } catch {
+        /* sessionStorage blocked: switch still works, just without scroll restore */
+      }
+      location.reload();
     }
   });
 }

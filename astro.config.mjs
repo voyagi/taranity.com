@@ -9,11 +9,25 @@ export default defineConfig({
   output: 'static',
   integrations: [
     sitemap({
-      // Drop the OG preview and the noindex per-design privacy variants
-      // (/<design>/privacy); Vitrine's canonical /privacy stays in the sitemap.
+      // Drop the OG preview and the ENTIRE per-design variant tree
+      // (/<design>, /<design>/journal, /<design>/privacy, ...). Those are noindex
+      // alternate renderings the edge serves at the canonical URL; only the clean
+      // canonical URLs (Vitrine at "/", "/journal", "/journal/<slug>", "/privacy")
+      // belong in the sitemap, so there is one canonical URL per piece of content.
       filter: (page) =>
         !page.includes('/og-preview') &&
-        !/\/(atlas|signal|storefront|practice|raw)\/privacy\/?$/.test(page),
+        // Anchor to the START of the pathname so only the variant tree (/atlas, /atlas/...)
+        // is dropped - not a canonical journal slug that merely contains a design name
+        // (e.g. /journal/atlas-case-study). `page` is a full URL; test its pathname.
+        !/^\/(atlas|signal|storefront|practice|raw)(\/|$)/.test(new URL(page).pathname),
+      // Emit slash-free URLs (except root) so the sitemap matches each page's
+      // <link rel=canonical> and the site's internal links (Astro's directory
+      // format would otherwise add a trailing slash the canonicals don't have).
+      serialize: (item) => {
+        const u = new URL(item.url);
+        if (u.pathname !== '/') u.pathname = u.pathname.replace(/\/$/, '');
+        return { ...item, url: u.href };
+      },
     }),
   ],
   prefetch: {
