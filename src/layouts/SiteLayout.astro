@@ -68,9 +68,14 @@ const canonical = new URL(canonicalPath, site.url);
 const ogImage = new URL(image, site.url);
 const fullTitle = title.includes(site.name) ? title : `${title} · ${site.name}`;
 
+// Stable @id so the WebSite and Article nodes reference one canonical
+// Organization entity instead of repeating anonymous copies of it.
+const orgId = new URL('/#organization', site.url).href;
+
 const orgLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': orgId,
   name: site.name,
   url: site.url,
   email: contactEmail,
@@ -88,7 +93,40 @@ const orgLd = {
     'Full-stack development',
     'TypeScript',
   ],
+  // Where the studio takes on work. Matches the visible copy ("clients of every
+  // size and kind, anywhere in the world"); areaServed accepts a plain string for
+  // the global reach and precise schema.org types for the named regions.
+  areaServed: [
+    'Worldwide',
+    { '@type': 'Continent', name: 'Europe' },
+    { '@type': 'Country', name: 'Netherlands' },
+  ],
+  // The services the studio offers, in the brand's own order (intelligent systems
+  // last, no AI-first framing). They appear in the visible page copy, so they
+  // satisfy Google's "only mark up what is on the page" rule. `makesOffer` with
+  // bare Service objects and no price is the truthful shape: there is no public
+  // pricing, so an OfferCatalog with price fields would be inaccurate.
+  makesOffer: [
+    'Web design and development',
+    'Ecommerce and online stores',
+    'App development',
+    'Workflow automation',
+    'Intelligent systems',
+  ].map((name) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name } })),
   sameAs: socials.map((s) => s.href),
+};
+
+// The site as a named entity, distinct from the Organization. Helps search and
+// answer engines tie the domain to the brand. No SearchAction: there is no
+// on-site search to expose.
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': new URL('/#website', site.url).href,
+  name: site.name,
+  url: site.url,
+  inLanguage: 'en',
+  publisher: { '@id': orgId },
 };
 ---
 
@@ -144,6 +182,7 @@ const orgLd = {
 
     <!-- Structured data -->
     <script is:inline type="application/ld+json" set:html={JSON.stringify(orgLd).replace(/</g, '\\u003c')} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteLd).replace(/</g, '\\u003c')} />
     {
       jsonLd &&
         (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((ld) => (

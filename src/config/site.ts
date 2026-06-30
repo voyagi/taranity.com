@@ -46,10 +46,13 @@ export interface SocialLink {
   href: string;
 }
 
+// Only profiles the studio actually owns belong here: this list feeds the
+// Organization `sameAs` (a trust/identity signal) and the footer links, and a
+// dead or unowned URL is a negative signal. Re-add X/Twitter here if a real
+// @taranity account is created.
 export const socials: SocialLink[] = [
   { label: 'GitHub', href: 'https://github.com/voyagi' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/taranity' },
-  { label: 'X / Twitter', href: 'https://x.com/taranity' },
 ];
 
 /** Public-facing contact email (domain address, not a personal inbox). */
