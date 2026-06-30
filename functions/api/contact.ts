@@ -9,6 +9,12 @@
  * verification by posting straight to Web3Forms with a key scraped from the page
  * - the Turnstile check is now actually enforced.
  *
+ * Abuse volume is capped at the Cloudflare edge, not here: a WAF rate-limit rule
+ * (Security > WAF > Rate limiting rules, taranity.com zone) blocks an IP that POSTs
+ * /api/contact more than 5 times in 10 seconds, so a solver-bot cannot drain the
+ * Web3Forms quota or flood the inbox even with valid tokens. It is dashboard-managed,
+ * so there is deliberately no app-level rate limiting in this function.
+ *
  * Fails CLOSED on every path (missing secret/key, bad request, unverified token,
  * upstream timeout or non-2xx). Plain types: this is type-checked by astro check
  * (tsconfig includes functions/), and we avoid a @cloudflare/workers-types dep.
