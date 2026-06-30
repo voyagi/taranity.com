@@ -19,7 +19,8 @@
     "e2e": "node scripts/prep-e2e.mjs && dev-browser --headless --timeout 150 run scripts/e2e-switch.devbrowser.js",
     "e2e:switch": "node scripts/prep-e2e.mjs && dev-browser --headless --timeout 150 run scripts/e2e-switch.devbrowser.js",
     "e2e:designs": "node scripts/prep-e2e.mjs && dev-browser --headless --timeout 180 run scripts/e2e.devbrowser.js",
-    "deploy": "astro build && npx wrangler pages deploy dist --project-name taranity && node scripts/verify-deploy.mjs",
+    "deploy": "echo Deploys run automatically on push/merge to main (Cloudflare Pages git build). Verify live with: npm run verify:deploy",
+    "deploy:preview": "astro build && npx wrangler pages deploy dist --project-name taranity --branch preview-manual",
     "verify:deploy": "node scripts/verify-deploy.mjs",
     "astro": "astro"
   },
