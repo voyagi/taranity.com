@@ -14,6 +14,7 @@ import '../styles/site.css';
 import { ClientRouter } from 'astro:transitions';
 import DesignSwitcher from '../components/DesignSwitcher.astro';
 import { site, services, socials, contactEmail } from '../config/site';
+import { organizationLd, websiteLd, toGraph } from '../lib/structured-data';
 
 interface Props {
   /** Design id from src/config/designs.ts; sets data-design on <html>. */
@@ -68,66 +69,26 @@ const canonical = new URL(canonicalPath, site.url);
 const ogImage = new URL(image, site.url);
 const fullTitle = title.includes(site.name) ? title : `${title} · ${site.name}`;
 
-// Stable @id so the WebSite and Article nodes reference one canonical
-// Organization entity instead of repeating anonymous copies of it.
-const orgId = new URL('/#organization', site.url).href;
-
-const orgLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  '@id': orgId,
-  name: site.name,
-  url: site.url,
-  email: contactEmail,
-  description: site.description,
-  slogan: site.shortTagline,
-  logo: new URL('/apple-touch-icon.png', site.url).href,
-  founder: { '@type': 'Person', name: site.founder },
-  address: { '@type': 'PostalAddress', addressLocality: 'Eindhoven', addressCountry: 'NL' },
-  knowsAbout: [
-    'Web design',
-    'Web development',
-    'App development',
-    'Workflow automation',
-    'AI systems',
-    'Full-stack development',
-    'TypeScript',
-  ],
-  // Where the studio takes on work. Matches the visible copy ("clients of every
-  // size and kind, anywhere in the world"); areaServed accepts a plain string for
-  // the global reach and precise schema.org types for the named regions.
-  areaServed: [
-    'Worldwide',
-    { '@type': 'Continent', name: 'Europe' },
-    { '@type': 'Country', name: 'Netherlands' },
-  ],
-  // The services the studio offers, in the brand's own order (intelligent systems
-  // last, no AI-first framing). They appear in the visible page copy, so they
-  // satisfy Google's "only mark up what is on the page" rule. `makesOffer` with
-  // bare Service objects and no price is the truthful shape: there is no public
-  // pricing, so an OfferCatalog with price fields would be inaccurate.
-  makesOffer: [
-    'Web design and development',
-    'Ecommerce and online stores',
-    'App development',
-    'Workflow automation',
-    'Intelligent systems',
-  ].map((name) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name } })),
-  sameAs: socials.map((s) => s.href),
-};
-
-// The site as a named entity, distinct from the Organization. Helps search and
-// answer engines tie the domain to the brand. No SearchAction: there is no
-// on-site search to expose.
-const websiteLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  '@id': new URL('/#website', site.url).href,
-  name: site.name,
-  url: site.url,
-  inLanguage: 'en',
-  publisher: { '@id': orgId },
-};
+// One connected @graph for the page: the sitewide Organization and WebSite
+// entities, plus any page-specific nodes (Article, BreadcrumbList, FAQPage)
+// passed via the jsonLd prop. Emitting a single graph (rather than separate
+// <script> blocks) guarantees the @id links between them resolve, instead of
+// relying on each engine to merge same-@id nodes across blocks. Shapes live in
+// src/lib/structured-data.ts so they can be unit-tested.
+const pageLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const graphLd = toGraph([
+  organizationLd({
+    name: site.name,
+    url: site.url,
+    description: site.description,
+    shortTagline: site.shortTagline,
+    founder: site.founder,
+    contactEmail,
+    socials,
+  }),
+  websiteLd({ name: site.name, url: site.url }),
+  ...pageLd,
+]);
 ---
 
 <!doctype html>
@@ -180,15 +141,8 @@ const websiteLd = {
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    <!-- Structured data -->
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(orgLd).replace(/</g, '\\u003c')} />
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteLd).replace(/</g, '\\u003c')} />
-    {
-      jsonLd &&
-        (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((ld) => (
-          <script is:inline type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
-        ))
-    }
+    <!-- Structured data: one connected @graph (Organization, WebSite, and any page nodes) -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(graphLd).replace(/</g, '\\u003c')} />
 
     <!-- Pre-paint: mark JS available (motion gates on it) + resolve the mode
          (stored choice, else system) + sync theme-color, all before first paint
