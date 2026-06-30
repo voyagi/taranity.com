@@ -4,28 +4,15 @@
  *
  * Strictly additive: the server HTML is complete and visible without JS. The
  * initial hidden states live in vitrine.css behind html.js + reduced-motion
- * gates, and everything here animates them in. Gated on [data-vitrine] so it
- * does nothing on other designs' pages after a View-Transition swap, and torn
- * down (Lenis included) before every swap so designs never double-drive the
- * scroll.
+ * gates, and everything here animates them in. The shared plumbing (Lenis,
+ * progress, anchor gliding, the Astro view-transition lifecycle, teardown)
+ * lives in design-motion.ts; this file is the Vitrine config plus its unique
+ * GSAP block.
  */
-import Lenis from 'lenis';
-import { resetScrollOnReload } from './scroll-reset';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { initDesignMotion } from './design-motion';
 import { revealOnScrollReduced } from './rm-reveal';
-
-gsap.registerPlugin(ScrollTrigger);
-
-let lenis: Lenis | null = null;
-let rafCb: ((time: number) => void) | null = null;
-let ctx: gsap.Context | null = null;
-let removeAnchorHandler: (() => void) | null = null;
-// Guards the window-load fallback only; `load` fires once per full page load,
-// so this never needs to reset across View-Transition navigations.
-let pageLoadFired = false;
-
-const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Reduced-motion fallback targets: everything the choreography below hides under
 // no-preference instead fades in (opacity only, no movement) as it enters the
@@ -34,193 +21,109 @@ const RM_FADE_TARGETS =
   '.v-mask-inner, [data-v-fade], [data-v-hero-fade], [data-v-hero-rule], [data-v-plate-art]';
 let rmReveal: (() => void) | null = null;
 
-function teardown() {
-  rmReveal?.();
-  rmReveal = null;
-  ctx?.revert();
-  ctx = null;
-  removeAnchorHandler?.();
-  removeAnchorHandler = null;
-  lenis?.destroy();
-  lenis = null;
-  if (rafCb) {
-    gsap.ticker.remove(rafCb);
-    rafCb = null;
-    // Undo the lagSmoothing(0) below: the ticker is shared GSAP state, and the
-    // next design's motion would otherwise inherit disabled smoothing. GSAP has
-    // no getter for it, so restore the documented defaults.
-    gsap.ticker.lagSmoothing(500, 33);
-  }
-  // Native scrollbar comes back the moment Lenis stops driving.
-  document.documentElement.classList.remove('v-lenis');
-  document.querySelector<HTMLElement>('[data-v-progress]')?.style.removeProperty('transform');
-}
+function choreography(_root: HTMLElement) {
+  // NOTE on { y: 0 }: vitrine.css hides mask lines with translateY(120%).
+  // GSAP parses that computed style as a pixel matrix (yPercent is not
+  // recoverable from a matrix), so without owning `y` the parsed pixel
+  // offset survives the yPercent tween and the line stays hidden. The
+  // from-pose (yPercent 120 + y 0) is pixel-identical to the CSS pose.
 
-function setup() {
-  teardown();
-  const root = document.querySelector<HTMLElement>('[data-vitrine]');
-  if (!root) return;
-  // Reduced motion: skip the kinetic choreography and instead reveal each scroll
-  // section with a gentle opacity-only fade as it enters the viewport.
-  if (reduceMotion()) {
-    rmReveal = revealOnScrollReduced(root, RM_FADE_TARGETS);
-    return;
-  }
+  // Hero entrance: lines rise out of their masks, then the details settle in.
+  gsap
+    .timeline({ defaults: { ease: 'power4.out' } })
+    .fromTo(
+      '.v-hero .v-mask-inner',
+      // 120 matches the html.js gate in vitrine.css (line + descender pad).
+      { yPercent: 120, y: 0 },
+      { yPercent: 0, y: 0, duration: 0.8, stagger: 0.09 },
+      0.1,
+    )
+    .fromTo(
+      '[data-v-hero-fade]',
+      { autoAlpha: 0, y: 24 },
+      { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.08 },
+      0.45,
+    )
+    .fromTo(
+      '[data-v-hero-rule]',
+      { scaleX: 0 },
+      { scaleX: 1, duration: 0.9, ease: 'power2.inOut' },
+      0.4,
+    );
 
-  // Slow, cinematic scroll. While Lenis drives, the native scrollbar is
-  // hidden (dragging it fights the smoothing loop) and the top hairline
-  // takes over as the position indicator.
-  lenis = new Lenis({ duration: 1.35, smoothWheel: true, touchMultiplier: 1.4 });
-  resetScrollOnReload(lenis);
-  // Usually already set pre-paint by SiteLayout's inline script (data-smooth);
-  // re-adding covers the mid-session "reduced motion turned off" path.
-  document.documentElement.classList.add('v-lenis');
-  const progress = document.querySelector<HTMLElement>('[data-v-progress]');
-  // Sync immediately so a visitor already mid-page (motion toggled on, or a
-  // restored scroll position) does not see the bar stuck at zero until the
-  // first scroll event.
-  if (progress) {
-    const limit = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.transform = `scaleX(${limit > 0 ? window.scrollY / limit : 0})`;
-  }
-  lenis.on('scroll', (l: Lenis) => {
-    ScrollTrigger.update();
-    if (progress && l.limit > 0) progress.style.transform = `scaleX(${l.scroll / l.limit})`;
+  // Masked statements below the fold rise when their block enters.
+  gsap.utils.toArray<HTMLElement>('[data-v-lines]').forEach((group) => {
+    gsap.fromTo(
+      group.querySelectorAll('.v-mask-inner'),
+      // 120 matches the html.js gate in vitrine.css (line + descender pad).
+      { yPercent: 120, y: 0 },
+      {
+        yPercent: 0,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.09,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: group, start: 'top 78%', once: true },
+      },
+    );
   });
-  rafCb = (time: number) => lenis?.raf(time * 1000);
-  gsap.ticker.add(rafCb);
-  gsap.ticker.lagSmoothing(0);
 
-  // Anchor navigation glides through Lenis; focus still moves for keyboards.
-  const onAnchorClick = (e: MouseEvent) => {
-    const anchor = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]');
-    if (!anchor) return;
-    // A malformed hash (e.g. "#1foo" or "#a:b") is not a valid selector and
-    // makes querySelector throw; fall through to the browser's default nav.
-    let target: HTMLElement | null;
-    try {
-      target = document.querySelector<HTMLElement>(anchor.hash);
-    } catch {
-      return;
-    }
-    if (!target) return;
-    e.preventDefault();
-    lenis?.scrollTo(target, { duration: 1.6 });
-    target.focus({ preventScroll: true });
-    history.pushState(null, '', anchor.hash);
-  };
-  root.addEventListener('click', onAnchorClick);
-  removeAnchorHandler = () => root.removeEventListener('click', onAnchorClick);
-
-  ctx = gsap.context(() => {
-    // NOTE on { y: 0 }: vitrine.css hides mask lines with translateY(120%).
-    // GSAP parses that computed style as a pixel matrix (yPercent is not
-    // recoverable from a matrix), so without owning `y` the parsed pixel
-    // offset survives the yPercent tween and the line stays hidden. The
-    // from-pose (yPercent 120 + y 0) is pixel-identical to the CSS pose.
-
-    // Hero entrance: lines rise out of their masks, then the details settle in.
-    gsap
-      .timeline({ defaults: { ease: 'power3.out' } })
-      .fromTo(
-        '.v-hero .v-mask-inner',
-        // 120 matches the html.js gate in vitrine.css (line + descender pad).
-        { yPercent: 120, y: 0 },
-        { yPercent: 0, y: 0, duration: 1.15, stagger: 0.14 },
-        0.15,
-      )
-      .fromTo(
-        '[data-v-hero-fade]',
-        { autoAlpha: 0, y: 24 },
-        { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12 },
-        0.7,
-      )
-      .fromTo(
-        '[data-v-hero-rule]',
-        { scaleX: 0 },
-        { scaleX: 1, duration: 1.4, ease: 'power2.inOut' },
-        0.6,
-      );
-
-    // Masked statements below the fold rise when their block enters.
-    gsap.utils.toArray<HTMLElement>('[data-v-lines]').forEach((group) => {
+  // Everything tagged for a fade rises gently as it enters.
+  ScrollTrigger.batch('[data-v-fade]', {
+    start: 'top 86%',
+    once: true,
+    onEnter: (els) =>
       gsap.fromTo(
-        group.querySelectorAll('.v-mask-inner'),
-        // 120 matches the html.js gate in vitrine.css (line + descender pad).
-        { yPercent: 120, y: 0 },
-        {
-          yPercent: 0,
-          y: 0,
-          duration: 1.05,
-          stagger: 0.12,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: group, start: 'top 78%', once: true },
-        },
-      );
-    });
+        els,
+        { autoAlpha: 0, y: 26 },
+        { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power3.out', stagger: 0.08 },
+      ),
+  });
 
-    // Everything tagged for a fade rises gently as it enters.
-    ScrollTrigger.batch('[data-v-fade]', {
-      start: 'top 86%',
-      once: true,
-      onEnter: (els) =>
-        gsap.fromTo(
-          els,
-          { autoAlpha: 0, y: 26 },
-          { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.08 },
-        ),
-    });
-
-    // Plates wipe open bottom-up as they enter (initial clip in vitrine.css),
-    // then the oversized art layer drifts as the plate crosses the viewport
-    // (its -10% inset means edges never show).
-    gsap.utils.toArray<HTMLElement>('[data-v-plate-art]').forEach((art) => {
-      gsap.fromTo(
-        art,
-        // Must match the `html.js .vitrine [data-v-plate-art]` gate in
-        // vitrine.css, or the first tween tick snaps to a different pose.
-        { clipPath: 'inset(0% 0% 100% 0%)' },
-        {
-          clipPath: 'inset(0% 0% 0% 0%)',
-          duration: 1.25,
-          ease: 'power4.inOut',
-          scrollTrigger: { trigger: art, start: 'top 74%', once: true },
-        },
-      );
-      const inner = art.querySelector<HTMLElement>('[data-v-art-inner]');
-      if (!inner) return;
-      gsap.fromTo(
-        inner,
-        { yPercent: -6 },
-        {
-          yPercent: 6,
-          ease: 'none',
-          scrollTrigger: { trigger: art, start: 'top bottom', end: 'bottom top', scrub: true },
-        },
-      );
-    });
-  }, root);
-
-  ScrollTrigger.refresh();
+  // Plates wipe open bottom-up as they enter (initial clip in vitrine.css),
+  // then the oversized art layer drifts as the plate crosses the viewport
+  // (its -10% inset means edges never show).
+  gsap.utils.toArray<HTMLElement>('[data-v-plate-art]').forEach((art) => {
+    gsap.fromTo(
+      art,
+      // Must match the `html.js .vitrine [data-v-plate-art]` gate in
+      // vitrine.css, or the first tween tick snaps to a different pose.
+      { clipPath: 'inset(0% 0% 100% 0%)' },
+      {
+        clipPath: 'inset(0% 0% 0% 0%)',
+        duration: 0.95,
+        ease: 'power4.inOut',
+        scrollTrigger: { trigger: art, start: 'top 74%', once: true },
+      },
+    );
+    const inner = art.querySelector<HTMLElement>('[data-v-art-inner]');
+    if (!inner) return;
+    gsap.fromTo(
+      inner,
+      { yPercent: -6 },
+      {
+        yPercent: 6,
+        ease: 'none',
+        scrollTrigger: { trigger: art, start: 'top bottom', end: 'bottom top', scrub: true },
+      },
+    );
+  });
 }
 
-// Initial load + every View-Transition navigation.
-document.addEventListener('astro:page-load', () => {
-  pageLoadFired = true;
-  setup();
+initDesignMotion({
+  rootSelector: '[data-vitrine]',
+  // Editorial scroll: quick and responsive. A flagship that promises "fast"
+  // should not feel floaty; the masked reveals carry the cinematic weight now,
+  // not a laggy scroll. (Was 1.35 - the slowest of all six designs.)
+  lenis: { duration: 0.95, touchMultiplier: 1.4 },
+  anchorDuration: 1.6,
+  progress: { fillSelector: '[data-v-progress]', axis: 'x' },
+  choreography,
+  onReducedMotion: (root) => {
+    rmReveal = revealOnScrollReduced(root, RM_FADE_TARGETS);
+  },
+  cleanupReducedMotion: () => {
+    rmReveal?.();
+    rmReveal = null;
+  },
 });
-// Tear down (Lenis included) before the DOM is swapped out.
-document.addEventListener('astro:before-swap', teardown);
-// Belt-and-suspenders: if astro:page-load somehow didn't fire, wire up on load.
-window.addEventListener('load', () => {
-  if (!pageLoadFired) {
-    pageLoadFired = true;
-    setup();
-  }
-});
-
-// Respond to a mid-session prefers-reduced-motion change in either direction:
-// setup() calls teardown() first (that teardown doubles as the cleanup when
-// the new state is reduce, removing v-lenis and the progress transform), and
-// the CSS gates flip with the media query.
-window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => setup());

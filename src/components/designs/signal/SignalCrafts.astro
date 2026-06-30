@@ -103,7 +103,10 @@ const crafts: Craft[] = [
   }
   .s-craft {
     padding: clamp(1.4rem, 2.4vw, 1.9rem);
-    /* the clip wipe (data-s-card gate) reveals each card on entry */
+    /* A deliberately squared bottom-left corner (not the uniform 16px rounded
+       box) so the grid reads as designed rather than an auto-generated SaaS
+       card grid. The clip wipe (data-s-card gate) reveals each card on entry. */
+    border-radius: var(--s-radius) var(--s-radius) var(--s-radius) 4px;
   }
   .s-craft-index {
     font-family: var(--s-mono);
