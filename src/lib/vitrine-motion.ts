@@ -30,25 +30,25 @@ function choreography(_root: HTMLElement) {
 
   // Hero entrance: lines rise out of their masks, then the details settle in.
   gsap
-    .timeline({ defaults: { ease: 'power3.out' } })
+    .timeline({ defaults: { ease: 'power4.out' } })
     .fromTo(
       '.v-hero .v-mask-inner',
       // 120 matches the html.js gate in vitrine.css (line + descender pad).
       { yPercent: 120, y: 0 },
-      { yPercent: 0, y: 0, duration: 1.15, stagger: 0.14 },
-      0.15,
+      { yPercent: 0, y: 0, duration: 0.8, stagger: 0.09 },
+      0.1,
     )
     .fromTo(
       '[data-v-hero-fade]',
       { autoAlpha: 0, y: 24 },
-      { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12 },
-      0.7,
+      { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.08 },
+      0.45,
     )
     .fromTo(
       '[data-v-hero-rule]',
       { scaleX: 0 },
-      { scaleX: 1, duration: 1.4, ease: 'power2.inOut' },
-      0.6,
+      { scaleX: 1, duration: 0.9, ease: 'power2.inOut' },
+      0.4,
     );
 
   // Masked statements below the fold rise when their block enters.
@@ -60,8 +60,8 @@ function choreography(_root: HTMLElement) {
       {
         yPercent: 0,
         y: 0,
-        duration: 1.05,
-        stagger: 0.12,
+        duration: 0.8,
+        stagger: 0.09,
         ease: 'power3.out',
         scrollTrigger: { trigger: group, start: 'top 78%', once: true },
       },
@@ -76,7 +76,7 @@ function choreography(_root: HTMLElement) {
       gsap.fromTo(
         els,
         { autoAlpha: 0, y: 26 },
-        { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.08 },
+        { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power3.out', stagger: 0.08 },
       ),
   });
 
@@ -91,7 +91,7 @@ function choreography(_root: HTMLElement) {
       { clipPath: 'inset(0% 0% 100% 0%)' },
       {
         clipPath: 'inset(0% 0% 0% 0%)',
-        duration: 1.25,
+        duration: 0.95,
         ease: 'power4.inOut',
         scrollTrigger: { trigger: art, start: 'top 74%', once: true },
       },
@@ -112,8 +112,10 @@ function choreography(_root: HTMLElement) {
 
 initDesignMotion({
   rootSelector: '[data-vitrine]',
-  // Slow, cinematic scroll.
-  lenis: { duration: 1.35, touchMultiplier: 1.4 },
+  // Editorial scroll: quick and responsive. A flagship that promises "fast"
+  // should not feel floaty; the masked reveals carry the cinematic weight now,
+  // not a laggy scroll. (Was 1.35 - the slowest of all six designs.)
+  lenis: { duration: 0.95, touchMultiplier: 1.4 },
   anchorDuration: 1.6,
   progress: { fillSelector: '[data-v-progress]', axis: 'x' },
   choreography,
