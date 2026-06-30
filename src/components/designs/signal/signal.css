@@ -1,6 +1,6 @@
 /* ==========================================================================
    Signal - clean, light, conversion-focused product design for SaaS, fintech,
-   and startups. Inter display and body, JetBrains Mono labels, indigo accent
+   and startups. Space Grotesk display, Inter body, JetBrains Mono labels, an instrument-green accent
    on a cool near-white canvas. The layout is structured and card-led; motion
    is restrained and fast (src/lib/signal-motion.ts: Lenis scroll + GSAP
    reveals, no WebGL). The "wild but fast" richness is a soft fixed aurora and
@@ -25,10 +25,10 @@
   --s-muted: #4f586f;
   --s-line: rgba(13, 20, 38, 0.1);
   --s-line-strong: rgba(13, 20, 38, 0.16);
-  --s-accent: #4f46e5;
-  --s-accent-ink: #ffffff; /* text that sits on a filled accent surface */
-  --s-accent-2: #06b6d4;
-  --s-accent-soft: rgba(79, 70, 229, 0.1);
+  --s-accent: #047857; /* instrument green (was indigo-600 #4f46e5, the AI-SaaS default) */
+  --s-accent-ink: #ffffff; /* text that sits on a filled accent surface (5.48:1 on the accent) */
+  --s-accent-2: #06b6d4; /* cyan trace - the secondary signal */
+  --s-accent-soft: rgba(4, 120, 87, 0.1);
   --s-error: #c4362a;
   --s-shadow: 0 1px 2px rgba(13, 20, 38, 0.04), 0 12px 32px -12px rgba(13, 20, 38, 0.16);
   /* fixed-atmosphere strengths, tuned per mode so the toggle crossfades */
@@ -36,7 +36,7 @@
   --s-grid-op: 0.5;
   --s-sheen-op: 0.7;
 
-  --s-display: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --s-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
   --s-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --s-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
   --s-gutter: clamp(1.25rem, 5vw, 5.5rem);
@@ -64,10 +64,10 @@
   --s-muted: #9aa6c0;
   --s-line: rgba(238, 242, 251, 0.1);
   --s-line-strong: rgba(238, 242, 251, 0.2);
-  --s-accent: #818cf8;
+  --s-accent: #34d399;
   --s-accent-ink: #0a0f1d;
   --s-accent-2: #38bdf8;
-  --s-accent-soft: rgba(129, 140, 248, 0.16);
+  --s-accent-soft: rgba(52, 211, 153, 0.16);
   --s-error: #ff9d85;
   --s-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 18px 40px -16px rgba(0, 0, 0, 0.6);
   --s-aurora-op: 0.7;
@@ -84,10 +84,10 @@
     --s-muted: #9aa6c0;
     --s-line: rgba(238, 242, 251, 0.1);
     --s-line-strong: rgba(238, 242, 251, 0.2);
-    --s-accent: #818cf8;
+    --s-accent: #34d399;
     --s-accent-ink: #0a0f1d;
     --s-accent-2: #38bdf8;
-    --s-accent-soft: rgba(129, 140, 248, 0.16);
+    --s-accent-soft: rgba(52, 211, 153, 0.16);
     --s-error: #ff9d85;
     --s-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 18px 40px -16px rgba(0, 0, 0, 0.6);
     --s-aurora-op: 0.7;
@@ -120,12 +120,12 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
-/* Aurora: indigo overhead-left, cyan low-right, a violet bloom centre-high. */
+/* Aurora: an emerald pool overhead-left, cyan low-right, a soft green bloom. */
 .s-field i:first-child {
   background-image:
-    radial-gradient(46% 40% at 18% 8%, rgba(79, 70, 229, 0.22), transparent 70%),
+    radial-gradient(46% 40% at 18% 8%, rgba(16, 185, 129, 0.2), transparent 70%),
     radial-gradient(42% 38% at 86% 78%, rgba(6, 182, 212, 0.16), transparent 72%),
-    radial-gradient(38% 32% at 62% 22%, rgba(124, 58, 237, 0.14), transparent 72%);
+    radial-gradient(38% 32% at 62% 22%, rgba(20, 184, 120, 0.12), transparent 72%);
   opacity: var(--s-aurora-op);
 }
 /* Structural grid: the "product" lattice, masked to a soft vignette so it
@@ -142,7 +142,7 @@
 }
 /* Sheen: a single wide highlight up top that fades into the page. */
 .s-field i:nth-child(3) {
-  background-image: radial-gradient(72% 48% at 50% -8%, rgba(129, 140, 248, 0.16), transparent 70%);
+  background-image: radial-gradient(72% 48% at 50% -8%, rgba(52, 211, 153, 0.16), transparent 70%);
   opacity: var(--s-sheen-op);
 }
 
