@@ -1,10 +1,14 @@
 /**
  * Site-wide configuration: identity, navigation, CTAs, and third-party services.
  *
- * Service config reads PUBLIC_* env at build time. The contact form renders the
- * public Turnstile widget by default; set PUBLIC_TURNSTILE_SITEKEY=off only for
- * intentional local/demo no-widget builds.
+ * Editable copy (tagline, description, contact email, socials) lives in
+ * src/data/site.json so it can be changed through the content admin at /admin.
+ * This module reads that file and keeps the exact same exports the rest of the
+ * app already uses. Service config still reads PUBLIC_* env at build time. The
+ * contact form renders the public Turnstile widget by default; set
+ * PUBLIC_TURNSTILE_SITEKEY=off only for intentional local/demo no-widget builds.
  */
+import siteData from '../data/site.json';
 
 const env = import.meta.env;
 const PROD_TURNSTILE_SITEKEY = '0x4AAAAAADnP2Jb2wFHK9aNW';
@@ -17,15 +21,15 @@ export const site = {
    * data, never as a public byline. Taranity is presented as a studio ("we").
    */
   founder: 'Taran',
-  /** Used in <title> templates and OG. */
-  shortTagline: 'If you can describe it, we build it',
+  /** Used in <title> templates and OG. Edit via /admin (src/data/site.json). */
+  shortTagline: siteData.tagline,
   /**
    * Organization description for structured data (JSON-LD). Leads with the
    * outcome and lists intelligent systems last, with no em dash, to honour the
    * hard rules (3: AI never leads; 4: no em dashes in copy or structured data).
+   * Edit via /admin (src/data/site.json).
    */
-  description:
-    'Taranity is a digital studio that builds websites, apps, automation, and intelligent systems, from the impossible-looking to the production-ready. Based in the Netherlands.',
+  description: siteData.description,
   url: env.PUBLIC_SITE_URL || 'https://taranity.com',
 } as const;
 
@@ -48,15 +52,11 @@ export interface SocialLink {
 
 // Only profiles the studio actually owns belong here: this list feeds the
 // Organization `sameAs` (a trust/identity signal) and the footer links, and a
-// dead or unowned URL is a negative signal. Re-add X/Twitter here if a real
-// @taranity account is created.
-export const socials: SocialLink[] = [
-  { label: 'GitHub', href: 'https://github.com/voyagi' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/taranity' },
-];
+// dead or unowned URL is a negative signal. Edit via /admin (src/data/site.json).
+export const socials: SocialLink[] = siteData.socials;
 
 /** Public-facing contact email (domain address, not a personal inbox). */
-export const contactEmail = 'hello@taranity.com';
+export const contactEmail = siteData.contactEmail;
 
 // No separate nav or call-to-action config: the site is a single-page
 // experience per design (hard rules: written contact only, no booking;

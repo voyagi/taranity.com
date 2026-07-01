@@ -1,0 +1,65 @@
+# Taranity content admin (Sveltia CMS).
+# Editing here commits to this repo on `main`, which triggers the Cloudflare Pages
+# build and republishes the site. Sign in with a fine-grained GitHub token (repo
+# contents: read/write) via "Sign In Using Access Token", or with GitHub once an
+# OAuth relay is added later.
+backend:
+  name: github
+  repo: voyagi/taranity.com
+  branch: main
+
+# Uploaded images are written here and served from the site root.
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: journal
+    label: Journal
+    label_singular: Journal post
+    description: Long-form articles. The filename becomes the URL slug.
+    folder: src/content/journal
+    create: true
+    extension: md
+    format: yaml-frontmatter
+    identifier_field: title
+    summary: '{{title}}'
+    sortable_fields: [order, pubDate, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Meta description, widget: text, hint: 'Aim for 150-160 characters.' }
+      - { name: lead, label: Lead (standfirst), widget: text, required: false }
+      - { name: kicker, label: Kicker, widget: string, default: Journal }
+      - { name: pubDate, label: Publish date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: updatedDate, label: Updated date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, required: false }
+      - { name: keywords, label: Keywords, widget: list, required: false }
+      - { name: heroImage, label: Hero image, widget: image, required: false }
+      - name: faqs
+        label: FAQs
+        widget: list
+        required: false
+        summary: '{{fields.q}}'
+        fields:
+          - { name: q, label: Question, widget: string }
+          - { name: a, label: Answer, widget: text }
+      - { name: order, label: Listing order, widget: number, default: 99, value_type: int }
+      - { name: draft, label: Draft, widget: boolean, default: false }
+      - { name: body, label: Body, widget: markdown }
+
+  - name: settings
+    label: Site settings
+    files:
+      - name: site
+        label: Site settings
+        file: src/data/site.json
+        description: Global text used across every design.
+        fields:
+          - { name: tagline, label: Tagline, widget: string, hint: 'Used in page titles and social cards.' }
+          - { name: description, label: Studio description, widget: text, hint: 'No em dashes; do not lead with AI.' }
+          - { name: contactEmail, label: Contact email, widget: string }
+          - name: socials
+            label: Social links
+            widget: list
+            summary: '{{fields.label}}'
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: href, label: URL, widget: string }

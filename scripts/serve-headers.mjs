@@ -1,12 +1,19 @@
 // Minimal static server that serves dist/ AND applies the response headers from
 // dist/_headers - so the production CSP/security headers can be tested locally
 // (astro preview ignores _headers). Not for production; CF Pages serves the real site.
+//
+// Header application mirrors Cloudflare Pages: EVERY rule whose pattern matches the path
+// contributes its headers cumulatively, duplicate header names COMBINE (multiple values)
+// rather than override, and a `! Header-Name` line DETACHES an inherited header. This makes
+// the local harness faithful to production - e.g. a scoped CSP must `! Content-Security-Policy`
+// to drop the inherited /* policy, otherwise the browser enforces both (the intersection).
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join, normalize, extname, resolve } from 'node:path';
 
 const DIST = resolve('dist'); // absolute, so the traversal guard is cwd-independent
 const PORT = Number(process.env.PORT) || 4321;
+const UNSET = Symbol('unset');
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -24,7 +31,8 @@ const TYPES = {
   '.txt': 'text/plain; charset=utf-8',
 };
 
-// Parse dist/_headers into [{ test(path), headers{} }] rules.
+// Parse dist/_headers into [{ test(path), headers: [[name, value|UNSET], ...] }] rules.
+// Header entries keep source order so a `! Name` detach is applied at the right point.
 function parseHeaders() {
   const file = join(DIST, '_headers');
   if (!existsSync(file)) return [];
@@ -33,12 +41,16 @@ function parseHeaders() {
   for (const raw of readFileSync(file, 'utf8').split(/\r?\n/)) {
     if (!raw.trim() || raw.trim().startsWith('#')) continue;
     if (!/^\s/.test(raw)) {
-      const pattern = raw.trim();
-      current = { pattern, headers: {} };
+      current = { pattern: raw.trim(), headers: [] };
       rules.push(current);
     } else if (current) {
-      const idx = raw.indexOf(':');
-      if (idx > 0) current.headers[raw.slice(0, idx).trim()] = raw.slice(idx + 1).trim();
+      const trimmed = raw.trim();
+      if (trimmed.startsWith('! ')) {
+        current.headers.push([trimmed.slice(2).trim(), UNSET]);
+      } else {
+        const idx = raw.indexOf(':');
+        if (idx > 0) current.headers.push([raw.slice(0, idx).trim(), raw.slice(idx + 1).trim()]);
+      }
     }
   }
   return rules.map((r) => ({
@@ -54,7 +66,19 @@ function parseHeaders() {
 
 const RULES = parseHeaders();
 const applyHeaders = (res, path) => {
-  for (const rule of RULES) if (rule.test(path)) for (const [k, v] of Object.entries(rule.headers)) res.setHeader(k, v);
+  for (const rule of RULES) {
+    if (!rule.test(path)) continue;
+    for (const [name, value] of rule.headers) {
+      if (value === UNSET) {
+        res.removeHeader(name);
+        continue;
+      }
+      const existing = res.getHeader(name);
+      if (existing === undefined) res.setHeader(name, value);
+      // Combine (emit multiple headers), matching Cloudflare's cumulative behavior.
+      else res.setHeader(name, [...(Array.isArray(existing) ? existing : [existing]), value]);
+    }
+  }
 };
 
 const send = (res, status, path, body, type) => {

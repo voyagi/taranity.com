@@ -21,6 +21,19 @@
   # below keep the hashed assets themselves immutable).
   Cache-Control: public, max-age=0, must-revalidate
 
+# The content admin (Sveltia CMS). Cloudflare Pages COMBINES every _headers rule that matches a
+# path, so /admin/* would otherwise receive BOTH the strict /* CSP and this one, and the browser
+# enforces the intersection (blocking unpkg + the GitHub API and breaking the admin). The
+# `! Content-Security-Policy` line DETACHES the inherited /* CSP so /admin gets ONLY the policy
+# below; every other security header is still inherited from /*. The main bundle is self-hosted
+# (script-src 'self'); /admin additionally allows unpkg because Sveltia loads its PINNED Prism
+# highlighter + schema/version JSON from there. The public /* CSP is unchanged and never talks to
+# unpkg. NOTE: the admin PAGE is publicly loadable; writes are gated by GitHub auth, but the UI is
+# not access-gated. For a true owner-only gate, put Cloudflare Access in front of /admin.
+/admin/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.githubusercontent.com; font-src 'self' data:; connect-src 'self' https://api.github.com https://github.com https://raw.githubusercontent.com https://*.githubusercontent.com https://unpkg.com; form-action 'self' https://github.com; frame-src 'self'
+
 # Long-cache the fingerprinted build assets.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable

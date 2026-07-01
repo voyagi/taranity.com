@@ -35,6 +35,10 @@ Thumbs.db
 # temp
 tmp-astro/
 
+# Sveltia CMS bundle: vendored at build time by scripts/vendor-sveltia.mjs
+# (pinned + SHA-256 verified), never committed.
+public/admin/sveltia-cms.js
+
 # local logs and editor scratch
 *.log
 .vscode/
