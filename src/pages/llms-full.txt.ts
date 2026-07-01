@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { site } from '../config/site';
+import { site, journalDescription } from '../config/site';
 
 /**
  * /llms-full.txt - the llmstxt.org "full" companion to /llms.txt: the complete
@@ -34,7 +34,7 @@ export const GET: APIRoute = async () => {
   const text = [
     `# ${site.name} Journal (full text)`,
     '',
-    `> ${site.description}`,
+    `> ${journalDescription}`,
     '',
     `Index: ${base}/llms.txt`,
     '',

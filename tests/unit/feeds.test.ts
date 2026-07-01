@@ -36,6 +36,22 @@ const FIXTURES = vi.hoisted(() => [
       faqs: [],
     },
   },
+  {
+    // Older article refreshed AFTER the newer one published: its effective date
+    // (updatedDate) must lead the feed and drive lastBuildDate.
+    id: 'refreshed-classic',
+    body: 'Evergreen body, revised.',
+    data: {
+      title: 'Refreshed Classic',
+      description: 'An older article whose update must surface it at the top of the feed.',
+      kicker: 'Evergreen',
+      pubDate: new Date('2026-06-20T00:00:00Z'),
+      updatedDate: new Date('2026-07-01T00:00:00Z'),
+      order: 3,
+      draft: false,
+      faqs: [],
+    },
+  },
 ]);
 
 vi.mock('astro:content', () => ({
@@ -69,7 +85,19 @@ describe('rss.xml', () => {
     expect(xml).toContain('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">');
     expect(xml).toContain('rel="self" type="application/rss+xml"');
     expect(xml).toContain('<pubDate>Mon, 29 Jun 2026 00:00:00 GMT</pubDate>');
-    expect((xml.match(/<item>/g) || []).length).toBe(1);
+    expect((xml.match(/<item>/g) || []).length).toBe(2);
+  });
+
+  it('orders by effective date: a refreshed older article leads and drives lastBuildDate', async () => {
+    const xml = await call(rssGet);
+    // refreshed-classic: pubDate Jun 20 but updatedDate Jul 1 -> first item.
+    const refreshed = xml.indexOf('<link>https://taranity.com/journal/refreshed-classic</link>');
+    const newerByPub = xml.indexOf('<link>https://taranity.com/journal/speed&amp;craft</link>');
+    expect(refreshed).toBeGreaterThan(-1);
+    expect(refreshed).toBeLessThan(newerByPub);
+    // Its item date is the updatedDate, and lastBuildDate matches it.
+    expect(xml).toContain('<pubDate>Wed, 01 Jul 2026 00:00:00 GMT</pubDate>');
+    expect(xml).toContain('<lastBuildDate>Wed, 01 Jul 2026 00:00:00 GMT</lastBuildDate>');
   });
 });
 

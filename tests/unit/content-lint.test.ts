@@ -8,38 +8,53 @@ import { describe, it, expect } from 'vitest';
  * drip schedule flips it. Bounds are set from the real corpus (titles 42-62
  * chars, descriptions 152-156) with headroom, so they flag genuine problems,
  * not style drift. Frontmatter is parsed textually because astro:content is
- * unavailable under vitest.
+ * unavailable under vitest. Walks subdirectories to mirror the collection's
+ * recursive `**\/*.md` glob, so a nested article cannot escape the lint.
  */
 const dir = resolve(__dirname, '../../src/content/journal');
-const articles = readdirSync(dir)
-  .filter((f) => f.endsWith('.md'))
-  .map((file) => {
-    const raw = readFileSync(join(dir, file), 'utf8');
-    const frontmatter = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
-    const field = (name: string) =>
-      frontmatter
-        .match(new RegExp(`^${name}:\\s*(.*)$`, 'm'))?.[1]
-        ?.trim()
-        .replace(/^["']|["']$/g, '') ?? '';
-    const keywordBlock = frontmatter.match(/^keywords:\r?\n((?:[ \t]+-[ \t]+.*\r?\n?)+)/m)?.[1] ?? '';
-    return {
-      file,
-      title: field('title'),
-      description: field('description'),
-      lead: field('lead'),
-      kicker: field('kicker'),
-      pubDate: field('pubDate'),
-      faqCount: (frontmatter.match(/^[ \t]+- q:/gm) || []).length,
-      keywordCount: (keywordBlock.match(/^[ \t]+-[ \t]+/gm) || []).length,
-    };
+
+const collectMd = (current: string, prefix = ''): string[] =>
+  readdirSync(current, { withFileTypes: true }).flatMap((entry) => {
+    if (entry.isDirectory()) return collectMd(join(current, entry.name), `${prefix}${entry.name}/`);
+    return entry.name.endsWith('.md') ? [`${prefix}${entry.name}`] : [];
   });
+
+const articles = collectMd(dir).map((relative) => {
+  const raw = readFileSync(join(dir, relative), 'utf8');
+  const frontmatter = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
+  const field = (name: string) =>
+    frontmatter
+      .match(new RegExp(`^${name}:\\s*(.*)$`, 'm'))?.[1]
+      ?.trim()
+      .replace(/^["']|["']$/g, '') ?? '';
+  const keywordBlock = frontmatter.match(/^keywords:\r?\n((?:[ \t]+-[ \t]+.*\r?\n?)+)/m)?.[1] ?? '';
+  return {
+    relative,
+    slug: relative.replace(/\.md$/, ''),
+    title: field('title'),
+    description: field('description'),
+    lead: field('lead'),
+    kicker: field('kicker'),
+    pubDate: field('pubDate'),
+    faqCount: (frontmatter.match(/^[ \t]+- q:/gm) || []).length,
+    keywordCount: (keywordBlock.match(/^[ \t]+-[ \t]+/gm) || []).length,
+  };
+});
+
+// Each path segment must already BE a canonical slug: lowercase alphanumerics
+// and hyphens. Astro's loader slugifies ids derived from filenames, and the
+// sitemap <lastmod> reader and RSS URLs assume filename === slug; a filename
+// like "My Post.md" would silently break that mapping, so it fails loudly here.
+const CANONICAL_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/;
 
 describe('journal content lint (SEO fields, drafts included)', () => {
   it('found the articles', () => {
     expect(articles.length).toBeGreaterThanOrEqual(5);
   });
 
-  it.each(articles.map((a) => [a.file, a] as const))('%s carries publishable SEO fields', (_file, a) => {
+  it.each(articles.map((a) => [a.relative, a] as const))('%s carries publishable SEO fields', (_file, a) => {
+    // Filename must equal its URL slug (see CANONICAL_SLUG above).
+    expect(a.slug).toMatch(CANONICAL_SLUG);
     // Title: present, and short enough not to truncate badly in a SERP.
     expect(a.title.length).toBeGreaterThan(0);
     expect(a.title.length).toBeLessThanOrEqual(70);

@@ -15,9 +15,14 @@ const escapeXml = (value: string): string =>
 
 export const GET: APIRoute = async () => {
   const base = site.url.replace(/\/$/, '');
-  // Newest first (feed convention), pubDate ties broken by the editorial order.
+  // Newest first (feed convention) by EFFECTIVE date - the same updatedDate ??
+  // pubDate each item's <pubDate> carries - so a refreshed older article
+  // surfaces at the top and lastBuildDate (posts[0]) can never trail an item.
+  // Ties broken by the editorial order.
+  const effective = (p: { data: { pubDate: Date; updatedDate?: Date } }) =>
+    (p.data.updatedDate ?? p.data.pubDate).getTime();
   const posts = (await getCollection('journal', ({ data }) => !data.draft)).sort(
-    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime() || a.data.order - b.data.order,
+    (a, b) => effective(b) - effective(a) || a.data.order - b.data.order,
   );
 
   const items = posts.map((p) => {

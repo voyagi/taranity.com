@@ -13,6 +13,11 @@ import { join } from 'node:path';
  * Walks subdirectories to mirror the collection's `**\/*.md` glob: a nested
  * article's slug is its path relative to the content dir (posix separators,
  * no extension), exactly how the content collection derives `post.id`.
+ *
+ * Assumes filename === URL slug. Astro's loader slugifies ids, so a filename
+ * that is not already a canonical slug (e.g. "My Post.md") would silently miss
+ * here; the content-lint test enforces canonical-slug filenames loudly, which
+ * keeps that mapping sound (tests/unit/content-lint.test.ts).
  */
 export function journalLastmod(dir = 'src/content/journal'): Map<string, string> {
   const map = new Map<string, string>();
