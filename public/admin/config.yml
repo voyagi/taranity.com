@@ -12,11 +12,23 @@ backend:
 media_folder: public/uploads
 public_folder: /uploads
 
+# Pin how saved files are written so a CMS save never reformats a data file
+# (the repo's JSON is 2-space indented; a formatting drift would make noisy
+# commits and could confuse the build-time guards' error line numbers).
+output:
+  json:
+    indent_style: space
+    indent_size: 2
+
+# The `pattern` rules below enforce the brand's hard no-em-dash rule in the
+# editor itself (friendly error at save) instead of a failed deploy minutes
+# later. The regex is written with the \u2014 escape on purpose: the em dash
+# character itself must never appear in this repo's files.
 collections:
   - name: journal
     label: Journal
     label_singular: Journal post
-    description: Long-form articles. The filename becomes the URL slug.
+    description: Long-form articles. The filename becomes the URL slug. Saved changes go live in about 2 minutes.
     folder: src/content/journal
     create: true
     extension: md
@@ -25,10 +37,10 @@ collections:
     summary: '{{title}}'
     sortable_fields: [order, pubDate, title]
     fields:
-      - { name: title, label: Title, widget: string }
-      - { name: description, label: Meta description, widget: text, hint: 'Aim for 150-160 characters.' }
-      - { name: lead, label: Lead (standfirst), widget: text, required: false }
-      - { name: kicker, label: Kicker, widget: string, default: Journal }
+      - { name: title, label: Title, widget: string, pattern: &no_em_dash ['^[^\u2014]*$', 'No em dashes. Use a comma, colon, or full stop.'] }
+      - { name: description, label: Meta description, widget: text, hint: 'Aim for 150-160 characters.', maxLength: 170, pattern: *no_em_dash }
+      - { name: lead, label: Lead (standfirst), widget: text, required: false, pattern: *no_em_dash }
+      - { name: kicker, label: Kicker, widget: string, default: Journal, pattern: *no_em_dash }
       - { name: pubDate, label: Publish date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
       - { name: updatedDate, label: Updated date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, required: false }
       - { name: keywords, label: Keywords, widget: list, required: false }
@@ -51,18 +63,18 @@ collections:
       - name: site
         label: Site settings
         file: src/data/site.json
-        description: Global text used across every design.
+        description: Global text used across every design. Saved changes go live in about 2 minutes.
         fields:
-          - { name: tagline, label: Tagline, widget: string, hint: 'Used in page titles and social cards.' }
-          - { name: description, label: Studio description, widget: text, hint: 'No em dashes; do not lead with AI.' }
-          - { name: contactEmail, label: Contact email, widget: string }
+          - { name: tagline, label: Tagline, widget: string, hint: 'Used in page titles and social cards.', pattern: *no_em_dash }
+          - { name: description, label: Studio description, widget: text, hint: 'No em dashes; do not lead with AI.', pattern: *no_em_dash }
+          - { name: contactEmail, label: Contact email, widget: string, type: email }
           - name: socials
             label: Social links
             widget: list
             summary: '{{fields.label}}'
             fields:
-              - { name: label, label: Label, widget: string }
-              - { name: href, label: URL, widget: string }
+              - { name: label, label: Label, widget: string, pattern: *no_em_dash }
+              - { name: href, label: URL, widget: string, type: url }
 
   - name: pages
     label: Pages
@@ -72,30 +84,31 @@ collections:
         file: src/data/vitrine.json
         description: >-
           Editorial copy for the flagship home page. Text only: the layout,
-          motion, and craft artwork stay in code. No em dashes; do not lead with AI.
+          motion, and craft artwork stay in code. No em dashes; do not lead
+          with AI. Saved changes go live in about 2 minutes.
         fields:
           - name: hero
             label: Hero
             widget: object
             fields:
-              - { name: kicker, label: Kicker, widget: string, hint: 'Small line above the headline.' }
+              - { name: kicker, label: Kicker, widget: string, hint: 'Small line above the headline.', pattern: *no_em_dash }
               - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per line of the big headline. The last line is shown lighter.' }
-              - { name: sub, label: Sub-heading, widget: text }
+              - { name: sub, label: Sub-heading, widget: text, pattern: *no_em_dash }
           - name: manifesto
             label: The point
             widget: object
             fields:
               - { name: label, label: Section label, widget: string, hint: 'e.g. 01 · The point' }
               - { name: statementLines, label: Statement lines, widget: list, hint: 'One entry per line. Each rises in on scroll.' }
-              - { name: copy, label: Paragraph, widget: text }
+              - { name: copy, label: Paragraph, widget: text, pattern: *no_em_dash }
               - name: method
                 label: Method steps
                 widget: list
                 summary: '{{fields.name}}'
                 fields:
                   - { name: index, label: Number, widget: string, hint: 'e.g. 01' }
-                  - { name: name, label: Name, widget: string }
-                  - { name: line, label: Description, widget: text }
+                  - { name: name, label: Name, widget: string, pattern: *no_em_dash }
+                  - { name: line, label: Description, widget: text, pattern: *no_em_dash }
           - name: crafts
             label: What we make
             widget: object
@@ -112,69 +125,69 @@ collections:
                     label: Websites
                     widget: object
                     fields:
-                      - { name: title, label: Title, widget: string }
-                      - { name: kicker, label: Kicker, widget: string }
-                      - { name: line, label: Description, widget: text }
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
                       - { name: includes, label: Includes, widget: list }
                   - name: commerce
                     label: Commerce
                     widget: object
                     fields:
-                      - { name: title, label: Title, widget: string }
-                      - { name: kicker, label: Kicker, widget: string }
-                      - { name: line, label: Description, widget: text }
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
                       - { name: includes, label: Includes, widget: list }
                   - name: applications
                     label: Applications
                     widget: object
                     fields:
-                      - { name: title, label: Title, widget: string }
-                      - { name: kicker, label: Kicker, widget: string }
-                      - { name: line, label: Description, widget: text }
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
                       - { name: includes, label: Includes, widget: list }
                   - name: automation
                     label: Automation
                     widget: object
                     fields:
-                      - { name: title, label: Title, widget: string }
-                      - { name: kicker, label: Kicker, widget: string }
-                      - { name: line, label: Description, widget: text }
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
                       - { name: includes, label: Includes, widget: list }
                   - name: advisory
                     label: Advisory
                     widget: object
                     fields:
-                      - { name: title, label: Title, widget: string }
-                      - { name: kicker, label: Kicker, widget: string }
-                      - { name: line, label: Description, widget: text }
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
                       - { name: includes, label: Includes, widget: list }
                   - name: intelligentSystems
                     label: Intelligent systems
                     widget: object
                     fields:
-                      - { name: title, label: Title, widget: string }
-                      - { name: kicker, label: Kicker, widget: string }
-                      - { name: line, label: Description, widget: text }
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
                       - { name: includes, label: Includes, widget: list }
           - name: studio
             label: The studio
             widget: object
             fields:
               - { name: label, label: Section label, widget: string, hint: 'e.g. 03 · The studio' }
-              - { name: lede, label: Lede, widget: string }
+              - { name: lede, label: Lede, widget: string, pattern: *no_em_dash }
               - { name: story, label: Story paragraphs, widget: list, hint: 'One entry per paragraph.' }
               - name: principles
                 label: Principles
                 widget: list
                 summary: '{{fields.title}}'
                 fields:
-                  - { name: title, label: Title, widget: string }
-                  - { name: body, label: Body, widget: text }
+                  - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                  - { name: body, label: Body, widget: text, pattern: *no_em_dash }
           - name: contact
             label: Contact
             widget: object
             fields:
               - { name: label, label: Section label, widget: string, hint: 'e.g. 04 · Contact' }
               - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per line.' }
-              - { name: lead, label: Lead paragraph, widget: text }
-              - { name: location, label: Location line, widget: string }
+              - { name: lead, label: Lead paragraph, widget: text, pattern: *no_em_dash }
+              - { name: location, label: Location line, widget: string, pattern: *no_em_dash }
