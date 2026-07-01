@@ -53,6 +53,7 @@ const ALLOWED_SUBJECTS = new Set([
   'New enquiry via taranity.com (Storefront)',
   'New enquiry via taranity.com (Practice)',
   'New enquiry via taranity.com (Raw)',
+  'New enquiry via taranity.com (Sheet)',
 ]);
 
 const json = (body: unknown, status = 200): Response =>

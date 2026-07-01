@@ -1,0 +1,41 @@
+---
+/**
+ * Sheet subpage shell (privacy, journal): the shared subpage content inside the
+ * full Sheet look - a thin document masthead, the Sheet palette/type, and the
+ * Sheet sign-off footer. Sheet's tokens are mapped onto the shared --sp-* bridge
+ * variables so the shared article renders in the Sheet language.
+ *
+ * The masthead links point back to the canonical home ("/"), served in the
+ * visitor's chosen design by the edge middleware, so the address bar stays clean.
+ */
+import './sheet.css';
+import '../../../styles/subpage.css';
+import SheetFooter from './SheetFooter.astro';
+import { contactEmail } from '../../../config/site';
+---
+
+<div
+  class="sheet sp-shell"
+  style="--sp-accent: var(--sh-accent); --sp-line: var(--sh-line); --sp-muted: var(--sh-muted); --sp-display: var(--sh-display); --sp-pad: var(--sh-pad);"
+>
+  <header class="sh-masthead sh-subpage-masthead">
+    <a class="sh-wordmark" href="/" aria-label="Taranity home">Taranity</a>
+    <p class="sh-masthead-what">A digital studio. We spec and build what you describe.</p>
+    <a class="sh-masthead-contact" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+  </header>
+  <div class="sp-main">
+    <div class="subpage-body"><slot /></div>
+  </div>
+  <SheetFooter />
+</div>
+
+<style>
+  /* The subpage masthead sits in the shared subpage measure, ruled off below. */
+  .sh-subpage-masthead {
+    max-width: 760px;
+    margin-inline: auto;
+    padding-inline: var(--sh-pad);
+    padding-block: clamp(1.4rem, 4vh, 2.2rem) clamp(1rem, 3vh, 1.6rem);
+    border-bottom: 1px solid var(--sh-line);
+  }
+</style>

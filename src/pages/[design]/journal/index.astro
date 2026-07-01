@@ -13,6 +13,7 @@ import SignalSubpage from '../../../components/designs/signal/SignalSubpage.astr
 import StorefrontSubpage from '../../../components/designs/storefront/StorefrontSubpage.astro';
 import PracticeSubpage from '../../../components/designs/practice/PracticeSubpage.astro';
 import RawSubpage from '../../../components/designs/raw/RawSubpage.astro';
+import SheetSubpage from '../../../components/designs/sheet/SheetSubpage.astro';
 import { readyDesigns, getDesign } from '../../../config/designs';
 import { subpageMeta } from '../../../config/subpage-meta';
 import '../../../styles/journal-shared.css';
@@ -25,6 +26,7 @@ const SHELLS = {
   storefront: StorefrontSubpage,
   practice: PracticeSubpage,
   raw: RawSubpage,
+  sheet: SheetSubpage,
 } satisfies Record<keyof typeof subpageMeta, unknown>;
 
 export function getStaticPaths() {

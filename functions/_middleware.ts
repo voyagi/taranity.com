@@ -19,7 +19,7 @@
 
 // Non-Vitrine ready designs (Vitrine is the canonical default, served as the plain path).
 // Phase TODO: derive from src/config/designs.ts so this can never drift from the registry.
-const VARIANT_DESIGNS = new Set(['atlas', 'signal', 'storefront', 'practice', 'raw']);
+const VARIANT_DESIGNS = new Set(['atlas', 'signal', 'storefront', 'practice', 'raw', 'sheet']);
 const COOKIE = 'taranity-design';
 
 interface Env {

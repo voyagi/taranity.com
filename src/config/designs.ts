@@ -32,6 +32,7 @@ export const designs: Design[] = [
   { id: 'storefront', name: 'Storefront', tagline: 'Commerce', audience: 'E-commerce and DTC brands', route: '/storefront', modes: ['light'], ready: true },
   { id: 'practice', name: 'Practice', tagline: 'Trusted local service', audience: 'Medical, legal, trades', route: '/practice', modes: ['light'], ready: true },
   { id: 'raw', name: 'Raw', tagline: 'Brutalist', audience: 'Art, music, culture, dev', route: '/raw', modes: ['dark', 'light'], ready: true },
+  { id: 'sheet', name: 'Sheet', tagline: 'A build spec you can read', audience: 'Founders who were told it is too much work', route: '/sheet', modes: ['light', 'dark'], ready: true },
 ];
 
 export const DEFAULT_DESIGN = 'vitrine';

@@ -41,5 +41,23 @@ export default defineConfig({
   // an empty-string style hash that neutralizes 'unsafe-inline'.
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      rollupOptions: {
+        output: {
+          // Force Sheet's filter island into its own named chunk so it is always
+          // emitted as an external /_astro/*.js file, never inlined into the page
+          // HTML. A tiny standalone island (no large shared vendor import, unlike
+          // the GSAP/Lenis motion modules) would otherwise be inlined as a
+          // <script type="module"> - which the strict header CSP (public/_headers,
+          // hashed inline scripts, no 'unsafe-inline') would block, silently
+          // killing the filter. Externalising it keeps script-src 'self' happy and
+          // adds ZERO new inline-script hashes.
+          manualChunks(id) {
+            if (id.includes('/lib/sheet-filter')) return 'sheet-filter';
+            return undefined;
+          },
+        },
+      },
+    },
   },
 });
