@@ -5,7 +5,7 @@
  * includes. No project portfolio anywhere on the site (hard rule 7): these
  * cards present the offerings, not past work. Commerce leads for this audience;
  * intelligent systems is last per the content rules (AI never leads). Each card
- * wipes open as it enters (storefront-motion.ts).
+ * pops onto the shelf as it enters (storefront-motion.ts).
  */
 interface Craft {
   index: string;
@@ -117,7 +117,7 @@ const crafts: Craft[] = [
   }
   .f-craft {
     padding: clamp(1.4rem, 2.4vw, 2rem);
-    /* the clip wipe (data-f-card gate) reveals each card on entry */
+    /* the pop-in (data-f-card gate) reveals each card on entry */
   }
   .f-craft-top {
     display: flex;

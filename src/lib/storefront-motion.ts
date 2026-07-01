@@ -1,6 +1,6 @@
 /**
  * Motion choreography for the Storefront design: Lenis scroll, masked line
- * reveals, hairline draws, product-card wipes, and the top scroll-progress bar.
+ * reveals, hairline draws, product-card pop-ins, and the top scroll-progress bar.
  *
  * Strictly additive: the page is complete and visible without JS. The initial
  * hidden states live in storefront.css behind html.js + reduced-motion gates,
@@ -44,7 +44,7 @@ function choreography(_root: HTMLElement) {
     .fromTo(
       '[data-f-hero-fade]',
       { autoAlpha: 0, y: 22 },
-      { autoAlpha: 1, y: 0, duration: 0.85, stagger: 0.1 },
+      { autoAlpha: 1, y: 0, duration: 0.7, ease: 'back.out(1.2)', stagger: 0.1 },
       0.45,
     )
     .fromTo(
@@ -79,7 +79,7 @@ function choreography(_root: HTMLElement) {
       gsap.fromTo(
         els,
         { autoAlpha: 0, y: 24 },
-        { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.08 },
+        { autoAlpha: 1, y: 0, duration: 0.7, ease: 'back.out(1.2)', stagger: 0.08 },
       ),
   });
 
@@ -97,17 +97,22 @@ function choreography(_root: HTMLElement) {
     );
   });
 
-  // Product cards wipe open left-to-right as they enter (initial clip in
-  // storefront.css; the from-pose must match that gate exactly).
+  // Product cards POP onto the shelf as they enter: scale + rise + fade with a
+  // friendly overshoot (back.out), staggered across each row like items being
+  // stocked. clearProps releases the inline transform on complete so the CSS
+  // hover-lift keeps working. Transform + opacity only, so no layout shift.
   gsap.utils.toArray<HTMLElement>('[data-f-card]').forEach((card, i) => {
     gsap.fromTo(
       card,
-      { clipPath: 'inset(0% 100% 0% 0%)' },
+      { autoAlpha: 0, y: 22, scale: 0.95 },
       {
-        clipPath: 'inset(0% 0% 0% 0%)',
-        duration: 0.9,
-        ease: 'power4.inOut',
-        delay: (i % 3) * 0.06,
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.5,
+        ease: 'back.out(1.5)',
+        delay: (i % 3) * 0.05,
+        clearProps: 'transform',
         scrollTrigger: { trigger: card, start: 'top 86%', once: true },
       },
     );
