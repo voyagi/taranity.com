@@ -42,8 +42,6 @@ export const services = {
    * for local/demo builds that intentionally omit Turnstile.
    */
   turnstileSitekey: turnstileOverride === 'off' ? '' : turnstileOverride || PROD_TURNSTILE_SITEKEY,
-  /** Plausible domain; empty → no analytics script injected. */
-  plausibleDomain: env.PUBLIC_PLAUSIBLE_DOMAIN || '',
   /**
    * Cloudflare Web Analytics beacon token. PUBLIC (it ships in every page's
    * HTML), so it is not a secret. Hardcoded so production and preview builds

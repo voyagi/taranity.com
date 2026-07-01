@@ -27,7 +27,6 @@ describe('site config', () => {
     // Turnstile's site key is public config, so zero-secret production builds
     // should still render the bot-check widget instead of falling into demo mode.
     expect(services.turnstileSitekey).toMatch(/^0x[a-zA-Z0-9]+$/);
-    expect(typeof services.plausibleDomain).toBe('string');
     // Web Analytics beacon token: empty in dev/test builds (PROD false), a public
     // token in production builds. Assert the field exists so an accidental deletion
     // or rename is caught by the suite.
