@@ -3,7 +3,9 @@
   "description": "Taranity is a digital studio that builds websites, apps, automation, and intelligent systems, from the impossible-looking to the production-ready. Based in the Netherlands.",
   "contactEmail": "hello@taranity.com",
   "socials": [
-    { "label": "GitHub", "href": "https://github.com/voyagi" },
-    { "label": "LinkedIn", "href": "https://www.linkedin.com/in/taranity" }
+    {
+      "label": "GitHub",
+      "href": "https://github.com/voyagi"
+    }
   ]
 }
