@@ -142,3 +142,17 @@ describe('sheet filter progressive enhancement', () => {
     expect(shell).toMatch(/import '\.\.\/\.\.\/\.\.\/lib\/sheet-filter'/);
   });
 });
+
+describe('sheet filter stays an external chunk (strict CSP)', () => {
+  const astroConfig = readFileSync(resolve(__dirname, '../../astro.config.mjs'), 'utf8');
+
+  it('forces sheet-filter into its own manualChunk so it is never inlined', () => {
+    // The strict header CSP (public/_headers) has no 'unsafe-inline' and blocks an
+    // inline <script type="module">. sheet-filter is a tiny standalone island that
+    // Vite would otherwise inline; the manualChunks mapping keeps it an external
+    // /_astro/*.js (allowed by script-src 'self'). If this mapping is removed the
+    // island gets inlined and silently CSP-blocked in production, so pin it here.
+    expect(astroConfig).toMatch(/manualChunks/);
+    expect(astroConfig).toMatch(/sheet-filter/);
+  });
+});

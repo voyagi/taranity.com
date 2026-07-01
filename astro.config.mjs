@@ -2,6 +2,21 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import { designs } from './src/config/designs';
+
+// The per-design variant trees (/<id>, /<id>/journal, /<id>/privacy, ...) are noindex
+// alternate renderings the edge serves at the canonical URL, so they must never enter
+// the sitemap. Derive the id list from the design registry (not a hardcoded regex),
+// anchored to the START of the pathname so only the variant tree is dropped and a
+// canonical journal slug that merely contains a design name (e.g. /journal/atlas-
+// case-study) is kept. Adding a design now updates this automatically, so a new
+// design's noindex tree can't silently leak into the sitemap.
+const VARIANT_TREE = new RegExp(
+  `^/(${designs
+    .filter((d) => d.route !== '/')
+    .map((d) => d.id)
+    .join('|')})(/|$)`,
+);
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,10 +31,8 @@ export default defineConfig({
       // belong in the sitemap, so there is one canonical URL per piece of content.
       filter: (page) =>
         !page.includes('/og-preview') &&
-        // Anchor to the START of the pathname so only the variant tree (/atlas, /atlas/...)
-        // is dropped - not a canonical journal slug that merely contains a design name
-        // (e.g. /journal/atlas-case-study). `page` is a full URL; test its pathname.
-        !/^\/(atlas|signal|storefront|practice|raw)(\/|$)/.test(new URL(page).pathname),
+        // `page` is a full URL; test its pathname against the derived variant tree.
+        !VARIANT_TREE.test(new URL(page).pathname),
       // Emit slash-free URLs (except root) so the sitemap matches each page's
       // <link rel=canonical> and the site's internal links (Astro's directory
       // format would otherwise add a trailing slash the canonicals don't have).

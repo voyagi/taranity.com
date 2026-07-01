@@ -271,6 +271,13 @@
   background: color-mix(in srgb, var(--sh-paper) 92%, transparent);
   border-bottom: 1px solid var(--sh-line);
 }
+/* The filter bar is sticky at the top of the list, so any in-page anchor jump (the
+   no-JS chip links, or a deep link to #<entry-id>) must clear it; without this the
+   target would land behind the sticky bar. */
+.sh-entries,
+.sh-entry {
+  scroll-margin-top: 5rem;
+}
 .sh-filter-legend {
   font-family: var(--sh-mono);
   font-size: 0.66rem;
@@ -299,9 +306,10 @@
 .sh-chip:hover {
   border-color: var(--sh-accent);
 }
-/* Active chip: the accent as an index device. Set by aria-current (JS; valid on
-   the anchor chips, unlike aria-pressed). The no-JS anchor form uses :target on
-   the entry container instead (see below). */
+/* Active chip: the accent as an index device, set by aria-current (JS; valid on
+   the anchor chips, unlike aria-pressed). With JS off there is no active-filter
+   state: the chips are in-page anchors to the full list below, which stays wholly
+   visible, and filtering is purely a JS enhancement. */
 .sh-chip[aria-current='true'] {
   background: var(--sh-accent);
   border-color: var(--sh-accent);

@@ -77,8 +77,9 @@ const pad = (n: number) => String(n).padStart(2, '0');
     <section class="sh-block sh-buildsheet" data-sh-buildsheet aria-label="Build sheet">
       <div class="sh-filter" role="group" aria-label="Filter entries by intent">
         <span class="sh-filter-legend">Filter</span>
-        <!-- Chips are REAL anchors: no-JS degrades to in-page jumps to the intent
-             anchors below; the island upgrades them to in-place filtering. -->
+        <!-- Chips are REAL anchors to the build sheet below: with JS off they are a
+             harmless in-page jump and every entry stays visible; the island upgrades
+             them to in-place filtering. -->
         <a class="sh-chip" href="#build-sheet" data-sh-chip="all" aria-current="true">all</a>
         {
           INTENTS.map((intent) => (
