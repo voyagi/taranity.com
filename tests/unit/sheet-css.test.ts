@@ -152,7 +152,10 @@ describe('sheet filter stays an external chunk (strict CSP)', () => {
     // Vite would otherwise inline; the manualChunks mapping keeps it an external
     // /_astro/*.js (allowed by script-src 'self'). If this mapping is removed the
     // island gets inlined and silently CSP-blocked in production, so pin it here.
-    expect(astroConfig).toMatch(/manualChunks/);
-    expect(astroConfig).toMatch(/sheet-filter/);
+    // Pin the exact mapping, not loose substrings: a typo in the id path or the
+    // returned chunk name (which would leave the island inlinable) must fail here.
+    expect(astroConfig).toMatch(/manualChunks\s*\(\s*id\s*\)/);
+    expect(astroConfig).toMatch(/id\.includes\('\/lib\/sheet-filter'\)/);
+    expect(astroConfig).toMatch(/return 'sheet-filter'/);
   });
 });
