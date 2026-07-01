@@ -10,25 +10,43 @@
  *
  * The character is built from its code point so this file never contains one.
  */
-import { readFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const EM_DASH = String.fromCharCode(0x2014);
+// Anchor to the repo root (this script's parent dir) so the gate scans the
+// right tree no matter which directory it is invoked from.
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-const targets = [
-  ...readdirSync('src/content/journal')
-    .filter((name) => name.endsWith('.md'))
-    .map((name) => join('src/content/journal', name)),
-  ...readdirSync('src/data')
-    .filter((name) => name.endsWith('.json'))
-    .map((name) => join('src/data', name)),
-];
+/**
+ * A deploy gate must never mistake "could not look" for "found nothing": a
+ * missing directory fails the build with a readable message instead of an
+ * ENOENT stack (or, worse, a silent pass).
+ */
+function listFiles(dir, extension) {
+  const abs = join(repoRoot, dir);
+  if (!existsSync(abs)) {
+    console.error(
+      `check-brand-rules: expected content directory is missing: ${dir}\n` +
+        `  If the content structure changed, update scripts/check-brand-rules.mjs ` +
+        `so the brand-rule deploy gate keeps scanning the right place.`,
+    );
+    process.exit(1);
+  }
+  return readdirSync(abs, { recursive: true })
+    .map(String)
+    .filter((name) => name.endsWith(extension))
+    .map((name) => join(abs, name));
+}
+
+const targets = [...listFiles('src/content/journal', '.md'), ...listFiles('src/data', '.json')];
 
 const violations = [];
 for (const file of targets) {
   const lines = readFileSync(file, 'utf8').split('\n');
   lines.forEach((line, i) => {
-    if (line.includes(EM_DASH)) violations.push(`${file}:${i + 1}`);
+    if (line.includes(EM_DASH)) violations.push(`${relative(repoRoot, file)}:${i + 1}`);
   });
 }
 
