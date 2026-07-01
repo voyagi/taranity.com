@@ -105,16 +105,21 @@ page.on('response', (r) => {
 page.on('requestfailed', (req) => failedRequests.push(req.url()));
 
 // Endpoints called best-effort and handled gracefully; a failure here is not a
-// site defect. plausible.io = analytics; challenges.cloudflare.com = Turnstile
-// local-dev challenge probes; cloudflareinsights.com = the Cloudflare Web Analytics
-// beacon (production builds load it and POST RUM events). All can 401/fail DNS in a
-// sandboxed test run without breaking our UI.
-const isBenign = (u) => /plausible\.io|challenges\.cloudflare\.com|cloudflareinsights\.com/.test(u);
+// site defect. challenges.cloudflare.com = Turnstile local-dev challenge probes;
+// cloudflareinsights.com = the Cloudflare Web Analytics beacon (production builds
+// load it and POST RUM events). Both can 401/fail DNS/CORS in a sandboxed test
+// run without breaking our UI.
+const isBenign = (u) => /challenges\.cloudflare\.com|cloudflareinsights\.com/.test(u);
 const isBenignConsoleLine = (text, firstPartyFailures) => {
   const t = text.trim();
   return (
     (/Failed to load resource/i.test(t) && firstPartyFailures.length === 0) ||
-    /^%c%d font-size:0;color:transparent NaN$/.test(t)
+    /^%c%d font-size:0;color:transparent NaN$/.test(t) ||
+    // A console error naming a benign third-party endpoint is the same best-effort
+    // noise as the network-level failures above - e.g. the CF Web Analytics RUM
+    // POST is CORS-blocked when the site is served from 127.0.0.1 instead of the
+    // real domain. Dedicated checks still cover the CSP header and script wiring.
+    isBenign(t)
   );
 };
 

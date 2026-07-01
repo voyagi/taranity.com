@@ -1,7 +1,7 @@
 // Post-deploy live smoke test for the Cloudflare Pages site. Run after a deploy goes
 // live (`npm run verify:deploy`); production deploys happen on push/merge to main.
 //
-// It guards three things that have each regressed before:
+// It guards four things that have each regressed before (or would fail silently):
 //   1. Theme routes resolve (no-trailing-slash design URLs + home/privacy) - the worker
 //      must stay scoped via public/_routes.json so native Pages serving handles them;
 //      a too-broad worker scope 404s them.
@@ -11,6 +11,9 @@
 //      variant at the same URL. This is the regression guard for the 2026-06-30 failure
 //      where the Pages project had no build command, so `astro build` never ran, the
 //      per-design subpages 404'd, and the switch silently fell back to vitrine.
+//   4. The Cloudflare Web Analytics beacon is in the served home HTML. A build that
+//      drops it (env regression, accidental PUBLIC_CF_BEACON_TOKEN=off, layout revert)
+//      is invisible in the browser - the site works, the stats just quietly flatline.
 //
 // The article slug is discovered from the live journal index, not hardcoded, so renaming
 // or replacing a post does not make this check fail or test a stale path.
@@ -69,6 +72,8 @@ async function checkOnce(switchChecks) {
       const body = await r.text();
       if (r.status !== 200) failures.push(`theme ${p} -> HTTP ${r.status}`);
       else if (/route was not found/i.test(body)) failures.push(`theme ${p} -> served the custom 404 page`);
+      else if (p === '/' && !body.includes('static.cloudflareinsights.com/beacon.min.js'))
+        failures.push('analytics / -> Web Analytics beacon missing from the served HTML');
     } catch (e) {
       failures.push(`theme ${p} -> ${String(e).slice(0, 70)}`);
     }
@@ -132,6 +137,9 @@ for (let attempt = 1; attempt <= MAX; attempt++) {
     console.error('  - theme/legacy fail: the Pages Functions worker scope (public/_routes.json) regressed.');
     console.error('  - switch fail: the build skipped per-design subpages (check the Pages project');
     console.error('    build command is set to "npm run build" so astro build actually runs).');
+    console.error('  - analytics fail: the beacon dropped out of the build (PUBLIC_CF_BEACON_TOKEN=off');
+    console.error('    set in the Pages env, or the SiteLayout wiring changed). If the beacon was');
+    console.error('    disabled ON PURPOSE, update this check in the same change.');
     process.exit(1);
   }
 }
