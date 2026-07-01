@@ -81,6 +81,9 @@ function init(): void {
     chip.addEventListener('click', (e) => {
       // Intercept: filter in place instead of jumping. The href stays a real
       // anchor for the no-JS path, so we preventDefault only when we handle it.
+      // Let modified / non-primary clicks (ctrl/cmd/shift/alt, middle button)
+      // fall through so the browser can still open the anchor in a new tab.
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const intent = chip.dataset.shChip;
       if (!intent) return;
       e.preventDefault();
