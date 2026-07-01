@@ -244,17 +244,17 @@ export async function onRequestPost(context: ContactContext): Promise<Response> 
       { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) },
       12000,
     );
-    // Trust parsed JSON (the contract for our application/json request). Only if
-    // the body isn't JSON do we fall back to a marker, matching "successfully"
-    // (as in Web3Forms' "Form Submitted Successfully" page) - NOT a bare
-    // "success", which also matches "unsuccessful"/"not successful" and would
-    // misreport a failure page as a delivered message.
-    const body = await sr.text();
-    let success = sr.ok;
+    // Web3Forms returns JSON for our application/json request; trust only that.
+    // A non-JSON body (an HTML error or interstitial page) is an anomaly, so fail
+    // closed rather than guessing from page text: substring matching cannot
+    // reliably tell "submitted successfully" from "submitted unsuccessfully" or
+    // "not successful", and a false "sent" is worse than a false "email us".
+    let success = false;
     try {
-      success = sr.ok && (JSON.parse(body) as { success?: boolean }).success === true;
+      const parsed = (await sr.json()) as { success?: boolean };
+      success = sr.ok && parsed.success === true;
     } catch {
-      success = sr.ok && /successfully/i.test(body);
+      success = false;
     }
     return json({ success });
   } catch {

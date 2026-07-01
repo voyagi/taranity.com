@@ -14,7 +14,11 @@ const makeEnv = (bodies: Record<string, string>) => ({
     fetch: (input: Request | string | URL) => {
       const href = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
       const body = bodies[new URL(href).pathname];
-      return Promise.resolve(body !== undefined ? new Response(body, { status: 200 }) : new Response('nf', { status: 404 }));
+      return Promise.resolve(
+        body !== undefined
+          ? new Response(body, { status: 200, headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } })
+          : new Response('nf', { status: 404 }),
+      );
     },
   },
 });
@@ -32,6 +36,8 @@ describe('design-switch middleware', () => {
     expect(res.status).toBe(200);
     expect(await res.text()).toBe('vitrine-home');
     expect(res.headers.get('Vary')).toMatch(/cookie/i);
+    // the default branch wraps the asset in a new Response: its headers survive.
+    expect(res.headers.get('Cache-Control')).toBe('public, max-age=0, must-revalidate');
   });
 
   it('serves the cookie-selected variant as private + Vary: Cookie', async () => {
