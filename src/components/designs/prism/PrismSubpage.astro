@@ -1,0 +1,64 @@
+---
+/**
+ * Prism subpage shell (privacy, journal): the shared subpage content inside the
+ * Prism look - the masthead, the dark palette over the STATIC gradient field
+ * (no WebGL island on a legal or reading page: nothing there earns the GPU
+ * cost), and the Prism sign-off footer. Prism's tokens are mapped onto the
+ * shared --sp-* bridge variables so the shared article renders in the Prism
+ * language.
+ *
+ * The masthead links point back to the canonical home ("/"), served in the
+ * visitor's chosen design by the edge middleware, so the address bar stays clean.
+ */
+import './prism.css';
+import '../../../styles/subpage.css';
+import PrismFooter from './PrismFooter.astro';
+import { contactEmail } from '../../../config/site';
+---
+
+<div
+  class="prism sp-shell"
+  style="--sp-accent: var(--pr-periwinkle); --sp-line: var(--pr-line); --sp-muted: var(--pr-muted); --sp-display: var(--pr-serif); --sp-pad: var(--pr-gutter);"
+>
+  <!-- Static field only: the same gradient fallback the homepage degrades to,
+       with no canvas and no island import. -->
+  <div class="pr-field" aria-hidden="true">
+    <div class="pr-field-fallback"></div>
+  </div>
+
+  <div class="pr-content pr-subpage-content">
+    <header class="pr-masthead pr-subpage-masthead">
+      <a class="pr-wordmark" href="/" aria-label="Taranity home">Taranity</a>
+      <nav class="pr-masthead-nav" aria-label="Taranity">
+        <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      </nav>
+    </header>
+    <div class="sp-main">
+      <div class="subpage-body pr-subpage-scrim"><slot /></div>
+    </div>
+    <PrismFooter />
+  </div>
+</div>
+
+<style>
+  /* .sp-shell is a flex column; the content wrapper inherits that job here
+     (the field div is fixed, so it does not participate in the flow). */
+  .pr-subpage-content {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+  .pr-subpage-content .sp-main {
+    flex: 1 0 auto;
+  }
+  .pr-subpage-masthead {
+    border-bottom: 1px solid var(--pr-line);
+  }
+  /* The article is readable content: same solid scrim contract as the
+     homepage sections, so the legal text never sits bare on the gradient. */
+  .pr-subpage-scrim {
+    background: var(--pr-scrim);
+    border: 1px solid var(--pr-line);
+    padding: clamp(1.6rem, 4vw, 3rem);
+  }
+</style>

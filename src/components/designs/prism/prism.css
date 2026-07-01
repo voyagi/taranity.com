@@ -1,0 +1,463 @@
+/* ==========================================================================
+   Prism - the living colour field. The entire page floats on a full-viewport
+   fixed WebGL field (src/lib/prism-field.ts): slow domain-warped iridescence
+   over a deep violet-indigo base. Poster-scale Instrument Serif lines overlap
+   and offset like a printed poster; uppercase Space Grotesk micro-labels carry
+   the wayfinding; a scrolling marquee and a rotating circular badge are the
+   kinetic craft details. Native scroll only - no Lenis, no GSAP, no preloader.
+
+   Prism is dark-only (designs.ts modes: ['dark']), so there is a single token
+   block: no data-mode duplicates, no prefers-color-scheme fallback needed.
+
+   Readability contract: the field's shader caps its own luminance and the
+   content sections sit on SOLID translucent-dark scrims (plain rgba fills,
+   never backdrop-filter), so near-white text passes WCAG contrast over any
+   region of the moving field. The static CSS fallback (.pr-field-fallback)
+   sits UNDER the canvas: no-JS, no-WebGL, and a lost context all degrade to
+   the same still gradient.
+
+   Motion: the marquee loop, the badge rotation, and every hover transition
+   live inside prefers-reduced-motion: no-preference blocks; under reduce the
+   page is fully static and the shader renders exactly one still frame.
+   ========================================================================== */
+
+/* Instrument Serif ships only with Prism (declared here, not in the shared
+   fonts.css, so the other designs never pay for a face they do not use). */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/instrument-serif-latin-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/instrument-serif-latin-400-italic.woff2') format('woff2');
+}
+
+/* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
+   contain, isolation, or will-change on .prism - the colour field is a FIXED
+   child, and any containing-block-forming property here would silently re-pin
+   it inside the flow (it would scroll away with the page). Pinned by
+   tests/unit/prism-css.test.ts. */
+.prism {
+  --pr-base: #14101f;
+  --pr-ink: #f4f2fb;
+  --pr-muted: #b6b0cf;
+  --pr-line: rgba(244, 242, 251, 0.16);
+  --pr-line-strong: rgba(244, 242, 251, 0.34);
+  --pr-periwinkle: #7b7ff2;
+  --pr-magenta: #e86bd0;
+  --pr-cyan: #66e0d6;
+  --pr-green: #9fe870;
+  --pr-error: #ffa08d;
+  /* Solid-enough dark fills for readable content over the moving field.
+     Plain rgba on purpose: backdrop-filter is banned (containment + cost). */
+  --pr-scrim: rgba(13, 10, 22, 0.78);
+  --pr-scrim-deep: rgba(13, 10, 22, 0.9);
+
+  --pr-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --pr-grotesk: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --pr-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --pr-gutter: clamp(1.25rem, 5vw, 4.5rem);
+  --pr-flow: clamp(4rem, 12vh, 8rem);
+
+  background: var(--pr-base);
+  color: var(--pr-ink);
+  font-family: var(--pr-sans);
+  overflow-x: clip;
+}
+
+.prism ::selection {
+  background: var(--pr-periwinkle);
+  color: #14101f;
+}
+
+.prism a {
+  color: inherit;
+}
+
+/* Visible keyboard focus on every interactive element, tuned to the palette. */
+.prism :focus-visible {
+  outline: 2px solid var(--pr-periwinkle);
+  outline-offset: 3px;
+}
+
+/* Screen-reader-only equivalents for the decorative marquee / badge copies. */
+.pr-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- the field: fixed canvas over a static gradient fallback ---- */
+
+.pr-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+/* The static fallback: a multi-stop blend approximating the shader palette.
+   It sits UNDER the canvas, so an un-rendered (transparent) canvas simply
+   shows it; nothing has to detect failure. */
+.pr-field-fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(58% 44% at 16% 18%, rgba(123, 127, 242, 0.32), transparent 68%),
+    radial-gradient(48% 42% at 84% 30%, rgba(232, 107, 208, 0.22), transparent 70%),
+    radial-gradient(52% 46% at 70% 82%, rgba(102, 224, 214, 0.2), transparent 72%),
+    radial-gradient(36% 30% at 28% 88%, rgba(159, 232, 112, 0.1), transparent 75%),
+    linear-gradient(160deg, #191430 0%, #14101f 55%, #100c1a 100%);
+}
+.pr-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Everything readable rides above the field. */
+.pr-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- masthead ---- */
+
+.pr-masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.8rem 1.6rem;
+  padding: clamp(1.2rem, 3.5vh, 2rem) var(--pr-gutter);
+}
+.pr-wordmark {
+  font-family: var(--pr-serif);
+  font-size: clamp(1.4rem, 2.8vw, 1.8rem);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+.pr-masthead-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.6rem;
+  margin-left: auto;
+}
+.pr-masthead-nav a {
+  font-family: var(--pr-grotesk);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--pr-ink);
+  padding-block: 0.3rem;
+}
+.pr-masthead-nav a:hover {
+  color: var(--pr-cyan);
+}
+
+/* ---- hero: stacked, offset poster lines ---- */
+
+.pr-hero {
+  padding: clamp(2rem, 8vh, 5rem) var(--pr-gutter) var(--pr-flow);
+}
+.pr-hero-label {
+  margin: 0 0 1.2rem;
+  font-family: var(--pr-grotesk);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--pr-ink);
+}
+.pr-hero-title {
+  margin: 0;
+  font-family: var(--pr-serif);
+  font-weight: 400;
+  font-size: clamp(3.4rem, 12.5vw, 9rem);
+  line-height: 0.86;
+  letter-spacing: -0.015em;
+}
+/* Each line offsets horizontally (a poster lockup, not a centered stack); the
+   overlap comes from the tight line-height, so no transforms are involved and
+   the type stays selectable, wrappable text. */
+.pr-hero-line {
+  display: block;
+}
+.pr-hero-line + .pr-hero-line {
+  margin-top: -0.04em;
+}
+.pr-hero-line:nth-child(2) {
+  margin-left: clamp(3rem, 22vw, 18rem);
+  color: var(--pr-periwinkle);
+}
+.pr-hero-line:nth-child(3) {
+  margin-left: clamp(1.2rem, 9vw, 7rem);
+  font-style: italic;
+}
+
+/* Two scattered caption blocks: small readable chips on their own scrims. */
+.pr-hero-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.5rem;
+  margin-top: clamp(2rem, 6vh, 3.4rem);
+}
+.pr-hero-caption {
+  max-width: 30ch;
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+  background: var(--pr-scrim);
+  border: 1px solid var(--pr-line);
+  font-size: 0.94rem;
+  line-height: 1.65;
+  color: var(--pr-ink);
+}
+/* The second caption drifts right on wide screens: the scatter is layout,
+   not decoration, so it collapses naturally on a phone. */
+.pr-hero-caption:nth-child(2) {
+  margin-left: auto;
+  margin-top: clamp(0rem, 4vh, 2.5rem);
+}
+.pr-hero-link {
+  display: inline-block;
+  margin-top: clamp(1.6rem, 5vh, 2.6rem);
+  font-family: var(--pr-serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  text-decoration: none;
+  border-bottom: 1px solid var(--pr-line-strong);
+  padding-bottom: 2px;
+}
+.pr-hero-link:hover {
+  color: var(--pr-cyan);
+  border-color: var(--pr-cyan);
+}
+
+/* ---- marquee band ---- */
+
+.pr-marquee {
+  overflow: hidden;
+  border-top: 1px solid var(--pr-line);
+  border-bottom: 1px solid var(--pr-line);
+  background: var(--pr-scrim);
+  padding-block: 0.9rem;
+}
+.pr-marquee-track {
+  display: flex;
+  width: max-content;
+}
+.pr-marquee-copy {
+  flex: none;
+  white-space: nowrap;
+  font-family: var(--pr-grotesk);
+  font-size: clamp(0.9rem, 1.8vw, 1.15rem);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--pr-ink);
+  padding-right: 0.5em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* The loop: the track holds two identical copies and slides by exactly one
+     copy's width (-50%), so the wrap point is invisible. Under reduce the
+     animation never applies and the band is a static line of text. */
+  .pr-marquee-track {
+    animation: pr-marquee 30s linear infinite;
+  }
+}
+@keyframes pr-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---- shared section chrome ---- */
+
+.pr-section {
+  margin: var(--pr-flow) var(--pr-gutter);
+  padding: clamp(2rem, 6vh, 3.5rem) clamp(1.2rem, 3.5vw, 3rem);
+  background: var(--pr-scrim);
+  border: 1px solid var(--pr-line);
+  scroll-margin-top: 2rem;
+}
+.pr-section:focus {
+  outline: none;
+}
+.pr-eyebrow {
+  margin: 0 0 clamp(1.6rem, 4vh, 2.4rem);
+  font-family: var(--pr-grotesk);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--pr-cyan);
+}
+
+/* ---- services: the numbered list ---- */
+
+.pr-services-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pr-service {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.6rem;
+  align-items: baseline;
+  padding-block: clamp(1.6rem, 4.5vh, 2.6rem);
+  border-top: 1px solid var(--pr-line);
+}
+.pr-service:first-child {
+  border-top: 0;
+}
+.pr-service-index {
+  font-family: var(--pr-grotesk);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--pr-magenta);
+}
+.pr-service-title {
+  margin: 0;
+  font-family: var(--pr-serif);
+  font-weight: 400;
+  font-size: clamp(2rem, 5.5vw, 3.8rem);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pr-service-title {
+    transition: translate 0.3s ease, color 0.3s ease;
+  }
+  .pr-service:hover .pr-service-title {
+    translate: 0.35em 0;
+  }
+}
+.pr-service:hover .pr-service-title {
+  color: var(--pr-periwinkle);
+}
+.pr-service-body {
+  grid-column: 2;
+}
+.pr-service-line {
+  max-width: 46ch;
+  margin: 0.7rem 0 0;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--pr-ink);
+}
+.pr-service-honor {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.3rem 1rem;
+  align-items: baseline;
+  max-width: 58ch;
+  margin: 0.8rem 0 0;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--pr-muted);
+}
+.pr-service-honor b {
+  font-family: var(--pr-grotesk);
+  font-weight: 500;
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pr-green);
+  white-space: nowrap;
+}
+@media (max-width: 620px) {
+  .pr-service {
+    grid-template-columns: 1fr;
+  }
+  .pr-service-body {
+    grid-column: 1;
+  }
+  .pr-service-honor {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
+
+/* ---- approach: the rotating badge + manifesto lines ---- */
+
+.pr-approach-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(2rem, 6vw, 4.5rem);
+}
+.pr-badge {
+  flex: none;
+  width: clamp(150px, 22vw, 220px);
+  height: clamp(150px, 22vw, 220px);
+}
+.pr-badge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* The whole badge turns slowly; under reduce it stands still (the text on
+     the circle is aria-hidden either way, with a sr-only equivalent). */
+  .pr-badge svg {
+    animation: pr-rotate 42s linear infinite;
+  }
+}
+@keyframes pr-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.pr-badge-text {
+  /* Sized so the ring copy (~51 chars) fills the r=78 circle (~490 viewBox
+     units of circumference) without overlapping its own start. */
+  font-family: var(--pr-grotesk);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  fill: var(--pr-ink);
+}
+.pr-badge-burst {
+  stroke: var(--pr-line-strong);
+  stroke-width: 1;
+}
+.pr-manifesto {
+  flex: 1 1 24rem;
+  margin: 0;
+}
+.pr-manifesto p {
+  margin: 0 0 0.9rem;
+  font-family: var(--pr-serif);
+  font-size: clamp(1.5rem, 3.4vw, 2.4rem);
+  line-height: 1.22;
+}
+.pr-manifesto p:last-child {
+  margin-bottom: 0;
+}
+.pr-manifesto p:nth-child(2) {
+  color: var(--pr-periwinkle);
+}

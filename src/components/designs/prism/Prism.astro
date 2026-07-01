@@ -1,0 +1,139 @@
+---
+/**
+ * Prism - the living colour field design. The whole page floats on a fixed
+ * WebGL iridescence (src/lib/prism-field.ts) with poster-scale Instrument
+ * Serif lines stacked and offset over it, Space Grotesk micro-labels, a
+ * scrolling marquee, and a slowly rotating circular badge. Native scroll only,
+ * no preloader; the page is complete and readable with JS off (the field
+ * degrades to the static CSS gradient underneath the transparent canvas).
+ *
+ * Copy comes through src/config/prism.ts (editable in /admin via
+ * src/data/prism.json); the layout, palette, marquee, and badge stay in code.
+ */
+import './prism.css';
+import { contactEmail } from '../../../config/site';
+import { heroContent, servicesLabel, services, approachContent } from '../../../config/prism';
+import PrismContact from './PrismContact.astro';
+import PrismFooter from './PrismFooter.astro';
+
+// The marquee line and badge ring are design devices, not copy: they stay in
+// code so the CMS cannot break the loop join or the circle's fit.
+const MARQUEE = 'TARANITY · WEBSITES · STORES · APPS · AUTOMATION · SYSTEMS · ';
+const BADGE_RING = 'DESCRIBE IT · WE SPEC IT · IN PLAIN TERMS · FREE · ';
+
+// Thin radial burst lines around the badge ring, precomputed server-side so
+// the SVG ships as static markup (rounded so the build output is stable).
+const bursts = Array.from({ length: 16 }, (_, i) => {
+  const angle = (i / 16) * Math.PI * 2;
+  const at = (radius: number, fn: (n: number) => number) =>
+    Math.round((100 + fn(angle) * radius) * 100) / 100;
+  return { x1: at(58, Math.cos), y1: at(58, Math.sin), x2: at(66, Math.cos), y2: at(66, Math.sin) };
+});
+---
+
+<div class="prism" data-prism>
+  <!-- The field: static gradient fallback UNDER a transparent canvas. The island
+       draws into the canvas; without it (no JS, no WebGL, blocked script, lost
+       context) the fallback simply shows through. Pure atmosphere: aria-hidden. -->
+  <div class="pr-field" data-prism-field aria-hidden="true">
+    <div class="pr-field-fallback"></div>
+    <canvas class="pr-canvas" data-prism-canvas></canvas>
+  </div>
+
+  <div class="pr-content">
+    <header class="pr-masthead">
+      <a class="pr-wordmark" href="/" aria-label="Taranity home">Taranity</a>
+      <nav class="pr-masthead-nav" aria-label="Sections">
+        <a href="#services">Services</a>
+        <a href="#approach">Approach</a>
+        <a href="#contact">Contact</a>
+        <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      </nav>
+    </header>
+
+    <!-- Hero: stacked, offset poster lines. The offsets are margins on plain
+         block spans, so the lockup stays real, selectable text. -->
+    <section class="pr-hero" aria-label="Taranity introduction">
+      <p class="pr-hero-label">{heroContent.label}</p>
+      <h1 class="pr-hero-title">
+        {/* The trailing space inside each span keeps the accessible name and
+            copied text reading "Digital Build Studio", not one mashed word;
+            block display trims it visually. */}
+        {heroContent.titleLines.map((line) => <span class="pr-hero-line">{line} </span>)}
+      </h1>
+      <div class="pr-hero-notes">
+        {heroContent.captions.map((caption) => <p class="pr-hero-caption">{caption}</p>)}
+      </div>
+      <a class="pr-hero-link" href="#services">{heroContent.link}</a>
+    </section>
+
+    <!-- Marquee band: two identical aria-hidden copies slide by one copy's
+         width so the loop join never shows; the sr-only line carries the meaning. -->
+    <div class="pr-marquee" role="presentation">
+      <p class="pr-sr-only">Taranity: websites, stores, apps, automation, systems.</p>
+      <div class="pr-marquee-track" aria-hidden="true">
+        <span class="pr-marquee-copy">{MARQUEE}</span>
+        <span class="pr-marquee-copy">{MARQUEE}</span>
+      </div>
+    </div>
+
+    <!-- Services: the numbered list (01-05). Copy adapted from the approved
+         Sheet entries; the numbering comes from the code-owned order. -->
+    <section class="pr-section pr-services" id="services" aria-labelledby="pr-services-title">
+      <h2 class="pr-eyebrow" id="pr-services-title">{servicesLabel}</h2>
+      <ol class="pr-services-list">
+        {
+          services.map((service) => (
+            <li class="pr-service">
+              <span class="pr-service-index" aria-hidden="true">{service.index}</span>
+              <div class="pr-service-body">
+                <h3 class="pr-service-title">{service.title}</h3>
+                <p class="pr-service-line">{service.line}</p>
+                <p class="pr-service-honor">
+                  <b>we honor</b>
+                  <span>{service.honor}</span>
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- Approach: the rotating badge (decorative, sr-only equivalent beside it)
+         and the three manifesto lines. -->
+    <section class="pr-section pr-approach" id="approach" aria-labelledby="pr-approach-title">
+      <h2 class="pr-eyebrow" id="pr-approach-title">{approachContent.label}</h2>
+      <div class="pr-approach-layout">
+        <div class="pr-badge" aria-hidden="true">
+          <svg viewBox="0 0 200 200" focusable="false">
+            <defs>
+              <path
+                id="pr-badge-arc"
+                d="M 100 100 m -78 0 a 78 78 0 1 1 156 0 a 78 78 0 1 1 -156 0"
+                fill="none"></path>
+            </defs>
+            {bursts.map((b) => <line class="pr-badge-burst" x1={b.x1} y1={b.y1} x2={b.x2} y2={b.y2} />)}
+            <text class="pr-badge-text">
+              <textPath href="#pr-badge-arc">{BADGE_RING}</textPath>
+            </text>
+          </svg>
+        </div>
+        <p class="pr-sr-only">Describe it. We spec it. In plain terms. Free.</p>
+        <div class="pr-manifesto">
+          {approachContent.lines.map((line) => <p>{line}</p>)}
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact: the site's real hardened contact form, restyled to Prism. -->
+    <PrismContact />
+
+    <PrismFooter />
+  </div>
+</div>
+
+<script>
+  // Bundled island: compiles to /_astro/*.js (script-src 'self'), no CSP inline hash.
+  import '../../../lib/prism-field';
+</script>

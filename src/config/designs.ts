@@ -32,6 +32,7 @@ export const designs: Design[] = [
   { id: 'storefront', name: 'Storefront', tagline: 'Commerce', audience: 'E-commerce and DTC brands', route: '/storefront', modes: ['light'], ready: true },
   { id: 'practice', name: 'Practice', tagline: 'Trusted local service', audience: 'Medical, legal, trades', route: '/practice', modes: ['light'], ready: true },
   { id: 'raw', name: 'Raw', tagline: 'Brutalist', audience: 'Art, music, culture, dev', route: '/raw', modes: ['dark', 'light'], ready: true },
+  { id: 'prism', name: 'Prism', tagline: 'A living colour field', audience: 'Brands that want to be felt', route: '/prism', modes: ['dark'], ready: true },
   // Sheet is HIDDEN pending a redesign: ready:false drops it from the switcher and every
   // route; its components + tests are kept in the repo for later reuse. To re-enable: set
   // ready:true, re-add 'sheet' to functions/switch.ts READY + functions/_middleware.ts

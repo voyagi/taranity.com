@@ -1,0 +1,276 @@
+---
+/**
+ * Written contact only (hard rule 1: no booking, no calls), styled as the
+ * closing section of the Prism page: the giant serif ask on its solid scrim.
+ * Runtime validation, Turnstile handling, and same-origin submission live in
+ * the shared bindContactForm() helper (identical to every other design); this
+ * component owns only the Prism markup and labels. The Turnstile widget, the
+ * data-* hooks, and the /api/contact flow are mirrored from SheetContact so
+ * it keeps working.
+ */
+import { services, contactEmail } from '../../../config/site';
+import { contactContent } from '../../../config/prism';
+
+const hasTurnstile = Boolean(services.turnstileSitekey);
+---
+
+<section class="pr-section pr-contact" id="contact" tabindex="-1" aria-label="Describe what to build">
+  <p class="pr-eyebrow">{contactContent.eyebrow}</p>
+  <h2 class="pr-contact-title">{contactContent.title}</h2>
+  <p class="pr-contact-lead">{contactContent.lead}</p>
+  <a class="pr-contact-email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+
+  <div class="pr-form-wrap">
+    <form
+      class="pr-form"
+      data-pr-form
+      data-fallback-email={contactEmail}
+      action="/api/contact"
+      method="POST"
+      novalidate
+    >
+      <input type="hidden" name="subject" value="New enquiry via taranity.com (Prism)" />
+      <input type="hidden" name="from_name" value="taranity.com" />
+      <!-- Honeypot -->
+      <input type="checkbox" name="botcheck" class="pr-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      {
+        !hasTurnstile && (
+          <p class="pr-demo-note">Demo mode: submissions are simulated in this preview.</p>
+        )
+      }
+
+      <div class="pr-field-row">
+        <label class="pr-field-label" for="pr-name">Name</label>
+        <input id="pr-name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="pr-err-name" />
+        <span class="pr-field-err" id="pr-err-name" data-pr-err="name" role="alert"></span>
+      </div>
+
+      <div class="pr-field-row">
+        <label class="pr-field-label" for="pr-email">Email</label>
+        <input id="pr-email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="pr-err-email" />
+        <span class="pr-field-err" id="pr-err-email" data-pr-err="email" role="alert"></span>
+      </div>
+
+      <div class="pr-field-row">
+        <label class="pr-field-label" for="pr-message">What do you need built?</label>
+        <textarea id="pr-message" name="message" rows="5" required maxlength="3000" aria-describedby="pr-err-message"></textarea>
+        <span class="pr-field-err" id="pr-err-message" data-pr-err="message" role="alert"></span>
+      </div>
+
+      {hasTurnstile && (
+        <Fragment>
+          <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+          <div class="cf-turnstile" data-sitekey={services.turnstileSitekey} data-action="turnstile-spin-v1" data-theme="dark" style="margin-bottom: 1.4rem"></div>
+        </Fragment>
+      )}
+
+      <button type="submit" class="pr-submit">
+        <span data-pr-submit-label>Send the brief</span>
+        <span class="pr-arrow" aria-hidden="true">&rarr;</span>
+      </button>
+
+      <p class="pr-form-status" data-pr-form-status role="status" aria-live="polite"></p>
+      <p class="pr-form-privacy">
+        Delivered via Web3Forms and used only to reply. No cookies, nothing sold.
+        <a href="/privacy" data-astro-reload>How your data is handled</a>.
+      </p>
+    </form>
+
+    <div class="pr-form-success" data-pr-form-success hidden tabindex="-1">
+      <h3>Got it.</h3>
+      <p>Thank you. We reply within a day, usually sooner, and always in writing.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pr-contact-title {
+    margin: 0 0 1rem;
+    max-width: 16ch;
+    font-family: var(--pr-serif);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 7vw, 5rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+  .pr-contact-lead {
+    max-width: 52ch;
+    margin: 0 0 1.4rem;
+    font-size: 1.04rem;
+    line-height: 1.7;
+    color: var(--pr-muted);
+  }
+  .pr-contact-email {
+    display: inline-block;
+    margin-bottom: clamp(1.8rem, 5vh, 2.6rem);
+    font-family: var(--pr-grotesk);
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    border-bottom: 1px solid var(--pr-cyan);
+    padding-bottom: 2px;
+  }
+  .pr-contact-email:hover {
+    color: var(--pr-cyan);
+  }
+
+  .pr-form-wrap {
+    max-width: 46rem;
+    padding-top: clamp(1.4rem, 4vh, 2rem);
+    border-top: 1px solid var(--pr-line);
+  }
+  .pr-hp {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+  .pr-demo-note {
+    margin-bottom: 1.4rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--pr-magenta);
+    font-family: var(--pr-grotesk);
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+    color: var(--pr-magenta);
+  }
+  .pr-field-row {
+    margin-bottom: 1.3rem;
+  }
+  .pr-field-label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-family: var(--pr-grotesk);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--pr-muted);
+  }
+  /* Inputs sit on the deeper scrim: a solid readable surface over the moving
+     field (no transparent form fields; hard readability rule). */
+  .pr-field-row input,
+  .pr-field-row textarea {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    background: var(--pr-scrim-deep);
+    border: 1px solid var(--pr-line-strong);
+    border-radius: 0;
+    font-family: var(--pr-sans);
+    font-size: 1rem;
+    color: var(--pr-ink);
+  }
+  .pr-field-row textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .pr-field-row input:focus-visible,
+  .pr-field-row textarea:focus-visible {
+    outline: 2px solid var(--pr-periwinkle);
+    outline-offset: 1px;
+    border-color: var(--pr-periwinkle);
+  }
+  .pr-field-row.invalid input,
+  .pr-field-row.invalid textarea {
+    border-color: var(--pr-error);
+  }
+  .pr-field-err {
+    display: block;
+    min-height: 1rem;
+    margin-top: 0.35rem;
+    font-family: var(--pr-grotesk);
+    font-size: 0.76rem;
+    letter-spacing: 0.02em;
+    color: var(--pr-error);
+  }
+
+  .pr-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.3rem;
+    padding: 0.8rem 1.5rem;
+    border: 0;
+    background: var(--pr-periwinkle);
+    color: #14101f;
+    font-family: var(--pr-grotesk);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .pr-submit[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pr-submit {
+      transition: background-color 0.2s ease;
+    }
+    .pr-submit .pr-arrow {
+      transition: transform 0.2s ease;
+    }
+    .pr-submit:hover:not([disabled]) .pr-arrow {
+      transform: translateX(3px);
+    }
+  }
+  .pr-submit:hover:not([disabled]) {
+    background: color-mix(in srgb, var(--pr-periwinkle) 82%, white);
+  }
+  .pr-form-status {
+    min-height: 1rem;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: var(--pr-muted);
+  }
+  .pr-form-status.is-error {
+    color: var(--pr-error);
+  }
+  .pr-form-privacy {
+    margin-top: 1.1rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--pr-muted);
+  }
+  .pr-form-privacy a {
+    color: var(--pr-ink);
+    text-underline-offset: 3px;
+  }
+
+  .pr-form-success:focus {
+    outline: none;
+  }
+  .pr-form-success h3 {
+    font-family: var(--pr-serif);
+    font-weight: 400;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0 0 0.6rem;
+  }
+  .pr-form-success p {
+    max-width: 42ch;
+    color: var(--pr-muted);
+    line-height: 1.7;
+  }
+  .pr-form-success[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  import { bindContactForm } from '../../../lib/contact-form';
+
+  document.addEventListener('astro:page-load', () =>
+    bindContactForm({
+      formSelector: '[data-pr-form]',
+      statusSelector: '[data-pr-form-status]',
+      submitButtonSelector: '.pr-submit',
+      submitLabelSelector: '[data-pr-submit-label]',
+      successSelector: '[data-pr-form-success]',
+      wrapperSelector: '.pr-form-wrap',
+      fieldRowSelector: '.pr-field-row',
+      errorAttr: 'data-pr-err',
+      sendingLabel: 'Sending…',
+    }),
+  );
+</script>

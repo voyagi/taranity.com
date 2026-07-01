@@ -14,6 +14,7 @@ import StorefrontSubpage from '../../components/designs/storefront/StorefrontSub
 import PracticeSubpage from '../../components/designs/practice/PracticeSubpage.astro';
 import RawSubpage from '../../components/designs/raw/RawSubpage.astro';
 import SheetSubpage from '../../components/designs/sheet/SheetSubpage.astro';
+import PrismSubpage from '../../components/designs/prism/PrismSubpage.astro';
 import { readyDesigns, getDesign } from '../../config/designs';
 import { subpageMeta } from '../../config/subpage-meta';
 
@@ -27,6 +28,7 @@ const SHELLS = {
   practice: PracticeSubpage,
   raw: RawSubpage,
   sheet: SheetSubpage,
+  prism: PrismSubpage,
 } satisfies Record<keyof typeof subpageMeta, unknown>;
 
 export function getStaticPaths() {

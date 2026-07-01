@@ -67,6 +67,9 @@ export default defineConfig({
           // adds ZERO new inline-script hashes.
           manualChunks(id) {
             if (id.includes('/lib/sheet-filter')) return 'sheet-filter';
+            // Same CSP reasoning for Prism's shader island: a standalone module
+            // with no shared vendor import would otherwise be inlined and blocked.
+            if (id.includes('/lib/prism-field')) return 'prism-field';
             return undefined;
           },
         },
