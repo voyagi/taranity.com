@@ -38,7 +38,7 @@ collections:
     sortable_fields: [order, pubDate, title]
     fields:
       - { name: title, label: Title, widget: string, pattern: &no_em_dash ['^[^\u2014]*$', 'No em dashes. Use a comma, colon, or full stop.'] }
-      - { name: description, label: Meta description, widget: text, hint: 'Aim for 150-160 characters.', maxLength: 170, pattern: *no_em_dash }
+      - { name: description, label: Meta description, widget: text, hint: 'Aim for 150-160 characters.', maxlength: 170, pattern: *no_em_dash }
       - { name: lead, label: Lead (standfirst), widget: text, required: false, pattern: *no_em_dash }
       - { name: kicker, label: Kicker, widget: string, default: Journal, pattern: *no_em_dash }
       - { name: pubDate, label: Publish date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
@@ -51,8 +51,8 @@ collections:
         required: false
         summary: '{{fields.q}}'
         fields:
-          - { name: q, label: Question, widget: string }
-          - { name: a, label: Answer, widget: text }
+          - { name: q, label: Question, widget: string, pattern: *no_em_dash }
+          - { name: a, label: Answer, widget: text, pattern: *no_em_dash }
       - { name: order, label: Listing order, widget: number, default: 99, value_type: int }
       - { name: draft, label: Draft, widget: boolean, default: false }
       - { name: body, label: Body, widget: markdown }
@@ -92,14 +92,14 @@ collections:
             widget: object
             fields:
               - { name: kicker, label: Kicker, widget: string, hint: 'Small line above the headline.', pattern: *no_em_dash }
-              - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per line of the big headline. The last line is shown lighter.' }
+              - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per line of the big headline. The last line is shown lighter.', pattern: *no_em_dash }
               - { name: sub, label: Sub-heading, widget: text, pattern: *no_em_dash }
           - name: manifesto
             label: The point
             widget: object
             fields:
               - { name: label, label: Section label, widget: string, hint: 'e.g. 01 · The point' }
-              - { name: statementLines, label: Statement lines, widget: list, hint: 'One entry per line. Each rises in on scroll.' }
+              - { name: statementLines, label: Statement lines, widget: list, hint: 'One entry per line. Each rises in on scroll.', pattern: *no_em_dash }
               - { name: copy, label: Paragraph, widget: text, pattern: *no_em_dash }
               - name: method
                 label: Method steps
@@ -128,7 +128,7 @@ collections:
                       - { name: title, label: Title, widget: string, pattern: *no_em_dash }
                       - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
                       - { name: line, label: Description, widget: text, pattern: *no_em_dash }
-                      - { name: includes, label: Includes, widget: list }
+                      - { name: includes, label: Includes, widget: list, pattern: *no_em_dash }
                   - name: commerce
                     label: Commerce
                     widget: object
@@ -136,7 +136,7 @@ collections:
                       - { name: title, label: Title, widget: string, pattern: *no_em_dash }
                       - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
                       - { name: line, label: Description, widget: text, pattern: *no_em_dash }
-                      - { name: includes, label: Includes, widget: list }
+                      - { name: includes, label: Includes, widget: list, pattern: *no_em_dash }
                   - name: applications
                     label: Applications
                     widget: object
@@ -144,7 +144,7 @@ collections:
                       - { name: title, label: Title, widget: string, pattern: *no_em_dash }
                       - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
                       - { name: line, label: Description, widget: text, pattern: *no_em_dash }
-                      - { name: includes, label: Includes, widget: list }
+                      - { name: includes, label: Includes, widget: list, pattern: *no_em_dash }
                   - name: automation
                     label: Automation
                     widget: object
@@ -152,7 +152,7 @@ collections:
                       - { name: title, label: Title, widget: string, pattern: *no_em_dash }
                       - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
                       - { name: line, label: Description, widget: text, pattern: *no_em_dash }
-                      - { name: includes, label: Includes, widget: list }
+                      - { name: includes, label: Includes, widget: list, pattern: *no_em_dash }
                   - name: advisory
                     label: Advisory
                     widget: object
@@ -160,7 +160,7 @@ collections:
                       - { name: title, label: Title, widget: string, pattern: *no_em_dash }
                       - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
                       - { name: line, label: Description, widget: text, pattern: *no_em_dash }
-                      - { name: includes, label: Includes, widget: list }
+                      - { name: includes, label: Includes, widget: list, pattern: *no_em_dash }
                   - name: intelligentSystems
                     label: Intelligent systems
                     widget: object
@@ -168,14 +168,14 @@ collections:
                       - { name: title, label: Title, widget: string, pattern: *no_em_dash }
                       - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
                       - { name: line, label: Description, widget: text, pattern: *no_em_dash }
-                      - { name: includes, label: Includes, widget: list }
+                      - { name: includes, label: Includes, widget: list, pattern: *no_em_dash }
           - name: studio
             label: The studio
             widget: object
             fields:
               - { name: label, label: Section label, widget: string, hint: 'e.g. 03 · The studio' }
               - { name: lede, label: Lede, widget: string, pattern: *no_em_dash }
-              - { name: story, label: Story paragraphs, widget: list, hint: 'One entry per paragraph.' }
+              - { name: story, label: Story paragraphs, widget: list, hint: 'One entry per paragraph.', pattern: *no_em_dash }
               - name: principles
                 label: Principles
                 widget: list
@@ -188,6 +188,6 @@ collections:
             widget: object
             fields:
               - { name: label, label: Section label, widget: string, hint: 'e.g. 04 · Contact' }
-              - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per line.' }
+              - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per line.', pattern: *no_em_dash }
               - { name: lead, label: Lead paragraph, widget: text, pattern: *no_em_dash }
               - { name: location, label: Location line, widget: string, pattern: *no_em_dash }
