@@ -100,12 +100,27 @@ const CRAFT_ORDER = [
 
 const craftCopy = vitrineData.crafts.items as Record<string, CraftCopy>;
 
-// Build-time guard: every code-defined craft must have copy. A missing entry is a
-// malformed edit; fail loudly at build rather than render a blank plate.
+/** A value is blank if it is not a string or is empty once trimmed. */
+const isBlank = (value: unknown): boolean => typeof value !== 'string' || value.trim() === '';
+
+// Build-time guard: every code-defined craft must have complete copy. A missing or
+// whitespace-only field, or an empty includes list, is a malformed edit; fail loudly
+// at build rather than render a blank plate or throw at render time (the component
+// reads copy.includes.length, so an undefined includes would TypeError). includes is
+// required content: every plate is designed to show its stack.
 export const crafts: Craft[] = CRAFT_ORDER.map((id) => {
   const copy = craftCopy[id];
-  if (!copy || !copy.title || !copy.kicker || !copy.line) {
-    throw new Error(`vitrine.json: crafts.items.${id} is missing required copy (title/kicker/line).`);
+  if (
+    !copy ||
+    isBlank(copy.title) ||
+    isBlank(copy.kicker) ||
+    isBlank(copy.line) ||
+    !Array.isArray(copy.includes) ||
+    copy.includes.length === 0
+  ) {
+    throw new Error(
+      `vitrine.json: crafts.items.${id} is missing required copy (title/kicker/line/includes).`,
+    );
   }
   return { id, ...copy, ...CRAFT_DESIGN[id] };
 });
@@ -117,12 +132,13 @@ export const contactContent = vitrineData.contact;
 export const craftsLabel = vitrineData.crafts.label;
 export const craftsNote = vitrineData.crafts.note;
 
-// A masked headline with no lines renders as an empty, broken heading. The CMS's
-// required-field default blocks an empty save through the admin UI; this is the
-// build-time backstop for a direct data edit.
+// A masked headline with a missing or blank line renders an empty, broken mask row
+// (and in the hero a blank final line still gets the lighter <em> payoff). The CMS's
+// required-field default blocks empty saves through the admin UI; this is the
+// build-time backstop for a direct edit. Reject an empty list AND any blank line.
 function assertNonEmptyLines(lines: string[], path: string): void {
-  if (!lines.some((line) => line.trim() !== '')) {
-    throw new Error(`vitrine.json: ${path} must have at least one non-empty line.`);
+  if (lines.length === 0 || lines.some(isBlank)) {
+    throw new Error(`vitrine.json: ${path} must have at least one line and no blank lines.`);
   }
 }
 assertNonEmptyLines(heroContent.titleLines, 'hero.titleLines');
