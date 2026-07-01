@@ -45,6 +45,17 @@ describe('site config', () => {
     vi.resetModules();
   });
 
+  it('cfBeaconToken disables via the PUBLIC_CF_BEACON_TOKEN=off sentinel', async () => {
+    // The off sentinel is the preview/incident kill switch; an empty-intent override
+    // must NOT silently fall back to the hardcoded production token.
+    vi.stubEnv('PUBLIC_CF_BEACON_TOKEN', 'off');
+    vi.resetModules();
+    const { services: disabled } = await import('../../src/config/site');
+    expect(disabled.cfBeaconToken).toBe('');
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
   it('has socials and a valid contact email', () => {
     expect(socials.length).toBeGreaterThan(0);
     expect(socials.every((s) => /^https?:\/\//.test(s.href))).toBe(true);
