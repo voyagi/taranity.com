@@ -26,13 +26,14 @@
 # enforces the intersection (blocking unpkg + the GitHub API and breaking the admin). The
 # `! Content-Security-Policy` line DETACHES the inherited /* CSP so /admin gets ONLY the policy
 # below; every other security header is still inherited from /*. The main bundle is self-hosted
-# (script-src 'self'); /admin additionally allows unpkg because Sveltia loads its PINNED Prism
-# highlighter + schema/version JSON from there. The public /* CSP is unchanged and never talks to
-# unpkg. NOTE: the admin PAGE is publicly loadable; writes are gated by GitHub auth, but the UI is
+# (script-src 'self'); /admin additionally allows unpkg (Sveltia's pinned Prism highlighter +
+# schema/version JSON) and Google Fonts (its Material Symbols icon font). The public /* CSP is
+# unchanged and never loads from those. NOTE: the admin PAGE is publicly loadable; writes are
+# gated by GitHub auth, but the UI is
 # not access-gated. For a true owner-only gate, put Cloudflare Access in front of /admin.
 /admin/*
   ! Content-Security-Policy
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.githubusercontent.com; font-src 'self' data:; connect-src 'self' https://api.github.com https://github.com https://raw.githubusercontent.com https://*.githubusercontent.com https://unpkg.com; form-action 'self' https://github.com; frame-src 'self'
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.githubusercontent.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://github.com https://raw.githubusercontent.com https://*.githubusercontent.com https://unpkg.com; form-action 'self' https://github.com; frame-src 'self'
 
 # Long-cache the fingerprinted build assets.
 /_astro/*
