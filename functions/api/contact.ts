@@ -25,7 +25,6 @@ interface ContactEnv {
   TURNSTILE_SECRET_KEY?: string;
   TURNSTILE_ALLOWED_HOSTNAMES?: string;
   WEB3FORMS_ACCESS_KEY?: string;
-  PUBLIC_WEB3FORMS_KEY?: string;
 }
 
 interface ContactContext {
@@ -215,14 +214,8 @@ export async function onRequestPost(context: ContactContext): Promise<Response> 
   }
 
   // 2) Token is good → submit to Web3Forms with the server-held access key.
-  // Prefer the server-only name, but accept the legacy Pages runtime binding so
-  // production keeps working until the encrypted secret is renamed in Cloudflare.
-  // PUBLIC_WEB3FORMS_KEY is read ONLY as a Pages runtime binding here; it must
-  // never be referenced via import.meta.env in client code, or Astro would inline
-  // it into the public bundle. Migration: rename the Cloudflare secret to
-  // WEB3FORMS_ACCESS_KEY, then drop this fallback (and its test) to retire the
-  // misleading PUBLIC_ name.
-  const accessKey = env.WEB3FORMS_ACCESS_KEY || env.PUBLIC_WEB3FORMS_KEY;
+  // Server-only encrypted Pages secret; never expose it to the client.
+  const accessKey = env.WEB3FORMS_ACCESS_KEY;
   if (!accessKey) return json({ success: false, error: 'web3forms-not-configured' }, 500);
   // Don't trust the client for subject/from_name - they'd otherwise let a crafted
   // request inject arbitrary text into our inbox. from_name is always us; subject

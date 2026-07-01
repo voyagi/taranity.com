@@ -32,10 +32,12 @@ describe('contact form runtime wiring', () => {
   });
 
   it('does not expose the Web3Forms credential through Astro PUBLIC_ env', () => {
-    for (const path of ['.env.example', 'src/env.d.ts']) {
+    // Server-only secret named WEB3FORMS_ACCESS_KEY; the misleading PUBLIC_ name
+    // is fully retired (a PUBLIC_ build var would be inlined into the client
+    // bundle by Astro).
+    for (const path of ['.env.example', 'src/env.d.ts', 'functions/api/contact.ts']) {
       expect(read(path)).not.toContain('PUBLIC_WEB3FORMS_KEY');
     }
-    expect(read('functions/api/contact.ts')).toContain('PUBLIC_WEB3FORMS_KEY');
     expect(read('.env.example')).toContain('WEB3FORMS_ACCESS_KEY');
   });
 

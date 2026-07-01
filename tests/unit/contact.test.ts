@@ -186,15 +186,6 @@ describe('contact /api/contact', () => {
     expect(await res.json()).toMatchObject({ success: false, error: 'web3forms-not-configured' });
   });
 
-  it('supports the legacy server-side Pages binding while the secret is migrated', async () => {
-    const fetchSpy = mockUpstreams({ verify: true, submit: true });
-    const res = await onRequestPost({ request: makeReq(validFields), env: { TURNSTILE_SECRET_KEY: 'secret', PUBLIC_WEB3FORMS_KEY: 'legacy-wf' } });
-    expect(await res.json()).toEqual({ success: true });
-    const submitCall = fetchSpy.mock.calls.find(([u]) => String(u).includes('web3forms'))!;
-    const submitBody = JSON.parse(submitCall[1]!.body as string) as Record<string, string>;
-    expect(submitBody.access_key).toBe('legacy-wf');
-  });
-
   it('verifies then submits server-side, forwarding the held access key (not the client)', async () => {
     const fetchSpy = mockUpstreams({ verify: true, submit: true });
     const res = await onRequestPost({ request: makeReq(validFields, '1.2.3.4'), env: ENV });
