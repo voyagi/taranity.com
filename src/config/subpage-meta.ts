@@ -42,4 +42,9 @@ export const subpageMeta = {
     themeDark: '#0a0a0b',
     fonts: ['/fonts/jetbrains-mono-latin-700.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
   },
+  sheet: {
+    themeLight: '#f4f0e8',
+    themeDark: '#16130f',
+    fonts: ['/fonts/space-grotesk-latin-var.woff2', '/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
+  },
 } satisfies Record<string, SubpageMeta>;

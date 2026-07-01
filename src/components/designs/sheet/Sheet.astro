@@ -1,0 +1,172 @@
+---
+/**
+ * Sheet - the build-specification design. The homepage IS a document you read:
+ * a masthead, an orientation block, the invitation (the emotional spine), a
+ * framing line, then the build sheet (a ruled, ragged, filterable index of
+ * things people have described and how we would build them), an open entry, a
+ * few marginal notes, contact, and a sign-off footer. No hero, no card grid.
+ *
+ * The whole server HTML is complete and visible without JS: every entry renders,
+ * every <details> opens natively, and the filter chips are real in-page anchors.
+ * The bundled island (src/lib/sheet-filter.ts) upgrades the chips to in-place
+ * filtering; it is strictly additive. Native scroll only - no Lenis/motion
+ * runtime. Dual-mode (light default); tokens follow data-mode.
+ */
+import './sheet.css';
+import { entries, INTENTS } from './entries';
+import { contactEmail } from '../../../config/site';
+import SheetContact from './SheetContact.astro';
+import SheetFooter from './SheetFooter.astro';
+
+// The mono attribute strip is deliberately ragged: only the fields an entry
+// actually carries are rendered, in this fixed order, so the spec reads as a
+// real (uneven) document rather than a forced grid.
+const ATTR_ORDER: { key: 'describe' | 'ships' | 'honor' | 'done'; label: string }[] = [
+  { key: 'describe', label: 'they said' },
+  { key: 'ships', label: 'we ship' },
+  { key: 'honor', label: 'we honor' },
+  { key: 'done', label: 'done when' },
+];
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<div class="sheet" data-sheet>
+  <div class="sh-doc">
+    <!-- 1. Masthead: wordmark, what-we-are, persistent written-contact line. -->
+    <header class="sh-masthead">
+      <a class="sh-wordmark" href="/" aria-label="Taranity home">Taranity</a>
+      <p class="sh-masthead-what">A digital studio. We spec and build what you describe.</p>
+      <a class="sh-masthead-contact" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+    </header>
+
+    <!-- 2. Orientation: plain-noun opener, then a good-fit / not-us line. -->
+    <section class="sh-block sh-orient" aria-label="What we build and who for">
+      <p>
+        Taranity is a digital studio. We build websites, stores, apps, automation, and
+        the systems underneath them, for founders and teams who have described something
+        and been told it is too much work. It usually isn't.
+      </p>
+      <p class="sh-fit">
+        <b>Good fit:</b> you can describe the outcome, and you want it built right the
+        first time. <b>Not us:</b> you want the cheapest possible version, or a logo and
+        a brochure.
+      </p>
+    </section>
+
+    <!-- 3. The invitation: the emotional spine, the one place the accent + motion go. -->
+    <section class="sh-block sh-invite" aria-label="Tell us what to build">
+      <p class="sh-invite-lead">
+        Tell us the thing you need built. We will spec it back to you in plain terms,
+        <span class="sh-invite-free">for free</span>, whether or not you hire us.
+      </p>
+      <a class="sh-invite-action" href="#contact">
+        Describe it
+        <span class="sh-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </section>
+
+    <!-- 4. A one-line framing of the sheet below. -->
+    <section class="sh-block sh-framing" aria-label="About the sheet below">
+      <p>
+        Below are things people have described to us, and how we would actually build
+        them. It is a sample, not a menu. <b>The method is the product.</b>
+      </p>
+    </section>
+
+    <!-- 5. The build sheet: filter chips + a ruled, ragged, stacked index. -->
+    <section class="sh-block sh-buildsheet" data-sh-buildsheet aria-label="Build sheet">
+      <div class="sh-filter" role="group" aria-label="Filter entries by intent">
+        <span class="sh-filter-legend">Filter</span>
+        <!-- Chips are REAL anchors to the build sheet below: with JS off they are a
+             harmless in-page jump and every entry stays visible; the island upgrades
+             them to in-place filtering. -->
+        <a class="sh-chip" href="#build-sheet" data-sh-chip="all" aria-current="true">all</a>
+        {
+          INTENTS.map((intent) => (
+            <a class="sh-chip" href="#build-sheet" data-sh-chip={intent.id}>
+              {intent.label}
+            </a>
+          ))
+        }
+        <span class="sh-count" data-sh-count aria-live="polite">{entries.length} of {entries.length}</span>
+      </div>
+
+      <ol class="sh-entries" id="build-sheet">
+        {
+          entries.map((entry, i) => (
+            <li
+              class="sh-entry"
+              id={entry.id}
+              data-sh-entry
+              data-sh-intents={entry.intents.join(' ')}
+            >
+              <div class="sh-entry-head">
+                <span class="sh-entry-marker" aria-hidden="true">{pad(i + 1)}</span>
+                <h2 class="sh-entry-title">{entry.headline}</h2>
+              </div>
+
+              <dl class="sh-attrs">
+                {ATTR_ORDER.map(({ key, label }) =>
+                  entry[key] ? (
+                    <Fragment>
+                      <dt>{label}</dt>
+                      <dd>
+                        {key === 'done' ? <span class="sh-done">{entry[key]}</span> : entry[key]}
+                      </dd>
+                    </Fragment>
+                  ) : null,
+                )}
+              </dl>
+
+              <details class="sh-reveal">
+                <summary class="sh-reveal-summary">how we would build it</summary>
+                <div class="sh-reveal-body">
+                  <div>
+                    <p class="sh-reveal-prose">{entry.reasoning}</p>
+                  </div>
+                </div>
+              </details>
+            </li>
+          ))
+        }
+      </ol>
+
+      {/* 6. The open entry: different weight, hands to contact. */}
+      <div class="sh-open-entry">
+        <h3>Describe something that isn't here</h3>
+        <p>
+          This is a sample. Whatever you are picturing, describe it and we will spec it
+          back to you in plain terms, the same way, for free.
+        </p>
+        <a href="#contact">Describe it &rarr;</a>
+      </div>
+    </section>
+
+    <!-- 7. Marginal notes: how we work / who we are, a few short lines. -->
+    <section class="sh-block sh-notes" aria-label="How we work">
+      <div class="sh-note">
+        <span class="sh-note-label">who</span>
+        <span class="sh-note-text">A small studio in the Netherlands, working with clients worldwide.</span>
+      </div>
+      <div class="sh-note">
+        <span class="sh-note-label">how</span>
+        <span class="sh-note-text">We spec first, in writing, in plain terms. You see the plan before the build.</span>
+      </div>
+      <div class="sh-note">
+        <span class="sh-note-label">why us</span>
+        <span class="sh-note-text">The reasoning above is the portfolio. Every entry names a real decision and the failure it avoids.</span>
+      </div>
+    </section>
+
+    <!-- 8. Contact: the site's real hardened contact form, restyled to the sheet. -->
+    <SheetContact />
+  </div>
+
+  <!-- 9. Footer: written-contact sign-off, privacy, legal/GDPR line. -->
+  <SheetFooter />
+</div>
+
+<script>
+  // Bundled island: compiles to /_astro/*.js (script-src 'self'), no CSP inline hash.
+  import '../../../lib/sheet-filter';
+</script>

@@ -7,6 +7,7 @@ const contactComponents = [
   'src/components/designs/atlas/AtlasContact.astro',
   'src/components/designs/practice/PracticeContact.astro',
   'src/components/designs/raw/RawContact.astro',
+  'src/components/designs/sheet/SheetContact.astro',
   'src/components/designs/signal/SignalContact.astro',
   'src/components/designs/storefront/StorefrontContact.astro',
   'src/components/designs/vitrine/VitrineContact.astro',
@@ -19,6 +20,17 @@ describe('contact form runtime wiring', () => {
     expect(source).toContain('bindContactForm({');
     expect(source).not.toContain("fetch('/api/contact'");
     expect(source).not.toContain('window.turnstile.render(tsEl)');
+  });
+
+  it.each(contactComponents)('%s posts a subject the edge allowlist accepts', (path) => {
+    const tag = read(path).match(/<input[^>]*name="subject"[^>]*>/)?.[0];
+    expect(tag, 'subject hidden input is present').toBeTruthy();
+    const subject = tag?.match(/value="([^"]+)"/)?.[1];
+    expect(subject, 'subject input has a value').toBeTruthy();
+    // functions/api/contact.ts drops any subject not in ALLOWED_SUBJECTS to a
+    // generic label, so a new design silently loses its per-design subject
+    // unless the allowlist is updated too. This guards that drift.
+    expect(read('functions/api/contact.ts')).toContain(subject as string);
   });
 
   it('keeps token reset and production fail-closed behavior in the shared helper', () => {

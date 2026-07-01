@@ -1,0 +1,30 @@
+---
+/**
+ * Sheet (a browsable build specification), the seventh design-showcase experience.
+ * Where the other six are a hero + card grid, Sheet is a document you read: no hero,
+ * no grid, a ruled index of things people have described and how we would build them.
+ *
+ * The flagship (Vitrine) renders at "/"; this variant renders at /sheet and is served
+ * at the canonical "/" for the cookie-selected visitor by the edge middleware. Native
+ * scroll only (no `smooth`): Sheet ships no Lenis/motion runtime.
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Sheet from '../components/designs/sheet/Sheet.astro';
+---
+
+<SiteLayout
+  design="sheet"
+  canonicalPath="/"
+  noindex
+  title="Taranity · Sheet"
+  description="Taranity is a digital studio. Sheet is the same studio as a build specification: things founders and teams have described to us, and how we would actually build them. Websites, stores, apps, automation, and the systems underneath."
+  themeLight="#f4f0e8"
+  themeDark="#16130f"
+  preloadFonts={[
+    '/fonts/space-grotesk-latin-var.woff2',
+    '/fonts/inter-latin-var.woff2',
+    '/fonts/jetbrains-mono-latin-400.woff2',
+  ]}
+>
+  <Sheet />
+</SiteLayout>

@@ -1,0 +1,74 @@
+---
+/**
+ * Sign-off footer: the written-contact restated as a document sign-off, a
+ * privacy link, and the legal/GDPR line. Kept to document weight, ruled off the
+ * page above it.
+ */
+import { contactEmail } from '../../../config/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="sh-footer">
+  <p class="sh-signoff">
+    Describe it and we spec it back, in plain terms, for free.
+    <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+  </p>
+  <nav class="sh-footer-links" aria-label="More from Taranity">
+    <a href="/journal">Journal</a>
+    <a href="/privacy">Privacy</a>
+  </nav>
+  <p class="sh-legal">
+    © {year} Taranity. A studio in the Netherlands, working with clients worldwide. We
+    collect only what you send us and only to reply; you can ask us to delete it any time.
+  </p>
+</footer>
+
+<style>
+  .sh-footer {
+    margin-inline: var(--sh-pad);
+    margin-top: clamp(2rem, 6vh, 4rem);
+    padding-block: clamp(1.6rem, 5vh, 2.4rem) clamp(2rem, 6vh, 3rem);
+    border-top: 2px solid var(--sh-accent);
+  }
+  .sh-signoff {
+    max-width: 52ch;
+    margin: 0 0 1.2rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--sh-ink);
+  }
+  .sh-signoff a {
+    font-family: var(--sh-mono);
+    font-size: 0.86rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--sh-line-strong);
+    padding-bottom: 1px;
+    white-space: nowrap;
+  }
+  .sh-signoff a:hover {
+    border-color: var(--sh-accent);
+  }
+  .sh-footer-links {
+    display: flex;
+    gap: 1.4rem;
+    margin-bottom: 1.2rem;
+    font-family: var(--sh-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .sh-footer-links a {
+    color: var(--sh-muted);
+    text-decoration: none;
+  }
+  .sh-footer-links a:hover {
+    color: var(--sh-ink);
+  }
+  .sh-legal {
+    max-width: 64ch;
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: var(--sh-muted);
+  }
+</style>

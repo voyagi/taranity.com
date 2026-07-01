@@ -1,0 +1,271 @@
+---
+/**
+ * Written contact only (hard rule 1: no booking, no calls), styled as the last
+ * section of the build sheet: a plain ruled form, not a card. Runtime validation,
+ * Turnstile handling, and same-origin submission live in the shared
+ * bindContactForm() helper (identical to every other design); this component owns
+ * only the Sheet markup and labels. The Turnstile widget, the data-* hooks, and
+ * the /api/contact flow are mirrored from SignalContact so it keeps working.
+ */
+import { services, contactEmail } from '../../../config/site';
+
+const hasTurnstile = Boolean(services.turnstileSitekey);
+---
+
+<section class="sh-block sh-contact" id="contact" tabindex="-1" aria-label="Describe what to build">
+  <p class="sh-contact-eyebrow">Describe it</p>
+  <h2 class="sh-contact-title">Tell us the thing you need built.</h2>
+  <p class="sh-contact-lead">
+    Send the outcome you are after and where you are now. We read everything and reply
+    within a day, in writing, with the spec in plain terms, whether or not you hire us.
+  </p>
+  <a class="sh-contact-email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+
+  <div class="sh-form-wrap">
+    <form
+      class="sh-form"
+      data-sh-form
+      data-fallback-email={contactEmail}
+      action="/api/contact"
+      method="POST"
+      novalidate
+    >
+      <input type="hidden" name="subject" value="New enquiry via taranity.com (Sheet)" />
+      <input type="hidden" name="from_name" value="taranity.com" />
+      <!-- Honeypot -->
+      <input type="checkbox" name="botcheck" class="sh-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      {
+        !hasTurnstile && (
+          <p class="sh-demo-note">Demo mode: submissions are simulated in this preview.</p>
+        )
+      }
+
+      <div class="sh-field-row">
+        <label class="sh-field-label" for="sh-name">Name</label>
+        <input id="sh-name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="sh-err-name" />
+        <span class="sh-field-err" id="sh-err-name" data-sh-err="name" role="alert"></span>
+      </div>
+
+      <div class="sh-field-row">
+        <label class="sh-field-label" for="sh-email">Email</label>
+        <input id="sh-email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="sh-err-email" />
+        <span class="sh-field-err" id="sh-err-email" data-sh-err="email" role="alert"></span>
+      </div>
+
+      <div class="sh-field-row">
+        <label class="sh-field-label" for="sh-message">What do you need built?</label>
+        <textarea id="sh-message" name="message" rows="5" required maxlength="3000" aria-describedby="sh-err-message"></textarea>
+        <span class="sh-field-err" id="sh-err-message" data-sh-err="message" role="alert"></span>
+      </div>
+
+      {hasTurnstile && (
+        <Fragment>
+          <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+          <div class="cf-turnstile" data-sitekey={services.turnstileSitekey} data-action="turnstile-spin-v1" data-theme="auto" style="margin-bottom: 1.4rem"></div>
+        </Fragment>
+      )}
+
+      <button type="submit" class="sh-submit">
+        <span data-sh-submit-label>Send the brief</span>
+        <span class="sh-arrow" aria-hidden="true">&rarr;</span>
+      </button>
+
+      <p class="sh-form-status" data-sh-form-status role="status" aria-live="polite"></p>
+      <p class="sh-form-privacy">
+        Delivered via Web3Forms and used only to reply. No cookies, nothing sold.
+        <a href="/privacy" data-astro-reload>How your data is handled</a>.
+      </p>
+    </form>
+
+    <div class="sh-form-success" data-sh-form-success hidden tabindex="-1">
+      <h3>Got it.</h3>
+      <p>Thank you. We reply within a day, usually sooner, and always in writing.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sh-contact-eyebrow {
+    margin: 0 0 0.9rem;
+    font-family: var(--sh-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sh-accent);
+  }
+  .sh-contact-title {
+    margin: 0 0 1rem;
+    max-width: 22ch;
+    font-family: var(--sh-display);
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 560;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+  .sh-contact-lead {
+    max-width: 52ch;
+    margin: 0 0 1.4rem;
+    font-size: 1.04rem;
+    line-height: 1.7;
+    color: var(--sh-muted);
+  }
+  .sh-contact-email {
+    display: inline-block;
+    margin-bottom: clamp(1.8rem, 5vh, 2.6rem);
+    font-family: var(--sh-mono);
+    font-size: 0.9rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--sh-accent);
+    padding-bottom: 2px;
+  }
+  .sh-contact-email:hover {
+    color: var(--sh-accent);
+  }
+
+  /* The form: a plain ruled document block, capped to a humane measure. No card. */
+  .sh-form-wrap {
+    max-width: 46rem;
+    padding-top: clamp(1.4rem, 4vh, 2rem);
+    border-top: 1px solid var(--sh-line);
+  }
+  .sh-hp {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+  .sh-demo-note {
+    margin-bottom: 1.4rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--sh-accent-soft);
+    background: var(--sh-accent-soft);
+    font-family: var(--sh-mono);
+    font-size: 0.76rem;
+    color: var(--sh-accent);
+  }
+  .sh-field-row {
+    margin-bottom: 1.3rem;
+  }
+  .sh-field-row input,
+  .sh-field-row textarea {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    background: var(--sh-paper-raise);
+    border: 1px solid var(--sh-line-strong);
+    border-radius: 0;
+    font-family: var(--sh-sans);
+    font-size: 1rem;
+    color: var(--sh-ink);
+  }
+  .sh-field-row textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .sh-field-row input:focus-visible,
+  .sh-field-row textarea:focus-visible {
+    outline: 2px solid var(--sh-accent);
+    outline-offset: 1px;
+    border-color: var(--sh-accent);
+  }
+  .sh-field-row.invalid input,
+  .sh-field-row.invalid textarea {
+    border-color: var(--sh-error);
+  }
+  .sh-field-err {
+    display: block;
+    min-height: 1rem;
+    margin-top: 0.35rem;
+    font-family: var(--sh-mono);
+    font-size: 0.74rem;
+    color: var(--sh-error);
+  }
+
+  .sh-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.3rem;
+    padding: 0.75rem 1.4rem;
+    border: 0;
+    background: var(--sh-accent);
+    color: var(--sh-accent-ink);
+    font-family: var(--sh-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .sh-submit[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sh-submit {
+      transition: background-color 0.2s ease;
+    }
+    .sh-submit .sh-arrow {
+      transition: transform 0.2s ease;
+    }
+    .sh-submit:hover:not([disabled]) .sh-arrow {
+      transform: translateX(3px);
+    }
+  }
+  .sh-submit:hover:not([disabled]) {
+    background: color-mix(in srgb, var(--sh-accent) 88%, black);
+  }
+  .sh-form-status {
+    min-height: 1rem;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: var(--sh-muted);
+  }
+  .sh-form-status.is-error {
+    color: var(--sh-error);
+  }
+  .sh-form-privacy {
+    margin-top: 1.1rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--sh-muted);
+  }
+  .sh-form-privacy a {
+    color: var(--sh-ink);
+    text-underline-offset: 3px;
+  }
+
+  .sh-form-success:focus {
+    outline: none;
+  }
+  .sh-form-success h3 {
+    font-family: var(--sh-display);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 560;
+    margin: 0 0 0.6rem;
+  }
+  .sh-form-success p {
+    max-width: 42ch;
+    color: var(--sh-muted);
+    line-height: 1.7;
+  }
+  .sh-form-success[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  import { bindContactForm } from '../../../lib/contact-form';
+
+  document.addEventListener('astro:page-load', () =>
+    bindContactForm({
+      formSelector: '[data-sh-form]',
+      statusSelector: '[data-sh-form-status]',
+      submitButtonSelector: '.sh-submit',
+      submitLabelSelector: '[data-sh-submit-label]',
+      successSelector: '[data-sh-form-success]',
+      wrapperSelector: '.sh-form-wrap',
+      fieldRowSelector: '.sh-field-row',
+      errorAttr: 'data-sh-err',
+      sendingLabel: 'Sending…',
+    }),
+  );
+</script>

@@ -1,0 +1,570 @@
+/* ==========================================================================
+   Sheet - a browsable build specification. The homepage IS a document you read,
+   not a landing page: no hero, no card grid. A masthead, an orientation block,
+   an invitation, then a ruled, ragged index of things people have described and
+   how we would actually build them, then contact and a sign-off.
+
+   The look is a warm-paper technical-specification / editorial aesthetic:
+   near-black ink on warm off-white paper (light) or warm off-white ink on warm
+   dark paper (dark). ONE spot accent, a restrained proof-mark red, used ONLY as
+   an index device (entry markers, the active filter chip, the "done" tick, the
+   invitation action). No gradients, no glass, no decorative shadow.
+
+   Type is a device, not decoration: Space Grotesk for headlines/entry titles,
+   JetBrains Mono for the spec-attribute labels + values + filter chips + counts
+   (never body), Inter for the reasoning prose and orientation.
+
+   Sheet is dual-mode (designs.ts modes: ['light', 'dark'], light default):
+   tokens follow data-mode on <html> (set pre-paint by SiteLayout); the no-JS
+   prefers-color-scheme duplicate below follows the system directly. The two dark
+   token sets are pinned identical by tests/unit/sheet-css.test.ts.
+
+   Motion is native-scroll and compositor-only: the <details> expand (animating
+   grid-template-rows 0fr -> 1fr), a subtle filter re-scan on the container, and
+   the invitation action. No scroll-triggered reveals - content is fully visible
+   on load. prefers-reduced-motion: reduce disables every transition.
+   ========================================================================== */
+
+/* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
+   contain, isolation, or will-change on .sheet - Sheet has no fixed children,
+   but the base block stays clean anyway so the containment test can pin it and
+   a future fixed layer (e.g. a reading-progress rule) is never silently
+   re-pinned inside the flow. Pinned by tests/unit/sheet-css.test.ts. */
+.sheet {
+  /* light: warm off-white paper, near-black ink */
+  --sh-paper: #f4f0e8;
+  --sh-paper-raise: #fbf8f1;
+  --sh-ink: #1c1a15;
+  --sh-muted: #6b6455;
+  --sh-line: rgba(28, 26, 21, 0.16);
+  --sh-line-strong: rgba(28, 26, 21, 0.32);
+  --sh-accent: #c5341c; /* proof-mark red - the only colour, used as an index device */
+  --sh-accent-ink: #fbf8f1; /* text on a filled accent surface */
+  --sh-accent-soft: rgba(197, 52, 28, 0.1);
+  --sh-error: #b23016;
+
+  --sh-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --sh-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --sh-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  /* A real document: one main measure with a generous margin, not a full-bleed
+     canvas. --sh-measure caps the reading column; the page is padded so the
+     column sits with air around it on wide screens and hugs the edges on a
+     phone. */
+  --sh-gutter: clamp(1.25rem, 6vw, 4rem);
+  --sh-measure: 74ch;
+  --sh-pad: max(var(--sh-gutter), calc((100% - var(--sh-measure)) / 2));
+  --sh-flow: clamp(2.5rem, 7vh, 4.5rem);
+
+  background: var(--sh-paper);
+  color: var(--sh-ink);
+  font-family: var(--sh-sans);
+  /* No decorative background: the document reads on flat warm paper, and the
+     hairline rules between blocks and entries carry the spec-sheet structure.
+     (No gradient, no glass, no decorative shadow - the anti-generic contract,
+     pinned by tests/unit/sheet-css.test.ts.) */
+  overflow-x: clip;
+}
+
+/* Dark: warm dark paper, warm off-white ink. The accent lifts a touch brighter
+   so it reads as the same proof-mark red on the darker ground. Keep in sync with
+   the no-JS duplicate below - pinned by the unit test. */
+:root[data-mode='dark'] .sheet {
+  --sh-paper: #16130f;
+  --sh-paper-raise: #1f1b16;
+  --sh-ink: #efe9dd;
+  --sh-muted: #a29a88;
+  --sh-line: rgba(239, 233, 221, 0.16);
+  --sh-line-strong: rgba(239, 233, 221, 0.32);
+  --sh-accent: #e5583c;
+  --sh-accent-ink: #16130f;
+  --sh-accent-soft: rgba(229, 88, 60, 0.16);
+  --sh-error: #ff8a6a;
+}
+/* No-JS fallback: no data-mode attribute, follow the system. Must stay byte-
+   identical to the data-mode='dark' block above (unit test pins it). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode]) .sheet {
+    --sh-paper: #16130f;
+    --sh-paper-raise: #1f1b16;
+    --sh-ink: #efe9dd;
+    --sh-muted: #a29a88;
+    --sh-line: rgba(239, 233, 221, 0.16);
+    --sh-line-strong: rgba(239, 233, 221, 0.32);
+    --sh-accent: #e5583c;
+    --sh-accent-ink: #16130f;
+    --sh-accent-soft: rgba(229, 88, 60, 0.16);
+    --sh-error: #ff8a6a;
+  }
+}
+
+.sheet ::selection {
+  background: var(--sh-accent);
+  color: var(--sh-accent-ink);
+}
+
+.sheet a {
+  color: inherit;
+}
+
+/* The document column. Every block sits in this measure with the generous
+   margin; sections separate by flow space, ruled where the spec calls for it. */
+.sh-doc {
+  padding-inline: var(--sh-pad);
+  padding-block: 0 clamp(3rem, 8vh, 5rem);
+}
+.sh-block {
+  padding-block: var(--sh-flow);
+  border-top: 1px solid var(--sh-line);
+}
+.sh-block:focus {
+  outline: none;
+}
+
+/* ---- masthead (document header) ---- */
+
+.sh-masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem 1.4rem;
+  padding-block: clamp(1.4rem, 4vh, 2.2rem) clamp(1rem, 3vh, 1.6rem);
+}
+.sh-wordmark {
+  font-family: var(--sh-display);
+  font-size: clamp(1.1rem, 2.4vw, 1.35rem);
+  font-weight: 640;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+.sh-wordmark::before {
+  /* the proof-mark: a small filled square, the index device in miniature */
+  content: '';
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  margin-right: 0.5em;
+  background: var(--sh-accent);
+  vertical-align: baseline;
+}
+.sh-masthead-what {
+  flex: 1 1 20ch;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--sh-muted);
+}
+.sh-masthead-contact {
+  font-family: var(--sh-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-decoration: none;
+  border-bottom: 1px solid var(--sh-line-strong);
+  padding-bottom: 1px;
+}
+.sh-masthead-contact:hover {
+  border-color: var(--sh-accent);
+}
+
+/* ---- orientation ---- */
+
+.sh-orient p {
+  max-width: 62ch;
+  font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+  line-height: 1.72;
+  margin: 0 0 1.1rem;
+}
+.sh-orient p:last-child {
+  margin-bottom: 0;
+}
+.sh-fit {
+  font-family: var(--sh-mono);
+  font-size: 0.8rem;
+  line-height: 1.9;
+  color: var(--sh-muted);
+}
+.sh-fit b {
+  color: var(--sh-ink);
+  font-weight: 400;
+}
+
+/* ---- the invitation (the emotional spine; the one place motion + accent go) ---- */
+
+.sh-invite {
+  /* A ruled panel that steps just off the page: the accent left rule marks it
+     as the live element, the one thing on the page that is not neutral. */
+  border-top: 2px solid var(--sh-accent);
+  border-bottom: 1px solid var(--sh-line);
+  padding-block: clamp(1.8rem, 5vh, 2.8rem);
+}
+.sh-invite-lead {
+  max-width: 40ch;
+  margin: 0 0 1.6rem;
+  font-family: var(--sh-display);
+  font-size: clamp(1.5rem, 3.6vw, 2.4rem);
+  font-weight: 560;
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+}
+.sh-invite-free {
+  color: var(--sh-accent);
+}
+/* `.sheet a { color: inherit }` (line ~106) out-specifies a bare `.sh-invite-action`,
+   which made the button inherit --sh-ink (dark) on the red fill and fail contrast.
+   Scope it under .sheet a so its own light-on-accent colour wins in both modes. */
+.sheet a.sh-invite-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1.3rem;
+  background: var(--sh-accent);
+  color: var(--sh-accent-ink);
+  font-family: var(--sh-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.sh-invite-action .sh-arrow {
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sh-invite-action {
+    transition: background-color 0.2s ease;
+  }
+  .sh-invite-action .sh-arrow {
+    transition: transform 0.2s ease;
+  }
+  .sh-invite-action:hover .sh-arrow {
+    transform: translateX(3px);
+  }
+}
+.sh-invite-action:hover {
+  background: color-mix(in srgb, var(--sh-accent) 88%, black);
+}
+
+/* ---- framing line ---- */
+
+.sh-framing {
+  max-width: 60ch;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--sh-muted);
+}
+.sh-framing b {
+  color: var(--sh-ink);
+  font-weight: 500;
+}
+
+/* ---- the build sheet: filter chips + ruled ragged index ---- */
+
+.sh-filter {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.6rem;
+  padding-block: 0.9rem;
+  margin-bottom: 0.5rem;
+  background: color-mix(in srgb, var(--sh-paper) 92%, transparent);
+  border-bottom: 1px solid var(--sh-line);
+}
+/* The filter bar is sticky at the top of the list, so any in-page anchor jump (the
+   no-JS chip links, or a deep link to #<entry-id>) must clear it; without this the
+   target would land behind the sticky bar. */
+.sh-entries,
+.sh-entry {
+  scroll-margin-top: 5rem;
+}
+.sh-filter-legend {
+  font-family: var(--sh-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sh-muted);
+  margin-right: 0.3rem;
+}
+.sh-chip {
+  font-family: var(--sh-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.01em;
+  padding: 0.32rem 0.7rem;
+  border: 1px solid var(--sh-line-strong);
+  background: transparent;
+  color: var(--sh-ink);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sh-chip {
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+  }
+}
+.sh-chip:hover {
+  border-color: var(--sh-accent);
+}
+/* Active chip: the accent as an index device, set by aria-current (JS; valid on
+   the anchor chips, unlike aria-pressed). With JS off there is no active-filter
+   state: the chips are in-page anchors to the full list below, which stays wholly
+   visible, and filtering is purely a JS enhancement. */
+.sh-chip[aria-current='true'] {
+  background: var(--sh-accent);
+  border-color: var(--sh-accent);
+  color: var(--sh-accent-ink);
+}
+.sh-count {
+  margin-left: auto;
+  font-family: var(--sh-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--sh-muted);
+  white-space: nowrap;
+}
+
+/* Entries: a ruled, ragged stack. Hairline rule between each, the accent marker
+   in the left margin, density varied by content, never a tidy grid. */
+.sh-entries {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sh-entry {
+  padding-block: clamp(1.5rem, 4vh, 2.4rem);
+  border-top: 1px solid var(--sh-line);
+}
+.sh-entry:first-child {
+  border-top: 0;
+}
+/* Filtered-out entries: the island toggles [hidden]; keep the native semantics
+   too (hidden also collapses layout). aria-live count updates alongside. */
+.sh-entry[hidden] {
+  display: none;
+}
+.sh-entry-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+}
+.sh-entry-marker {
+  flex: none;
+  font-family: var(--sh-mono);
+  font-size: 0.8rem;
+  color: var(--sh-accent);
+  /* a zero-padded index number, set from the DOM order in the markup */
+}
+.sh-entry-title {
+  font-family: var(--sh-display);
+  font-size: clamp(1.25rem, 2.6vw, 1.7rem);
+  font-weight: 560;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+/* The mono attribute strip: labels + values as an aligned spec. Ragged on
+   purpose (entries omit some fields), so this is a definition list that wraps,
+   never a fixed grid. */
+.sh-attrs {
+  margin: 1rem 0 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1.1rem;
+  font-family: var(--sh-mono);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+.sh-attrs dt {
+  color: var(--sh-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  padding-top: 0.15em;
+  white-space: nowrap;
+}
+.sh-attrs dd {
+  margin: 0;
+  color: var(--sh-ink);
+}
+/* The acceptance "done" value carries the accent tick - the only place a value
+   is marked, because it is the falsifiable claim. */
+.sh-attrs .sh-done {
+  display: inline;
+}
+.sh-attrs .sh-done::before {
+  content: '\2713\00a0';
+  color: var(--sh-accent);
+}
+@media (max-width: 560px) {
+  .sh-attrs {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+  .sh-attrs dt {
+    padding-top: 0.6em;
+  }
+  .sh-attrs dt:first-of-type {
+    padding-top: 0;
+  }
+}
+
+/* The reveal: a native <details>. Closed by default; the summary is the prompt,
+   the body is the reasoning prose (Inter). Animated open by growing a CSS grid
+   row 0fr -> 1fr (compositor-cheap, and it degrades to an instant open with no
+   JS and under reduced motion). */
+.sh-reveal {
+  margin-top: 1.1rem;
+}
+.sh-reveal-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--sh-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sh-muted);
+  cursor: pointer;
+  list-style: none;
+  padding-block: 0.2rem;
+}
+.sh-reveal-summary::-webkit-details-marker {
+  display: none;
+}
+.sh-reveal-summary::before {
+  content: '+';
+  display: inline-grid;
+  place-items: center;
+  width: 1.1em;
+  height: 1.1em;
+  border: 1px solid var(--sh-line-strong);
+  color: var(--sh-accent);
+  font-size: 0.9em;
+}
+.sh-reveal[open] > .sh-reveal-summary {
+  color: var(--sh-ink);
+}
+.sh-reveal[open] > .sh-reveal-summary::before {
+  content: '\2212'; /* minus */
+  border-color: var(--sh-accent);
+}
+.sh-reveal-summary:hover {
+  color: var(--sh-ink);
+}
+/* The animated body: a grid that expands its single row from 0fr to 1fr. The
+   inner wrapper must be overflow:hidden so the collapsed row clips its content.
+   No-JS / reduced-motion: the [open] state snaps to 1fr with no transition. */
+.sh-reveal-body {
+  display: grid;
+  grid-template-rows: 0fr;
+}
+.sh-reveal[open] > .sh-reveal-body {
+  grid-template-rows: 1fr;
+}
+.sh-reveal-body > div {
+  overflow: hidden;
+  min-height: 0;
+}
+.sh-reveal-prose {
+  max-width: 64ch;
+  margin: 0.9rem 0 0;
+  font-family: var(--sh-sans);
+  font-size: 1rem;
+  line-height: 1.74;
+  color: var(--sh-ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sh-reveal-body {
+    transition: grid-template-rows 0.32s ease;
+  }
+}
+
+/* A subtle filter re-scan on the whole index when the active chip changes: the
+   island sets data-scanning for one frame, and the list dips its opacity. Purely
+   cosmetic, opacity-only, disabled under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .sh-entries {
+    transition: opacity 0.18s ease;
+  }
+  .sh-buildsheet[data-scanning] .sh-entries {
+    opacity: 0.35;
+  }
+}
+
+/* The open entry: "describe something that isn't here". Visually different
+   weight - a filled ruled block that closes the index and hands to contact. */
+.sh-open-entry {
+  margin-top: clamp(1.5rem, 4vh, 2.4rem);
+  padding: clamp(1.4rem, 4vh, 2rem);
+  border: 1px solid var(--sh-line-strong);
+  background: var(--sh-paper-raise);
+}
+.sh-open-entry h3 {
+  font-family: var(--sh-display);
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+  font-weight: 560;
+  line-height: 1.2;
+  margin: 0 0 0.7rem;
+}
+.sh-open-entry p {
+  max-width: 56ch;
+  margin: 0 0 1.1rem;
+  color: var(--sh-muted);
+  line-height: 1.7;
+}
+.sh-open-entry a {
+  font-family: var(--sh-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--sh-accent);
+  border-bottom: 1px solid var(--sh-accent);
+  padding-bottom: 1px;
+}
+
+/* ---- marginal annotations: how we work / who we are ---- */
+
+.sh-notes {
+  display: grid;
+  gap: 0.7rem;
+}
+.sh-note {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1.1rem;
+  align-items: baseline;
+  max-width: 68ch;
+}
+.sh-note-label {
+  font-family: var(--sh-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sh-accent);
+  white-space: nowrap;
+}
+.sh-note-text {
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--sh-muted);
+}
+@media (max-width: 560px) {
+  .sh-note {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}
+
+/* ---- primitives shared by contact + footer (document weight) ---- */
+
+.sh-field-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-family: var(--sh-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sh-muted);
+}
