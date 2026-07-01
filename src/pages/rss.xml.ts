@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { site } from '../config/site';
+import { site, journalDescription } from '../config/site';
 
 /**
  * /rss.xml - RSS 2.0 feed of the published journal articles, newest first.
@@ -21,7 +21,9 @@ export const GET: APIRoute = async () => {
   );
 
   const items = posts.map((p) => {
-    const url = `${base}/journal/${p.id}`;
+    // The slug comes from the content filename (CMS contributors choose it), so
+    // the URL is escaped like every other text field - nothing enters unescaped.
+    const url = escapeXml(`${base}/journal/${p.id}`);
     return [
       '    <item>',
       `      <title>${escapeXml(p.data.title)}</title>`,
@@ -44,7 +46,7 @@ export const GET: APIRoute = async () => {
     `    <title>${escapeXml(`${site.name} Journal`)}</title>`,
     `    <link>${base}/journal</link>`,
     `    <atom:link href="${base}/rss.xml" rel="self" type="application/rss+xml" />`,
-    '    <description>Long-form notes from the Taranity studio on web performance, ecommerce conversion, business automation, and building intelligent systems that last.</description>',
+    `    <description>${escapeXml(journalDescription)}</description>`,
     '    <language>en</language>',
     ...(newest ? [`    <lastBuildDate>${newest}</lastBuildDate>`] : []),
     ...items,

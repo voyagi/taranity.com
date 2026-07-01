@@ -7,7 +7,7 @@
 import { getCollection } from 'astro:content';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import VitrinePage from '../../components/designs/vitrine/VitrinePage.astro';
-import { site } from '../../config/site';
+import { site, journalDescription as description } from '../../config/site';
 import { websiteId } from '../../lib/structured-data';
 import '../../styles/journal.css';
 
@@ -15,8 +15,6 @@ const posts = (await getCollection('journal', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
 
-const description =
-  'Long-form notes from the Taranity studio on web performance, ecommerce conversion, business automation, and building intelligent systems that last.';
 const canonical = new URL('/journal', site.url).href;
 
 // The listing as a CollectionPage whose main entity is the ordered article list.

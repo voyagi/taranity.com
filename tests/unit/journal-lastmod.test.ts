@@ -1,34 +1,58 @@
-import { describe, it, expect } from 'vitest';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { describe, it, expect, afterAll } from 'vitest';
 import { journalLastmod, newestLastmod } from '../../src/lib/journal-lastmod';
 
 /**
- * The sitemap's <lastmod> source (astro.config.mjs serialize). Runs against the
- * real content directory, so it also proves the frontmatter stays parseable by
- * the fs-based reader the config uses.
+ * The sitemap's <lastmod> source (astro.config.mjs serialize). The fixture
+ * tests pin the behaviours the sitemap depends on (draft exclusion,
+ * updatedDate precedence, nested slugs); the real-corpus test proves the
+ * frontmatter of the actual articles stays parseable by the fs-based reader.
  */
-describe('journalLastmod', () => {
-  const map = journalLastmod();
+const fixtureDir = mkdtempSync(join(tmpdir(), 'journal-lastmod-'));
+writeFileSync(
+  join(fixtureDir, 'published.md'),
+  '---\ntitle: Published\npubDate: 2026-06-29\n---\nBody.\n',
+);
+writeFileSync(
+  join(fixtureDir, 'updated.md'),
+  '---\ntitle: Updated\npubDate: 2026-06-01\nupdatedDate: 2026-07-01\n---\nBody.\n',
+);
+writeFileSync(
+  join(fixtureDir, 'a-draft.md'),
+  '---\ntitle: Draft\npubDate: 2026-06-30\ndraft: true\n---\nBody.\n',
+);
+mkdirSync(join(fixtureDir, 'nested'));
+writeFileSync(
+  join(fixtureDir, 'nested', 'deep.md'),
+  '---\ntitle: Deep\npubDate: 2026-06-15\n---\nBody.\n',
+);
+afterAll(() => rmSync(fixtureDir, { recursive: true, force: true }));
 
-  it('maps every published article slug to its date', () => {
-    // One article is live today; the map grows as drip-scheduled drafts flip.
-    expect(map.size).toBeGreaterThanOrEqual(1);
-    expect(map.get('website-speed-conversions')).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+describe('journalLastmod (fixtures)', () => {
+  const map = journalLastmod(fixtureDir);
+
+  it('maps published articles, excludes drafts, and prefers updatedDate', () => {
+    expect(map.get('published')).toBe('2026-06-29');
+    expect(map.get('updated')).toBe('2026-07-01'); // updatedDate wins over pubDate
+    expect(map.has('a-draft')).toBe(false); // draft: true never gets a lastmod
   });
 
-  it('excludes drafts (they are not built, so they get no sitemap entry)', () => {
-    // These four are draft: true today; if one publishes, it may legitimately
-    // appear - the invariant tested is "size equals published count".
-    const published = map.size;
-    expect(published).toBeLessThanOrEqual(5);
+  it('walks subdirectories and derives the nested slug like the collection does', () => {
+    expect(map.get('nested/deep')).toBe('2026-06-15');
   });
 
   it('newestLastmod returns the max date and undefined for an empty map', () => {
-    const m = new Map([
-      ['a', '2026-01-05'],
-      ['b', '2026-03-01'],
-      ['c', '2026-02-10'],
-    ]);
-    expect(newestLastmod(m)).toBe('2026-03-01');
+    expect(newestLastmod(map)).toBe('2026-07-01');
     expect(newestLastmod(new Map())).toBeUndefined();
+  });
+});
+
+describe('journalLastmod (real content dir)', () => {
+  it('parses the actual corpus and includes the live article', () => {
+    const real = journalLastmod();
+    expect(real.size).toBeGreaterThanOrEqual(1);
+    expect(real.get('website-speed-conversions')).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });

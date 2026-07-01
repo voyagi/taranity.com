@@ -34,6 +34,14 @@ export const site = {
   url: env.PUBLIC_SITE_URL || 'https://taranity.com',
 } as const;
 
+/**
+ * The journal's one-line description: the /journal meta description, its
+ * CollectionPage node, and the RSS channel description all read this single
+ * constant so the copy can never drift between them.
+ */
+export const journalDescription =
+  'Long-form notes from the Taranity studio on web performance, ecommerce conversion, business automation, and building intelligent systems that last.';
+
 export const services = {
   /**
    * Cloudflare Turnstile site key (public; renders the bot-check widget).

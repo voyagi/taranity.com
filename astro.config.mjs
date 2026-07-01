@@ -46,7 +46,8 @@ export default defineConfig({
       serialize: (item) => {
         const u = new URL(item.url);
         if (u.pathname !== '/') u.pathname = u.pathname.replace(/\/$/, '');
-        const slug = u.pathname.match(/^\/journal\/([^/]+)$/)?.[1];
+        // (.+) not ([^/]+): a nested content file yields a multi-segment slug.
+        const slug = u.pathname.match(/^\/journal\/(.+)$/)?.[1];
         const lastmod =
           (slug && JOURNAL_LASTMOD.get(slug)) ||
           (u.pathname === '/journal' ? newestLastmod(JOURNAL_LASTMOD) : undefined);

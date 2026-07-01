@@ -9,19 +9,30 @@ import { join } from 'node:path';
  * real content date get one. Reads frontmatter with fs because astro:content
  * is not available inside the Astro config. Drafts are skipped (they are not
  * built, so they never appear in the sitemap).
+ *
+ * Walks subdirectories to mirror the collection's `**\/*.md` glob: a nested
+ * article's slug is its path relative to the content dir (posix separators,
+ * no extension), exactly how the content collection derives `post.id`.
  */
 export function journalLastmod(dir = 'src/content/journal'): Map<string, string> {
   const map = new Map<string, string>();
-  for (const file of readdirSync(dir)) {
-    if (!file.endsWith('.md')) continue;
-    const raw = readFileSync(join(dir, file), 'utf8');
-    const frontmatter = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
-    if (/^draft:\s*true\s*$/m.test(frontmatter)) continue;
-    const date =
-      frontmatter.match(/^updatedDate:\s*["']?(\d{4}-\d{2}-\d{2})/m)?.[1] ??
-      frontmatter.match(/^pubDate:\s*["']?(\d{4}-\d{2}-\d{2})/m)?.[1];
-    if (date) map.set(file.replace(/\.md$/, ''), date);
-  }
+  const walk = (current: string, prefix: string) => {
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        walk(join(current, entry.name), `${prefix}${entry.name}/`);
+        continue;
+      }
+      if (!entry.name.endsWith('.md')) continue;
+      const raw = readFileSync(join(current, entry.name), 'utf8');
+      const frontmatter = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
+      if (/^draft:\s*true\s*$/m.test(frontmatter)) continue;
+      const date =
+        frontmatter.match(/^updatedDate:\s*["']?(\d{4}-\d{2}-\d{2})/m)?.[1] ??
+        frontmatter.match(/^pubDate:\s*["']?(\d{4}-\d{2}-\d{2})/m)?.[1];
+      if (date) map.set(`${prefix}${entry.name.replace(/\.md$/, '')}`, date);
+    }
+  };
+  walk(dir, '');
   return map;
 }
 
