@@ -73,6 +73,17 @@ async function asset(env: Env, origin: string, path: string): Promise<Response |
   return res.status === 200 ? res : null;
 }
 
+// This route serves different HTML per `taranity-design` cookie at the same URL, so any
+// cache must key on that cookie. The Cache-Control split (private variant, revalidate-always
+// default) already stops a shared cache from serving the wrong design; Vary: Cookie is the
+// explicit belt-and-suspenders signal for any downstream/browser cache. Appends to an
+// existing Vary rather than clobbering it.
+function addVaryCookie(headers: Headers): void {
+  const existing = headers.get('Vary');
+  if (!existing) headers.set('Vary', 'Cookie');
+  else if (!/(^|,)\s*cookie\s*(,|$)/i.test(existing)) headers.set('Vary', `${existing}, Cookie`);
+}
+
 export async function onRequest(context: MiddlewareContext): Promise<Response> {
   const { request, env, next } = context;
 
@@ -92,11 +103,16 @@ export async function onRequest(context: MiddlewareContext): Promise<Response> {
     if (variant) {
       const out = new Response(variant.body, variant);
       out.headers.set('Cache-Control', 'private, max-age=0, must-revalidate');
+      addVaryCookie(out.headers);
       return out;
     }
   }
 
   // Default / Vitrine / invalid cookie / missing variant: serve the canonical asset by its
   // pretty path (not next(), whose exact-asset fallthrough can 404 a directory page).
-  return (await asset(env, url.origin, canonical)) ?? next();
+  const canonicalAsset = await asset(env, url.origin, canonical);
+  if (!canonicalAsset) return next();
+  const out = new Response(canonicalAsset.body, canonicalAsset);
+  addVaryCookie(out.headers);
+  return out;
 }
