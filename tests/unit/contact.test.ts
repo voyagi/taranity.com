@@ -221,6 +221,19 @@ describe('contact /api/contact', () => {
     expect(await res.json()).toEqual({ success: true });
   });
 
+  it('does not misread a non-JSON "unsuccessful" body as a delivered message', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      const u = String(url);
+      if (u.includes('siteverify')) {
+        return Promise.resolve(new Response(JSON.stringify({ success: true, action: 'turnstile-spin-v1', hostname: 'taranity.com' }), { status: 200 }));
+      }
+      if (u.includes('web3forms')) return Promise.resolve(new Response('<html><title>Submission was unsuccessful</title></html>', { status: 200 }));
+      return Promise.reject(new Error('unexpected'));
+    });
+    const res = await onRequestPost({ request: makeReq(validFields), env: ENV });
+    expect(await res.json()).toEqual({ success: false });
+  });
+
   it('returns success:false when Web3Forms rejects the submission', async () => {
     mockUpstreams({ verify: true, submit: false });
     const res = await onRequestPost({ request: makeReq(validFields), env: ENV });

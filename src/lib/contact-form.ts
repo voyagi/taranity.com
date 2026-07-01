@@ -1,3 +1,5 @@
+import { EMAIL_RE } from './validation';
+
 interface ContactFormOptions {
   formSelector: string;
   statusSelector: string;
@@ -13,8 +15,6 @@ interface ContactFormOptions {
   retryLabel?: string;
   demoDelayMs?: number;
 }
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
