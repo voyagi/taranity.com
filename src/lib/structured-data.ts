@@ -88,15 +88,20 @@ export function websiteLd(input: { name: string; url: string }): LdNode {
 /**
  * Wrap nodes into one connected schema.org graph. Any per-node `@context` is
  * dropped (the graph carries the single top-level context), so page nodes built
- * elsewhere as standalone blocks slot in cleanly.
+ * elsewhere as standalone blocks slot in cleanly. A node that is itself a graph
+ * (a prebuilt `{ @context, @graph: [...] }` object) is flattened into its member
+ * nodes, so a caller passing a full graph never produces a nested `@graph`.
  */
 export function toGraph(nodes: LdNode[]): LdNode {
-  return {
-    '@context': 'https://schema.org',
-    '@graph': nodes.map((node) => {
-      const copy = { ...node };
+  const members: LdNode[] = [];
+  for (const node of nodes) {
+    const inner = node['@graph'];
+    const items = Array.isArray(inner) ? (inner as LdNode[]) : [node];
+    for (const item of items) {
+      const copy = { ...item };
       delete copy['@context'];
-      return copy;
-    }),
-  };
+      members.push(copy);
+    }
+  }
+  return { '@context': 'https://schema.org', '@graph': members };
 }

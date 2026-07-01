@@ -42,4 +42,10 @@ describe('relatedPosts (Keep reading rotation)', () => {
   it('respects a custom limit', () => {
     expect(relatedPosts(posts, 0, 2)).toEqual(['b', 'c']);
   });
+
+  it('returns empty for an out-of-range index or a non-positive limit', () => {
+    expect(relatedPosts(posts, -1)).toEqual([]); // findIndex miss
+    expect(relatedPosts(posts, 0, 0)).toEqual([]);
+    expect(relatedPosts(posts, 2, -1)).toEqual([]);
+  });
 });
