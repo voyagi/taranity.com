@@ -2,7 +2,7 @@
 /// <reference types="astro/client" />
 
 interface ImportMetaEnv {
-  readonly PUBLIC_PLAUSIBLE_DOMAIN?: string;
+  readonly PUBLIC_CF_BEACON_TOKEN?: string;
   readonly PUBLIC_SITE_URL?: string;
   readonly PUBLIC_TURNSTILE_SITEKEY?: string;
 }

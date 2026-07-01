@@ -170,26 +170,18 @@ const graphLd = toGraph([
       })();
     </script>
 
-    <!-- Cookieless analytics: load at most ONE provider so two trackers never run
-         at once. Cloudflare Web Analytics (the configured default) takes precedence;
-         Plausible is the fallback if only it is set. If you switch the active
-         provider, update the privacy page disclosure to match. -->
+    <!-- Cookieless analytics (Cloudflare Web Analytics; off when the token is empty).
+         If the provider ever changes, update the privacy page disclosure and the
+         public/_headers allow-list to match. -->
     {
-      services.cfBeaconToken ? (
+      services.cfBeaconToken && (
         <script
           is:inline
           defer
           src="https://static.cloudflareinsights.com/beacon.min.js"
           data-cf-beacon={JSON.stringify({ token: services.cfBeaconToken })}
         />
-      ) : services.plausibleDomain ? (
-        <script
-          is:inline
-          defer
-          data-domain={services.plausibleDomain}
-          src="https://plausible.io/js/script.js"
-        />
-      ) : null
+      )
     }
 
     <ClientRouter />
