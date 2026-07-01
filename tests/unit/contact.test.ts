@@ -208,7 +208,7 @@ describe('contact /api/contact', () => {
     expect(submitBody.email).toBe('ada@example.com');
   });
 
-  it('treats a Web3Forms HTML success page as success (not a failure)', async () => {
+  it('fails closed on a non-JSON response, even one whose text looks successful', async () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
       const u = String(url);
       if (u.includes('siteverify')) {
@@ -218,7 +218,20 @@ describe('contact /api/contact', () => {
       return Promise.reject(new Error('unexpected'));
     });
     const res = await onRequestPost({ request: makeReq(validFields), env: ENV });
-    expect(await res.json()).toEqual({ success: true });
+    expect(await res.json()).toEqual({ success: false });
+  });
+
+  it('fails closed on a non-JSON failure page (no "unsuccessfully" substring false-positive)', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
+      const u = String(url);
+      if (u.includes('siteverify')) {
+        return Promise.resolve(new Response(JSON.stringify({ success: true, action: 'turnstile-spin-v1', hostname: 'taranity.com' }), { status: 200 }));
+      }
+      if (u.includes('web3forms')) return Promise.resolve(new Response('<html><title>Submission completed unsuccessfully</title></html>', { status: 200 }));
+      return Promise.reject(new Error('unexpected'));
+    });
+    const res = await onRequestPost({ request: makeReq(validFields), env: ENV });
+    expect(await res.json()).toEqual({ success: false });
   });
 
   it('returns success:false when Web3Forms rejects the submission', async () => {

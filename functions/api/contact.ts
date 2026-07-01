@@ -19,6 +19,8 @@
  * upstream timeout or non-2xx). Plain types: this is type-checked by astro check
  * (tsconfig includes functions/), and we avoid a @cloudflare/workers-types dep.
  */
+import { EMAIL_RE } from '../../src/lib/validation';
+
 interface ContactEnv {
   TURNSTILE_SECRET_KEY?: string;
   TURNSTILE_ALLOWED_HOSTNAMES?: string;
@@ -33,7 +35,6 @@ interface ContactContext {
 
 const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const WEB3FORMS = 'https://api.web3forms.com/submit';
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const TURNSTILE_ACTION = 'turnstile-spin-v1';
 const DEFAULT_TURNSTILE_HOSTNAMES = ['taranity.com', 'www.taranity.com'];
 const DEFAULT_TURNSTILE_HOSTNAME_SUFFIXES = ['.taranity.pages.dev'];
@@ -216,6 +217,11 @@ export async function onRequestPost(context: ContactContext): Promise<Response> 
   // 2) Token is good → submit to Web3Forms with the server-held access key.
   // Prefer the server-only name, but accept the legacy Pages runtime binding so
   // production keeps working until the encrypted secret is renamed in Cloudflare.
+  // PUBLIC_WEB3FORMS_KEY is read ONLY as a Pages runtime binding here; it must
+  // never be referenced via import.meta.env in client code, or Astro would inline
+  // it into the public bundle. Migration: rename the Cloudflare secret to
+  // WEB3FORMS_ACCESS_KEY, then drop this fallback (and its test) to retire the
+  // misleading PUBLIC_ name.
   const accessKey = env.WEB3FORMS_ACCESS_KEY || env.PUBLIC_WEB3FORMS_KEY;
   if (!accessKey) return json({ success: false, error: 'web3forms-not-configured' }, 500);
   // Don't trust the client for subject/from_name - they'd otherwise let a crafted
@@ -238,14 +244,17 @@ export async function onRequestPost(context: ContactContext): Promise<Response> 
       { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) },
       12000,
     );
-    // Trust parsed JSON when present; fall back to the 2xx status + a success
-    // marker if a non-JSON (HTML) body is ever returned, so success isn't lost.
-    const body = await sr.text();
-    let success = sr.ok;
+    // Web3Forms returns JSON for our application/json request; trust only that.
+    // A non-JSON body (an HTML error or interstitial page) is an anomaly, so fail
+    // closed rather than guessing from page text: substring matching cannot
+    // reliably tell "submitted successfully" from "submitted unsuccessfully" or
+    // "not successful", and a false "sent" is worse than a false "email us".
+    let success = false;
     try {
-      success = sr.ok && (JSON.parse(body) as { success?: boolean }).success === true;
+      const parsed = (await sr.json()) as { success?: boolean };
+      success = sr.ok && parsed.success === true;
     } catch {
-      success = sr.ok && /success/i.test(body);
+      success = false;
     }
     return json({ success });
   } catch {
