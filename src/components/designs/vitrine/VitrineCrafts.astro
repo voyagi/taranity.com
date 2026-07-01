@@ -9,84 +9,12 @@
  * overlaid text is the real content. Each plate wipes open as it enters
  * (vitrine-motion.ts).
  */
-interface Plate {
-  numeral: string;
-  title: string;
-  kicker: string;
-  line: string;
-  /** What an engagement includes, as a short stack. */
-  includes: string[];
-  /** Engraved etching depicting the craft, drawn over the gradient field. */
-  motif: 'page' | 'tag' | 'panels' | 'orbits' | 'compass' | 'constellation';
-  /** Gradient stops: a/b/e highlights and a conic sweep over a c→d base.
-      `art` is the rich dark-mode plate; `artLight` is a pale tint of the same
-      hue so the plates read as light gallery prints in light mode. */
-  art: { a: string; b: string; c: string; d: string; e: string };
-  artLight: { a: string; b: string; c: string; d: string; e: string };
-}
-
-const plates: Plate[] = [
-  {
-    numeral: 'I',
-    title: 'Websites',
-    kicker: 'Digital flagships',
-    line: 'Editorial, fast, and made to be looked at twice.',
-    includes: ['Design direction', 'Build and launch', 'Speed, SEO, accessibility'],
-    motif: 'page',
-    art: { a: '#4a3a80', b: '#2d2452', c: '#1a1430', d: '#2a2046', e: '#6e54b4' },
-    artLight: { a: '#ece4fb', b: '#ddd0f3', c: '#e3d7f7', d: '#ccbbee', e: '#c2a8ee' },
-  },
-  {
-    numeral: 'II',
-    title: 'Commerce',
-    kicker: 'Stores that sell',
-    line: 'Storefronts where the craft carries through to checkout.',
-    includes: ['Store design', 'Build and payments', 'Conversion care'],
-    motif: 'tag',
-    art: { a: '#84304e', b: '#4e1f30', c: '#271018', d: '#46202e', e: '#b04a66' },
-    artLight: { a: '#fde9ef', b: '#f8d3de', c: '#fadce5', d: '#f3c2d0', e: '#f0a6be' },
-  },
-  {
-    numeral: 'III',
-    title: 'Applications',
-    kicker: 'Products and tools',
-    line: 'Web and mobile, designed and engineered end to end.',
-    includes: ['Product design', 'Full-stack build', 'Care after launch'],
-    motif: 'panels',
-    art: { a: '#3c5a7a', b: '#243447', c: '#131c26', d: '#27384c', e: '#5a82a8' },
-    artLight: { a: '#e6f1fb', b: '#cfe2f6', c: '#d9e9f8', d: '#b8d5ef', e: '#9cc6ed' },
-  },
-  {
-    numeral: 'IV',
-    title: 'Automation',
-    kicker: 'Quiet systems',
-    line: 'The repetitive work, rebuilt to run itself.',
-    includes: ['Process mapping', 'Integrations', 'Monitoring and alerts'],
-    motif: 'orbits',
-    art: { a: '#7a5a2c', b: '#473522', c: '#241b12', d: '#42301a', e: '#a87c3c' },
-    artLight: { a: '#fdeeda', b: '#f9ddc1', c: '#fce4cb', d: '#f5cca2', e: '#f2bb8c' },
-  },
-  {
-    numeral: 'V',
-    title: 'Advisory',
-    kicker: 'A second pair of eyes',
-    line: 'Clarity before you build: honest answers, clear direction.',
-    includes: ['Audits and reviews', 'Technical direction', 'Roadmaps and estimates'],
-    motif: 'compass',
-    art: { a: '#5a6474', b: '#393f4c', c: '#1b1f26', d: '#333a46', e: '#7e8aa0' },
-    artLight: { a: '#e3f5e8', b: '#cdebd5', c: '#d7f0dd', d: '#b7e1c2', e: '#9bd4ad' },
-  },
-  {
-    numeral: 'VI',
-    title: 'Intelligent systems',
-    kicker: 'Applied with restraint',
-    line: 'AI only where it earns its place, with guardrails to match.',
-    includes: ['Use-case selection', 'Implementation', 'Evaluation and guardrails'],
-    motif: 'constellation',
-    art: { a: '#2a6a5e', b: '#1c443c', c: '#102420', d: '#1d4038', e: '#3f947f' },
-    artLight: { a: '#e0f4f3', b: '#c7e9e6', c: '#d1eeeb', d: '#aedfd9', e: '#90d0c9' },
-  },
-];
+// Each plate's editable copy (title, kicker, line, includes) comes from
+// src/data/vitrine.json via /admin; the fixed design per craft (roman numeral,
+// engraved motif, gradient palettes) and the code-owned order live in
+// src/config/vitrine.ts. `crafts` is the two merged by a stable craft id, so the
+// admin edits words only and can neither add a seventh craft nor reorder the six.
+import { crafts, craftsLabel, craftsNote } from '../../../config/vitrine';
 
 /* Etching geometry (viewBox 0 0 1600 1100, 1px engraved strokes; opacity
    lives on the <g> layers so each etching has depth). */
@@ -159,12 +87,12 @@ const arcRadii = [620, 780, 950, 1130, 1320];
 <section class="v-work" id="crafts" tabindex="-1">
   <h2 class="v-sr">What we make</h2>
   <div class="v-work-head">
-    <p class="v-label" data-v-fade>02 · What we make</p>
-    <p class="v-work-note" data-v-fade>Six crafts, one standard.</p>
+    <p class="v-label" data-v-fade>{craftsLabel}</p>
+    <p class="v-work-note" data-v-fade>{craftsNote}</p>
   </div>
 
   {
-    plates.map((p, i) => (
+    crafts.map((p, i) => (
       <article class="v-plate">
         <div
           class="v-plate-art"
@@ -349,9 +277,13 @@ const arcRadii = [620, 780, 950, 1130, 1320];
               <h3 class="v-plate-title v-serif" data-v-fade>{p.title}</h3>
               <p class="v-plate-line" data-v-fade>{p.line}</p>
             </div>
-            <ul class="v-plate-includes" data-v-fade>
-              {p.includes.map((item) => <li>{item}</li>)}
-            </ul>
+            {p.includes.length > 0 && (
+              <ul class="v-plate-includes" data-v-fade>
+                {p.includes.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </article>

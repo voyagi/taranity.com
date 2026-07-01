@@ -3,39 +3,26 @@
  * The studio, told briefly: where the habit of replacing manual work came
  * from, and the principles the work is held to. A tonal band (deeper paper /
  * lifted black) separates it from the work gallery.
+ *
+ * Copy comes from src/data/vitrine.json (editable at /admin). The story is an
+ * array of paragraphs; each keeps its own data-v-fade so it rises in on scroll.
  */
-const principles = [
-  { title: 'Outcomes over output', body: 'Every engagement carries a number it is expected to move.' },
-  { title: 'Detail is the product', body: 'Type, rhythm, and pace are not decoration. They are the brand.' },
-  { title: 'Quietly engineered', body: 'Fast on a phone, kind to a screen reader, private by default.' },
-  { title: 'Built to last', body: 'Still working, still elegant, long after the launch.' },
-];
+import { studioContent } from '../../../config/vitrine';
 ---
 
 <section class="v-studio v-tonal" id="studio" tabindex="-1">
   <h2 class="v-sr">The studio</h2>
-  <p class="v-label" data-v-fade>03 · The studio</p>
+  <p class="v-label" data-v-fade>{studioContent.label}</p>
 
   <div class="v-studio-grid">
     <div class="v-studio-story">
-      <p class="v-studio-lede v-serif" data-v-fade>Small by choice, senior by default.</p>
-      <p data-v-fade>
-        Taranity began with a small irritation: a university schedule portal so
-        slow that building a better one felt like self-defense. The habit stuck.
-        Find the part of the day that wastes human attention, and replace it
-        with something that runs on its own.
-      </p>
-      <p data-v-fade>
-        Today the studio designs and builds across the whole stack, for clients
-        anywhere in the world. Sites that read like editorials, products that
-        feel inevitable, automation that never calls in sick. The last five
-        percent gets sweated, because that is the part people feel.
-      </p>
+      <p class="v-studio-lede v-serif" data-v-fade>{studioContent.lede}</p>
+      {studioContent.story.map((para) => <p data-v-fade>{para}</p>)}
     </div>
 
     <ul class="v-principles">
       {
-        principles.map((p) => (
+        studioContent.principles.map((p) => (
           <li class="v-principle" data-v-fade>
             <h3 class="v-principle-title v-serif">{p.title}</h3>
             <p class="v-principle-body">{p.body}</p>

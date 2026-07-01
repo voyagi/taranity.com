@@ -1,0 +1,84 @@
+{
+  "hero": {
+    "kicker": "Digital studio · Working worldwide",
+    "titleLines": ["Made to be", "remembered."],
+    "sub": "Websites, stores, apps, and the quiet systems behind them, for anyone building something that deserves care. Designed and engineered end to end."
+  },
+  "manifesto": {
+    "label": "01 · The point",
+    "statementLines": [
+      "Beauty gets the first look.",
+      "Craft earns the second.",
+      "Results pay for both."
+    ],
+    "copy": "Taranity is a digital studio for clients of every size and kind: companies, studios, and individuals with one good idea, anywhere in the world. Whatever the domain, every line of type, every transition, every second of load time is treated as part of the brand.",
+    "method": [
+      { "index": "01", "name": "Listen", "line": "Every engagement starts with the problem, not the brief." },
+      { "index": "02", "name": "Distill", "line": "We cut until what remains is the point." },
+      { "index": "03", "name": "Craft", "line": "Designed and engineered under one roof, no handoffs." },
+      { "index": "04", "name": "Stay", "line": "Launch is the midpoint. We keep it running and improving." }
+    ]
+  },
+  "crafts": {
+    "label": "02 · What we make",
+    "note": "Six crafts, one standard.",
+    "items": {
+      "websites": {
+        "title": "Websites",
+        "kicker": "Digital flagships",
+        "line": "Editorial, fast, and made to be looked at twice.",
+        "includes": ["Design direction", "Build and launch", "Speed, SEO, accessibility"]
+      },
+      "commerce": {
+        "title": "Commerce",
+        "kicker": "Stores that sell",
+        "line": "Storefronts where the craft carries through to checkout.",
+        "includes": ["Store design", "Build and payments", "Conversion care"]
+      },
+      "applications": {
+        "title": "Applications",
+        "kicker": "Products and tools",
+        "line": "Web and mobile, designed and engineered end to end.",
+        "includes": ["Product design", "Full-stack build", "Care after launch"]
+      },
+      "automation": {
+        "title": "Automation",
+        "kicker": "Quiet systems",
+        "line": "The repetitive work, rebuilt to run itself.",
+        "includes": ["Process mapping", "Integrations", "Monitoring and alerts"]
+      },
+      "advisory": {
+        "title": "Advisory",
+        "kicker": "A second pair of eyes",
+        "line": "Clarity before you build: honest answers, clear direction.",
+        "includes": ["Audits and reviews", "Technical direction", "Roadmaps and estimates"]
+      },
+      "intelligentSystems": {
+        "title": "Intelligent systems",
+        "kicker": "Applied with restraint",
+        "line": "AI only where it earns its place, with guardrails to match.",
+        "includes": ["Use-case selection", "Implementation", "Evaluation and guardrails"]
+      }
+    }
+  },
+  "studio": {
+    "label": "03 · The studio",
+    "lede": "Small by choice, senior by default.",
+    "story": [
+      "Taranity began with a small irritation: a university schedule portal so slow that building a better one felt like self-defense. The habit stuck. Find the part of the day that wastes human attention, and replace it with something that runs on its own.",
+      "Today the studio designs and builds across the whole stack, for clients anywhere in the world. Sites that read like editorials, products that feel inevitable, automation that never calls in sick. The last five percent gets sweated, because that is the part people feel."
+    ],
+    "principles": [
+      { "title": "Outcomes over output", "body": "Every engagement carries a number it is expected to move." },
+      { "title": "Detail is the product", "body": "Type, rhythm, and pace are not decoration. They are the brand." },
+      { "title": "Quietly engineered", "body": "Fast on a phone, kind to a screen reader, private by default." },
+      { "title": "Built to last", "body": "Still working, still elegant, long after the launch." }
+    ]
+  },
+  "contact": {
+    "label": "04 · Contact",
+    "titleLines": ["Tell us what", "you are building."],
+    "lead": "Write a few lines about the work. We read everything and reply within a day, in writing.",
+    "location": "Working with clients worldwide"
+  }
+}
