@@ -322,9 +322,11 @@ html:not(.v-lenis) .f-progress {
   html.js .storefront [data-f-hero-rule] {
     transform: scaleX(0);
   }
-  /* Product cards wipe open left-to-right as they enter (storefront-motion.ts). */
+  /* Product cards pop onto the shelf (scale + rise + fade) as they enter
+     (storefront-motion.ts). Opacity-only gate so the tween can clear its inline
+     transform on complete and let the CSS hover-lift keep working. */
   html.js .storefront [data-f-card] {
-    clip-path: inset(0% 100% 0% 0%);
+    opacity: 0;
   }
 
   /* The warm blobs drift and the sheen breathes on slow clocks. */
