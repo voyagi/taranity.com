@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { site, services, socials, contactEmail } from '../../src/config/site';
 
 describe('site config', () => {
@@ -28,6 +28,21 @@ describe('site config', () => {
     // should still render the bot-check widget instead of falling into demo mode.
     expect(services.turnstileSitekey).toMatch(/^0x[a-zA-Z0-9]+$/);
     expect(typeof services.plausibleDomain).toBe('string');
+    // Web Analytics beacon token: empty in dev/test builds (PROD false), a public
+    // token in production builds. Assert the field exists so an accidental deletion
+    // or rename is caught by the suite.
+    expect(typeof services.cfBeaconToken).toBe('string');
+  });
+
+  it('cfBeaconToken honours the PUBLIC_CF_BEACON_TOKEN override', async () => {
+    // Verifies the env wiring end-to-end, since the hardcoded production fallback
+    // is gated behind import.meta.env.PROD and so is empty under test.
+    vi.stubEnv('PUBLIC_CF_BEACON_TOKEN', 'e2e-override-token');
+    vi.resetModules();
+    const { services: overridden } = await import('../../src/config/site');
+    expect(overridden.cfBeaconToken).toBe('e2e-override-token');
+    vi.unstubAllEnvs();
+    vi.resetModules();
   });
 
   it('has socials and a valid contact email', () => {
