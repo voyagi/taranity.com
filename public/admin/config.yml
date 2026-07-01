@@ -63,3 +63,118 @@ collections:
             fields:
               - { name: label, label: Label, widget: string }
               - { name: href, label: URL, widget: string }
+
+  - name: pages
+    label: Pages
+    files:
+      - name: vitrine
+        label: Home page (Vitrine)
+        file: src/data/vitrine.json
+        description: >-
+          Editorial copy for the flagship home page. Text only: the layout,
+          motion, and craft artwork stay in code. No em dashes; do not lead with AI.
+        fields:
+          - name: hero
+            label: Hero
+            widget: object
+            fields:
+              - { name: kicker, label: Kicker, widget: string, hint: 'Small line above the headline.' }
+              - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per line of the big headline. The last line is shown lighter.' }
+              - { name: sub, label: Sub-heading, widget: text }
+          - name: manifesto
+            label: The point
+            widget: object
+            fields:
+              - { name: label, label: Section label, widget: string, hint: 'e.g. 01 · The point' }
+              - { name: statementLines, label: Statement lines, widget: list, hint: 'One entry per line. Each rises in on scroll.' }
+              - { name: copy, label: Paragraph, widget: text }
+              - name: method
+                label: Method steps
+                widget: list
+                summary: '{{fields.name}}'
+                fields:
+                  - { name: index, label: Number, widget: string, hint: 'e.g. 01' }
+                  - { name: name, label: Name, widget: string }
+                  - { name: line, label: Description, widget: text }
+          - name: crafts
+            label: What we make
+            widget: object
+            fields:
+              - { name: label, label: Section label, widget: string, hint: 'e.g. 02 · What we make' }
+              - { name: note, label: Section note, widget: string }
+              - name: items
+                label: Crafts
+                widget: object
+                # Fixed set of six: each craft's artwork and order live in code.
+                # Edit the words only.
+                fields:
+                  - name: websites
+                    label: Websites
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string }
+                      - { name: kicker, label: Kicker, widget: string }
+                      - { name: line, label: Description, widget: text }
+                      - { name: includes, label: Includes, widget: list }
+                  - name: commerce
+                    label: Commerce
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string }
+                      - { name: kicker, label: Kicker, widget: string }
+                      - { name: line, label: Description, widget: text }
+                      - { name: includes, label: Includes, widget: list }
+                  - name: applications
+                    label: Applications
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string }
+                      - { name: kicker, label: Kicker, widget: string }
+                      - { name: line, label: Description, widget: text }
+                      - { name: includes, label: Includes, widget: list }
+                  - name: automation
+                    label: Automation
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string }
+                      - { name: kicker, label: Kicker, widget: string }
+                      - { name: line, label: Description, widget: text }
+                      - { name: includes, label: Includes, widget: list }
+                  - name: advisory
+                    label: Advisory
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string }
+                      - { name: kicker, label: Kicker, widget: string }
+                      - { name: line, label: Description, widget: text }
+                      - { name: includes, label: Includes, widget: list }
+                  - name: intelligentSystems
+                    label: Intelligent systems
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string }
+                      - { name: kicker, label: Kicker, widget: string }
+                      - { name: line, label: Description, widget: text }
+                      - { name: includes, label: Includes, widget: list }
+          - name: studio
+            label: The studio
+            widget: object
+            fields:
+              - { name: label, label: Section label, widget: string, hint: 'e.g. 03 · The studio' }
+              - { name: lede, label: Lede, widget: string }
+              - { name: story, label: Story paragraphs, widget: list, hint: 'One entry per paragraph.' }
+              - name: principles
+                label: Principles
+                widget: list
+                summary: '{{fields.title}}'
+                fields:
+                  - { name: title, label: Title, widget: string }
+                  - { name: body, label: Body, widget: text }
+          - name: contact
+            label: Contact
+            widget: object
+            fields:
+              - { name: label, label: Section label, widget: string, hint: 'e.g. 04 · Contact' }
+              - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per line.' }
+              - { name: lead, label: Lead paragraph, widget: text }
+              - { name: location, label: Location line, widget: string }

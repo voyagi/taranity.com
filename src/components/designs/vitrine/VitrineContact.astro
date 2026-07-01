@@ -6,26 +6,29 @@
  * helper; this component owns the Vitrine markup and labels.
  */
 import { services, socials, contactEmail } from '../../../config/site';
+import { contactContent } from '../../../config/vitrine';
 
 const hasTurnstile = Boolean(services.turnstileSitekey);
 ---
 
 <section class="v-contact" id="contact" tabindex="-1">
-  <p class="v-label" data-v-fade>04 · Contact</p>
+  <p class="v-label" data-v-fade>{contactContent.label}</p>
 
   <h2 class="v-contact-title v-serif" data-v-lines>
-    <span class="v-mask"><span class="v-mask-inner">Tell us what</span></span>
-    <span class="v-mask"><span class="v-mask-inner">you are building.</span></span>
+    {
+      contactContent.titleLines.map((line) => (
+        <span class="v-mask">
+          <span class="v-mask-inner">{line}</span>
+        </span>
+      ))
+    }
   </h2>
 
   <div class="v-contact-grid">
     <div class="v-contact-aside" data-v-fade>
-      <p class="v-contact-lead">
-        Write a few lines about the work. We read everything and reply within a
-        day, in writing.
-      </p>
+      <p class="v-contact-lead">{contactContent.lead}</p>
       <a class="v-contact-email v-serif" href={`mailto:${contactEmail}`}>{contactEmail}</a>
-      <p class="v-contact-loc">Working with clients worldwide</p>
+      <p class="v-contact-loc">{contactContent.location}</p>
       <ul class="v-contact-socials">
         {
           socials.map((s) => (

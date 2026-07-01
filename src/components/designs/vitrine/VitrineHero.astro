@@ -3,22 +3,31 @@
  * Full-viewport editorial opening. The statement leads with what the work is
  * for (being remembered, results), never with the tooling. Server-rendered
  * and fully visible without JS; motion only adds the entrance.
+ *
+ * Copy comes from src/data/vitrine.json (editable at /admin). Each title line
+ * becomes its own `.v-mask` so the hero timeline can rise them out one by one;
+ * the final line is set lighter (the em treatment) as the closing payoff.
  */
+import { heroContent } from '../../../config/vitrine';
 ---
 
 <section class="v-hero">
-  <p class="v-label v-hero-kicker" data-v-hero-fade>Digital studio · Working worldwide</p>
+  <p class="v-label v-hero-kicker" data-v-hero-fade>{heroContent.kicker}</p>
 
   <h1 class="v-hero-title v-serif">
-    <span class="v-mask"><span class="v-mask-inner">Made to be</span></span>
-    <span class="v-mask"><span class="v-mask-inner"><em>remembered.</em></span></span>
+    {
+      heroContent.titleLines.map((line, i) => (
+        <span class="v-mask">
+          <span class="v-mask-inner">
+            {i === heroContent.titleLines.length - 1 ? <em>{line}</em> : line}
+          </span>
+        </span>
+      ))
+    }
   </h1>
 
   <div class="v-hero-foot">
-    <p class="v-hero-sub" data-v-hero-fade>
-      Websites, stores, apps, and the quiet systems behind them, for anyone
-      building something that deserves care. Designed and engineered end to end.
-    </p>
+    <p class="v-hero-sub" data-v-hero-fade>{heroContent.sub}</p>
     <p class="v-hero-scroll" data-v-hero-fade aria-hidden="true">
       Scroll<span class="v-hero-scroll-line"></span>
     </p>

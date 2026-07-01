@@ -4,34 +4,31 @@
  * engagement runs as a numbered index. The crafts themselves live in the
  * plates section; these rows carry the method (copy deliberately does not
  * overlap the studio principles).
+ *
+ * Copy comes from src/data/vitrine.json (editable at /admin). Each statement
+ * line keeps its own `.v-mask` so the [data-v-lines] reveal can stagger them.
  */
-const method = [
-  { index: '01', name: 'Listen', line: 'Every engagement starts with the problem, not the brief.' },
-  { index: '02', name: 'Distill', line: 'We cut until what remains is the point.' },
-  { index: '03', name: 'Craft', line: 'Designed and engineered under one roof, no handoffs.' },
-  { index: '04', name: 'Stay', line: 'Launch is the midpoint. We keep it running and improving.' },
-];
+import { manifestoContent } from '../../../config/vitrine';
 ---
 
 <section class="v-manifesto">
-  <p class="v-label" data-v-fade>01 · The point</p>
+  <p class="v-label" data-v-fade>{manifestoContent.label}</p>
 
   <h2 class="v-statement v-serif" data-v-lines>
-    <span class="v-mask"><span class="v-mask-inner">Beauty gets the first look.</span></span>
-    <span class="v-mask"><span class="v-mask-inner">Craft earns the second.</span></span>
-    <span class="v-mask"><span class="v-mask-inner">Results pay for both.</span></span>
+    {
+      manifestoContent.statementLines.map((line) => (
+        <span class="v-mask">
+          <span class="v-mask-inner">{line}</span>
+        </span>
+      ))
+    }
   </h2>
 
-  <p class="v-manifesto-copy" data-v-fade>
-    Taranity is a digital studio for clients of every size and kind: companies,
-    studios, and individuals with one good idea, anywhere in the world. Whatever
-    the domain, every line of type, every transition, every second of load time
-    is treated as part of the brand.
-  </p>
+  <p class="v-manifesto-copy" data-v-fade>{manifestoContent.copy}</p>
 
   <ol class="v-capabilities">
     {
-      method.map((step) => (
+      manifestoContent.method.map((step) => (
         <li class="v-cap" data-v-fade>
           <span class="v-cap-index v-serif" aria-hidden="true">{step.index}</span>
           <h3 class="v-cap-name v-serif">{step.name}</h3>
