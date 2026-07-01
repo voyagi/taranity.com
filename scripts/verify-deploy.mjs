@@ -139,7 +139,8 @@ for (let attempt = 1; attempt <= MAX; attempt++) {
     console.error('    build command is set to "npm run build" so astro build actually runs).');
     console.error('  - analytics fail: the beacon dropped out of the build (PUBLIC_CF_BEACON_TOKEN=off');
     console.error('    set in the Pages env, or the SiteLayout wiring changed). If the beacon was');
-    console.error('    disabled ON PURPOSE, update this check in the same change.');
+    console.error('    disabled ON PURPOSE, update this check AND the privacy page Analytics');
+    console.error('    disclosure (src/components/PrivacyContent.astro) in the same change.');
     process.exit(1);
   }
 }

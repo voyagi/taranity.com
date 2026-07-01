@@ -115,11 +115,15 @@ const isBenignConsoleLine = (text, firstPartyFailures) => {
   return (
     (/Failed to load resource/i.test(t) && firstPartyFailures.length === 0) ||
     /^%c%d font-size:0;color:transparent NaN$/.test(t) ||
-    // A console error naming a benign third-party endpoint is the same best-effort
-    // noise as the network-level failures above - e.g. the CF Web Analytics RUM
-    // POST is CORS-blocked when the site is served from 127.0.0.1 instead of the
-    // real domain. Dedicated checks still cover the CSP header and script wiring.
-    isBenign(t)
+    // A NETWORK failure naming a benign third-party endpoint is best-effort noise:
+    // the CF Web Analytics RUM POST is CORS-blocked when the prod build is served
+    // from 127.0.0.1 instead of the real domain. Scoped to network/CORS phrasing on
+    // purpose - a CSP violation ("Refused to load ... Content Security Policy")
+    // must STILL fail the suite even when it names one of these endpoints, so a
+    // _headers regression that blocks the beacon or Turnstile cannot slip through.
+    (isBenign(t) &&
+      /CORS|Access to XMLHttpRequest|net::ERR_|Failed to load resource/i.test(t) &&
+      !/Content Security Policy/i.test(t))
   );
 };
 
@@ -201,15 +205,24 @@ for (const [route, label] of pages200) {
   );
   rec(`${label}: all <img> load`, badImgs.length === 0, badImgs.join(', '));
 
-  // CSP delivered as a response header; strict (no unsafe-inline in script-src).
+  // CSP delivered as a response header; strict (no unsafe-inline in script-src),
+  // and the third-party sources the site depends on must stay allow-listed - the
+  // analytics beacon (script + its RUM POST target) and Turnstile. This is the
+  // positive guard that catches a _headers edit dropping a needed source, which
+  // console-error filtering alone cannot be trusted to surface.
   const csp = (resp && resp.headers()['content-security-policy']) || '';
   const scriptSrc = (csp.match(/script-src[^;]*/) || [''])[0];
+  const connectSrc = (csp.match(/connect-src[^;]*/) || [''])[0];
   rec(
     `${label}: strict CSP header (script-src, no unsafe-inline)`,
     csp.includes('script-src') &&
       !/unsafe-inline/.test(scriptSrc) &&
       csp.includes("object-src 'none'") &&
-      csp.includes("frame-ancestors 'none'"),
+      csp.includes("frame-ancestors 'none'") &&
+      scriptSrc.includes('https://static.cloudflareinsights.com/beacon.min.js') &&
+      scriptSrc.includes('https://challenges.cloudflare.com') &&
+      connectSrc.includes('https://cloudflareinsights.com') &&
+      connectSrc.includes('https://challenges.cloudflare.com'),
     scriptSrc.slice(0, 70),
   );
 
