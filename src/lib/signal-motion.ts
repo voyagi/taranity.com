@@ -1,6 +1,6 @@
 /**
  * Motion choreography for the Signal design: Lenis scroll, masked line
- * reveals, hairline draws, card wipes, and the top scroll-progress bar.
+ * reveals, hairline draws, quick precise card scans, and the top scroll-progress bar.
  *
  * Strictly additive: the page is complete and visible without JS. The initial
  * hidden states live in signal.css behind html.js + reduced-motion gates, and
@@ -32,25 +32,26 @@ function choreography(_root: HTMLElement) {
 
   // Hero entrance: lines rise out of their masks, then the details settle in.
   gsap
-    .timeline({ defaults: { ease: 'power3.out' } })
+    // Precise, instrument-quick entrance: panels snap into place, no float.
+    .timeline({ defaults: { ease: 'power2.out' } })
     .fromTo(
       '.s-hero .s-mask-inner',
       // 120 matches the html.js gate in signal.css (line + descender pad).
       { yPercent: 120, y: 0 },
-      { yPercent: 0, y: 0, duration: 1.05, stagger: 0.12 },
+      { yPercent: 0, y: 0, duration: 0.7, stagger: 0.1 },
       0.1,
     )
     .fromTo(
       '[data-s-hero-fade]',
-      { autoAlpha: 0, y: 22 },
-      { autoAlpha: 1, y: 0, duration: 0.85, stagger: 0.1 },
-      0.45,
+      { autoAlpha: 0, y: 18 },
+      { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.08 },
+      0.4,
     )
     .fromTo(
       '[data-s-hero-rule]',
       { scaleX: 0 },
-      { scaleX: 1, duration: 1.3, ease: 'power2.inOut' },
-      0.5,
+      { scaleX: 1, duration: 0.7, ease: 'power2.inOut' },
+      0.45,
     );
 
   // Masked statements below the fold rise when their block enters.
@@ -62,9 +63,9 @@ function choreography(_root: HTMLElement) {
       {
         yPercent: 0,
         y: 0,
-        duration: 0.95,
-        stagger: 0.1,
-        ease: 'power3.out',
+        duration: 0.65,
+        stagger: 0.08,
+        ease: 'power2.out',
         scrollTrigger: { trigger: group, start: 'top 80%', once: true },
       },
     );
@@ -77,8 +78,8 @@ function choreography(_root: HTMLElement) {
     onEnter: (els) =>
       gsap.fromTo(
         els,
-        { autoAlpha: 0, y: 24 },
-        { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.08 },
+        { autoAlpha: 0, y: 16 },
+        { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.06 },
       ),
   });
 
@@ -89,24 +90,25 @@ function choreography(_root: HTMLElement) {
       { scaleX: 0 },
       {
         scaleX: 1,
-        duration: 1.2,
+        duration: 0.7,
         ease: 'power2.inOut',
         scrollTrigger: { trigger: line, start: 'top 90%', once: true },
       },
     );
   });
 
-  // Offering cards wipe open left-to-right as they enter (initial clip in
-  // signal.css; the from-pose must match that gate exactly).
+  // Offering cards scan open left-to-right as they enter - quick and precise,
+  // like a dashboard panel rendering (initial clip in signal.css; the from-pose
+  // must match that gate exactly).
   gsap.utils.toArray<HTMLElement>('[data-s-card]').forEach((card, i) => {
     gsap.fromTo(
       card,
       { clipPath: 'inset(0% 100% 0% 0%)' },
       {
         clipPath: 'inset(0% 0% 0% 0%)',
-        duration: 0.9,
-        ease: 'power4.inOut',
-        delay: (i % 3) * 0.06,
+        duration: 0.5,
+        ease: 'power2.out',
+        delay: (i % 3) * 0.05,
         scrollTrigger: { trigger: card, start: 'top 86%', once: true },
       },
     );
