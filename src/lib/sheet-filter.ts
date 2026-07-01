@@ -36,7 +36,7 @@ function matches(entry: HTMLElement, intent: string): boolean {
   return intents.includes(intent);
 }
 
-function apply(refs: Refs, intent: string, prefersReduced: boolean): void {
+function apply(refs: Refs, intent: string, prefersReduced: boolean, animate = true): void {
   let shown = 0;
   for (const entry of refs.entries) {
     const show = matches(entry, intent);
@@ -54,8 +54,9 @@ function apply(refs: Refs, intent: string, prefersReduced: boolean): void {
     else chip.removeAttribute('aria-current');
   }
 
-  // A subtle re-scan dip on the list. Skip entirely under reduced motion.
-  if (!prefersReduced) {
+  // A subtle re-scan dip on the list, only on an actual filter change (not the
+  // initial sync) and never under reduced motion.
+  if (animate && !prefersReduced) {
     refs.root.setAttribute('data-scanning', '');
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => refs.root.removeAttribute('data-scanning'));
@@ -72,8 +73,9 @@ function init(): void {
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Every entry renders server-side; the sheet opens on "all" (nothing hidden).
-  apply(refs, ALL, prefersReduced);
+  // Every entry renders server-side; the sheet opens on "all" (nothing hidden). No
+  // scan animation on this initial sync - the dip signals a filter change, not load.
+  apply(refs, ALL, prefersReduced, false);
 
   for (const chip of refs.chips) {
     chip.addEventListener('click', (e) => {

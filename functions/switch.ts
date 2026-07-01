@@ -9,7 +9,7 @@
  * `next` is resolved against our own origin and only its path+query is used, so a crafted
  * value (`//evil.com`, `https://evil`) can never turn this into an open redirect.
  */
-const READY = new Set(['vitrine', 'atlas', 'signal', 'storefront', 'practice', 'raw']);
+const READY = new Set(['vitrine', 'atlas', 'signal', 'storefront', 'practice', 'raw', 'sheet']);
 const COOKIE = 'taranity-design';
 
 interface SwitchContext {
