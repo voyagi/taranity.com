@@ -87,10 +87,12 @@ describe('practice motion gate sync', () => {
     expect(motion).toMatch(/yPercent: 120, y: 0/);
   });
 
-  it('card clip gate matches the from-pose string exactly', () => {
-    const gate = css.match(/html\.js \.practice \[data-p-card\] \{[^}]*clip-path: (inset\([^)]*\))/)?.[1];
-    expect(gate, 'card clip gate missing').toBeTruthy();
-    expect(motion).toContain(`clipPath: '${gate}'`);
+  it('card gate hides via opacity, and the tween owns the settle-in from-pose + clears transform for hover', () => {
+    // The cards settle in softly (a gentle fade + rise). An opacity-only gate lets
+    // the tween clear its inline transform on complete so the CSS :hover lift still applies.
+    expect(css).toMatch(/html\.js \.practice \[data-p-card\] \{[^}]*opacity:\s*0/);
+    expect(motion).toMatch(/autoAlpha: 0, y: 14/);
+    expect(motion).toMatch(/clearProps: 'transform'/);
   });
 
   it('hides only attributes the choreography actually animates back in', () => {
