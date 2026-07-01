@@ -21,6 +21,18 @@
   # below keep the hashed assets themselves immutable).
   Cache-Control: public, max-age=0, must-revalidate
 
+# The content admin (Sveltia CMS). The main bundle is self-hosted (script-src 'self'),
+# but Sveltia also loads its PINNED Prism syntax highlighter and its schema/version JSON
+# from unpkg, so /admin (and ONLY /admin) allows unpkg. The strict public /* CSP above is
+# unchanged and never talks to unpkg. NOTE: the admin PAGE is publicly loadable; writes
+# are gated by GitHub auth (a token with repo write), but the UI itself is not access-
+# gated. For a true owner-only gate, put Cloudflare Access in front of /admin.
+/admin/*
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.githubusercontent.com; font-src 'self' data:; connect-src 'self' https://api.github.com https://github.com https://raw.githubusercontent.com https://*.githubusercontent.com https://unpkg.com; form-action 'self' https://github.com; frame-src 'self'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
 # Long-cache the fingerprinted build assets.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable

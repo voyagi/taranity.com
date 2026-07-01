@@ -4,6 +4,7 @@
   "exclude": [
     "dist",
     "tests",
+    "public",
     "eslint.config.js",
     "**/*.config.js",
     "**/*.config.mjs",
