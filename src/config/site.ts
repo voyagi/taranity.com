@@ -13,6 +13,7 @@ import siteData from '../data/site.json';
 const env = import.meta.env;
 const PROD_TURNSTILE_SITEKEY = '0x4AAAAAADnP2Jb2wFHK9aNW';
 const turnstileOverride = env.PUBLIC_TURNSTILE_SITEKEY?.trim();
+const cfBeaconOverride = env.PUBLIC_CF_BEACON_TOKEN?.trim();
 
 export const site = {
   name: 'Taranity',
@@ -43,6 +44,20 @@ export const services = {
   turnstileSitekey: turnstileOverride === 'off' ? '' : turnstileOverride || PROD_TURNSTILE_SITEKEY,
   /** Plausible domain; empty → no analytics script injected. */
   plausibleDomain: env.PUBLIC_PLAUSIBLE_DOMAIN || '',
+  /**
+   * Cloudflare Web Analytics beacon token. PUBLIC (it ships in every page's
+   * HTML), so it is not a secret. Hardcoded so production and preview builds
+   * need no env var; PUBLIC_CF_BEACON_TOKEN overrides it, and
+   * PUBLIC_CF_BEACON_TOKEN=off disables the beacon entirely (a preview/incident
+   * kill switch, mirroring the Turnstile sentinel above). Empty in local
+   * `astro dev` (PROD false) so development traffic never pollutes the real
+   * stats. Cookieless, so no consent banner; domains allow-listed in
+   * public/_headers.
+   */
+  cfBeaconToken:
+    cfBeaconOverride === 'off'
+      ? ''
+      : cfBeaconOverride || (import.meta.env.PROD ? '5523a68463ac468ab5bbd2b4a0f214fc' : ''),
 } as const;
 
 export interface SocialLink {

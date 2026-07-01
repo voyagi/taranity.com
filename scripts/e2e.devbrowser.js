@@ -106,8 +106,10 @@ page.on('requestfailed', (req) => failedRequests.push(req.url()));
 
 // Endpoints called best-effort and handled gracefully; a failure here is not a
 // site defect. plausible.io = analytics; challenges.cloudflare.com = Turnstile
-// local-dev challenge probes, which can 401/fail DNS without breaking our UI.
-const isBenign = (u) => /plausible\.io|challenges\.cloudflare\.com/.test(u);
+// local-dev challenge probes; cloudflareinsights.com = the Cloudflare Web Analytics
+// beacon (production builds load it and POST RUM events). All can 401/fail DNS in a
+// sandboxed test run without breaking our UI.
+const isBenign = (u) => /plausible\.io|challenges\.cloudflare\.com|cloudflareinsights\.com/.test(u);
 const isBenignConsoleLine = (text, firstPartyFailures) => {
   const t = text.trim();
   return (
