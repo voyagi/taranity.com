@@ -324,9 +324,12 @@ html:not(.v-lenis) .p-progress {
   html.js .practice [data-p-hero-rule] {
     transform: scaleX(0);
   }
-  /* Service cards wipe open left-to-right as they enter (practice-motion.ts). */
+  /* Service cards settle in softly (a gentle fade + rise, like a document filed
+     into place) as they enter (practice-motion.ts). Opacity-only gate so the
+     tween can clear its inline transform on complete and the CSS hover-lift
+     keeps working. */
   html.js .practice [data-p-card] {
-    clip-path: inset(0% 100% 0% 0%);
+    opacity: 0;
   }
 
   /* The warm wash drifts and the sheen breathes on slow clocks. */

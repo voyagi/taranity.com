@@ -1,6 +1,6 @@
 /**
  * Motion choreography for the Practice design: Lenis scroll, masked line
- * reveals, hairline draws, service-card wipes, and the top scroll-progress bar.
+ * reveals, hairline draws, soft service-card settles, and the top scroll-progress bar.
  *
  * Strictly additive: the page is complete and visible without JS. The initial
  * hidden states live in practice.css behind html.js + reduced-motion gates, and
@@ -34,24 +34,26 @@ function choreography(_root: HTMLElement) {
 
   // Hero entrance: lines rise out of their masks, then the details settle in.
   gsap
-    .timeline({ defaults: { ease: 'power3.out' } })
+    // Calm, soft entrance: everything eases in gently (sine), a little unhurried -
+    // the quietest motion of the six, for a trust-led page.
+    .timeline({ defaults: { ease: 'sine.out' } })
     .fromTo(
       '.p-hero .p-mask-inner',
       // 120 matches the html.js gate in practice.css (line + descender pad).
       { yPercent: 120, y: 0 },
-      { yPercent: 0, y: 0, duration: 1.05, stagger: 0.12 },
+      { yPercent: 0, y: 0, duration: 1.1, stagger: 0.14 },
       0.1,
     )
     .fromTo(
       '[data-p-hero-fade]',
-      { autoAlpha: 0, y: 22 },
-      { autoAlpha: 1, y: 0, duration: 0.85, stagger: 0.1 },
+      { autoAlpha: 0, y: 14 },
+      { autoAlpha: 1, y: 0, duration: 1.0, stagger: 0.12 },
       0.45,
     )
     .fromTo(
       '[data-p-hero-rule]',
       { scaleX: 0 },
-      { scaleX: 1, duration: 1.3, ease: 'power2.inOut' },
+      { scaleX: 1, duration: 1.5, ease: 'sine.inOut' },
       0.5,
     );
 
@@ -64,9 +66,9 @@ function choreography(_root: HTMLElement) {
       {
         yPercent: 0,
         y: 0,
-        duration: 0.95,
-        stagger: 0.1,
-        ease: 'power3.out',
+        duration: 1.1,
+        stagger: 0.12,
+        ease: 'sine.out',
         scrollTrigger: { trigger: group, start: 'top 80%', once: true },
       },
     );
@@ -79,8 +81,8 @@ function choreography(_root: HTMLElement) {
     onEnter: (els) =>
       gsap.fromTo(
         els,
-        { autoAlpha: 0, y: 24 },
-        { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.08 },
+        { autoAlpha: 0, y: 14 },
+        { autoAlpha: 1, y: 0, duration: 0.95, ease: 'sine.out', stagger: 0.1 },
       ),
   });
 
@@ -91,24 +93,27 @@ function choreography(_root: HTMLElement) {
       { scaleX: 0 },
       {
         scaleX: 1,
-        duration: 1.2,
-        ease: 'power2.inOut',
+        duration: 1.5,
+        ease: 'sine.inOut',
         scrollTrigger: { trigger: line, start: 'top 90%', once: true },
       },
     );
   });
 
-  // Service cards wipe open left-to-right as they enter (initial clip in
-  // practice.css; the from-pose must match that gate exactly).
+  // Service cards settle in softly - a gentle fade + small rise, like a document
+  // filed into place. clearProps releases the inline transform on complete so the
+  // CSS hover-lift keeps working. Opacity + transform only, so no layout shift.
   gsap.utils.toArray<HTMLElement>('[data-p-card]').forEach((card, i) => {
     gsap.fromTo(
       card,
-      { clipPath: 'inset(0% 100% 0% 0%)' },
+      { autoAlpha: 0, y: 14 },
       {
-        clipPath: 'inset(0% 0% 0% 0%)',
-        duration: 0.9,
-        ease: 'power4.inOut',
-        delay: (i % 3) * 0.06,
+        autoAlpha: 1,
+        y: 0,
+        duration: 1.0,
+        ease: 'sine.out',
+        delay: (i % 3) * 0.08,
+        clearProps: 'transform',
         scrollTrigger: { trigger: card, start: 'top 86%', once: true },
       },
     );
