@@ -36,9 +36,11 @@ const declarations = (block: string | undefined): string[] =>
     .sort();
 
 describe('sheet registry wiring', () => {
-  it('is ready, dual-mode, and routed where the page lives', () => {
+  it('is hidden (ready:false) but kept in the registry, dual-mode, routed /sheet', () => {
+    // Sheet is retained in the registry but hidden pending a redesign; the standalone
+    // /sheet page is removed, so ready must be false (drops it from the switcher + routes).
     const sheet = getDesign('sheet');
-    expect(sheet?.ready).toBe(true);
+    expect(sheet?.ready).toBe(false);
     expect(sheet?.modes).toEqual(['light', 'dark']);
     expect(sheet?.route).toBe('/sheet');
   });
