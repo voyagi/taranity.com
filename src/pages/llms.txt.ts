@@ -26,6 +26,7 @@ export const GET: APIRoute = async () => {
     '## Journal',
     '',
     'Plain, opinionated articles on building software that lasts.',
+    `Full text of every article in one file: ${base}/llms-full.txt`,
     '',
     ...posts.map((p) => `- [${p.data.title}](${base}/journal/${p.id}): ${p.data.description}`),
     '',

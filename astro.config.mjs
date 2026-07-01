@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import { designs } from './src/config/designs';
+import { journalLastmod, newestLastmod } from './src/lib/journal-lastmod';
 
 // The per-design variant trees (/<id>, /<id>/journal, /<id>/privacy, ...) are noindex
 // alternate renderings the edge serves at the canonical URL, so they must never enter
@@ -17,6 +18,9 @@ const VARIANT_TREE = new RegExp(
     .map((d) => d.id)
     .join('|')})(/|$)`,
 );
+
+// Published-article dates for sitemap <lastmod> (see serialize below).
+const JOURNAL_LASTMOD = journalLastmod();
 
 // https://astro.build/config
 export default defineConfig({
@@ -36,10 +40,17 @@ export default defineConfig({
       // Emit slash-free URLs (except root) so the sitemap matches each page's
       // <link rel=canonical> and the site's internal links (Astro's directory
       // format would otherwise add a trailing slash the canonicals don't have).
+      // Journal URLs also get an accurate <lastmod> from the article's
+      // updatedDate/pubDate (the /journal listing gets the newest of them);
+      // other pages get none, because a made-up lastmod is worse than none.
       serialize: (item) => {
         const u = new URL(item.url);
         if (u.pathname !== '/') u.pathname = u.pathname.replace(/\/$/, '');
-        return { ...item, url: u.href };
+        const slug = u.pathname.match(/^\/journal\/([^/]+)$/)?.[1];
+        const lastmod =
+          (slug && JOURNAL_LASTMOD.get(slug)) ||
+          (u.pathname === '/journal' ? newestLastmod(JOURNAL_LASTMOD) : undefined);
+        return { ...item, url: u.href, ...(lastmod ? { lastmod } : {}) };
       },
     }),
   ],

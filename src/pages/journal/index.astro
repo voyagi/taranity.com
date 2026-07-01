@@ -7,21 +7,51 @@
 import { getCollection } from 'astro:content';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import VitrinePage from '../../components/designs/vitrine/VitrinePage.astro';
+import { site } from '../../config/site';
+import { websiteId } from '../../lib/structured-data';
 import '../../styles/journal.css';
 
 const posts = (await getCollection('journal', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
+
+const description =
+  'Long-form notes from the Taranity studio on web performance, ecommerce conversion, business automation, and building intelligent systems that last.';
+const canonical = new URL('/journal', site.url).href;
+
+// The listing as a CollectionPage whose main entity is the ordered article list.
+// Joins the layout's @graph (context stripped there), linked into the WebSite
+// entity by @id, so the index is a first-class node rather than a bare page.
+const collectionLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': canonical,
+  url: canonical,
+  name: 'Journal',
+  description,
+  inLanguage: 'en',
+  isPartOf: { '@id': websiteId(site.url) },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: posts.map((post, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: post.data.title,
+      url: new URL(`/journal/${post.id}`, site.url).href,
+    })),
+  },
+};
 ---
 
 <SiteLayout
   design="vitrine"
   canonicalPath="/journal"
   title="Journal"
-  description="Long-form notes from the Taranity studio on web performance, ecommerce conversion, business automation, and building intelligent systems that last."
+  description={description}
   themeLight="#f4f0e8"
   themeDark="#110f0c"
   preloadFonts={['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2']}
+  jsonLd={collectionLd}
 >
   <VitrinePage>
     <section class="v-page v-journal v-journal-index" tabindex="-1">

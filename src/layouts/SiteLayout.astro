@@ -140,6 +140,7 @@ const graphLd = toGraph([
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} Journal`} href="/rss.xml" />
 
     <!-- Structured data: one connected @graph (Organization, WebSite, and any page nodes) -->
     <script is:inline type="application/ld+json" set:html={JSON.stringify(graphLd).replace(/</g, '\\u003c')} />
