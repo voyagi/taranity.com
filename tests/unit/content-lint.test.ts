@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { describe, it, expect } from 'vitest';
 
@@ -36,6 +36,7 @@ const articles = collectMd(dir).map((relative) => {
     lead: field('lead'),
     kicker: field('kicker'),
     pubDate: field('pubDate'),
+    heroImage: field('heroImage'),
     faqCount: (frontmatter.match(/^[ \t]+- q:/gm) || []).length,
     keywordCount: (keywordBlock.match(/^[ \t]+-[ \t]+/gm) || []).length,
   };
@@ -68,5 +69,9 @@ describe('journal content lint (SEO fields, drafts included)', () => {
     // FAQs feed the visible FAQ + FAQPage JSON-LD; keywords feed Article LD.
     expect(a.faqCount).toBeGreaterThanOrEqual(3);
     expect(a.keywordCount).toBeGreaterThanOrEqual(3);
+    // Every article ships its own OG card, and the PNG must actually exist
+    // (regenerate with `node scripts/generate-og.mjs` after adding an article).
+    expect(a.heroImage).toBe(`/journal/${a.slug}.png`);
+    expect(existsSync(resolve(__dirname, '../../public', a.heroImage.slice(1)))).toBe(true);
   });
 });
