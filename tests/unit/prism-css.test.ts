@@ -214,4 +214,17 @@ describe('prism on-field text contrast guarantee', () => {
     expect(cssCode).toMatch(/\.pr-hero-line:nth-child\(2\)[^}]*var\(--pr-accent-text\)/);
     expect(cssCode).toMatch(/:focus-visible[^}]*var\(--pr-accent-text\)/);
   });
+
+  it('keeps on-canvas hovers decoration-only (palette hues fail 4.5:1 as text there)', () => {
+    // Cyan text over the capped field is ~3.7:1; as a DECORATION it only needs
+    // the 3:1 non-text bar. So the two on-canvas hover rules must not set a
+    // text colour at all: the signal is the underline/border, the ink stays.
+    const mastheadHover = cssCode.match(/\.pr-masthead-nav a:hover \{([^}]*)\}/)?.[1] ?? '';
+    const heroLinkHover = cssCode.match(/\.pr-hero-link:hover \{([^}]*)\}/)?.[1] ?? '';
+    expect(mastheadHover, 'masthead hover rule present').not.toBe('');
+    expect(heroLinkHover, 'hero-link hover rule present').not.toBe('');
+    for (const block of [mastheadHover, heroLinkHover]) {
+      expect(declarations(block).filter((d) => /^color\s*:/.test(d))).toEqual([]);
+    }
+  });
 });

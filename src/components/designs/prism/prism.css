@@ -178,8 +178,14 @@
   color: var(--pr-ink);
   padding-block: 0.3rem;
 }
+/* On-canvas hovers signal with a cyan DECORATION, never a cyan text colour:
+   cyan text over the capped field is ~3.7:1 (fails 4.5:1 for this size), but a
+   decoration only needs the 3:1 non-text bar, which cyan clears. */
 .pr-masthead-nav a:hover {
-  color: var(--pr-cyan);
+  text-decoration: underline;
+  text-decoration-color: var(--pr-cyan);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
 }
 
 /* ---- hero: stacked, offset poster lines ---- */
@@ -256,7 +262,7 @@
   padding-bottom: 2px;
 }
 .pr-hero-link:hover {
-  color: var(--pr-cyan);
+  /* Same rule as the masthead: the ink stays, the underline turns cyan. */
   border-color: var(--pr-cyan);
 }
 
