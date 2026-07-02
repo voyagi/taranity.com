@@ -11,6 +11,11 @@
  * image exists before it publishes - which means a draft's TITLE ships early
  * in its deployed card PNG under /journal/ (not covered by those exclusions)
  * and in this public repo. Deliberate and acceptable: titles only, no body.
+ *
+ * Rest param ([...slug]) on purpose: a nested article's id is its relative
+ * path ("sub/name"), which the recursive walkers in generate-og.mjs and the
+ * content lint both support - a single-segment [slug] route would 404 the
+ * generator on exactly those articles.
  */
 import { getCollection } from 'astro:content';
 import '../../../styles/fonts.css';
