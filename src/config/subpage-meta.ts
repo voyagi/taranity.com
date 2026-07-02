@@ -47,4 +47,9 @@ export const subpageMeta = {
     themeDark: '#16130f',
     fonts: ['/fonts/space-grotesk-latin-var.woff2', '/fonts/inter-latin-var.woff2', '/fonts/jetbrains-mono-latin-400.woff2'],
   },
+  prism: {
+    themeLight: '#14101f',
+    themeDark: '#14101f',
+    fonts: ['/fonts/instrument-serif-latin-400.woff2', '/fonts/space-grotesk-latin-var.woff2', '/fonts/inter-latin-var.woff2'],
+  },
 } satisfies Record<string, SubpageMeta>;

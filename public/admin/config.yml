@@ -191,3 +191,78 @@ collections:
               - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per line.', pattern: *no_em_dash }
               - { name: lead, label: Lead paragraph, widget: text, pattern: *no_em_dash }
               - { name: location, label: Location line, widget: string, pattern: *no_em_dash }
+
+      - name: prism
+        label: Prism page
+        file: src/data/prism.json
+        description: >-
+          Copy for the Prism design. Text only: the colour field, marquee,
+          badge, and layout stay in code. No em dashes; do not lead with AI.
+        fields:
+          - name: hero
+            label: Hero
+            widget: object
+            fields:
+              - { name: label, label: Label, widget: string, hint: 'Small line above the poster headline.', pattern: *no_em_dash }
+              - { name: titleLines, label: Headline lines, widget: list, hint: 'One entry per stacked poster line.', pattern: *no_em_dash }
+              - { name: captions, label: Captions, widget: list, hint: 'The two small scattered caption blocks.', pattern: *no_em_dash }
+              - { name: link, label: Hero link text, widget: string, hint: 'The italic in-page link to Services.', pattern: *no_em_dash }
+          - name: services
+            label: Services
+            widget: object
+            fields:
+              - { name: label, label: Section label, widget: string, pattern: *no_em_dash }
+              - name: items
+                label: Services
+                widget: object
+                # Fixed set of five: the order and numbering live in code.
+                # Edit the words only.
+                fields:
+                  - name: websites
+                    label: 01 Websites
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+                  - name: commerce
+                    label: 02 Commerce
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+                  - name: apps
+                    label: 03 Apps
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+                  - name: automation
+                    label: 04 Automation
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+                  - name: systems
+                    label: 05 Systems
+                    widget: object
+                    fields:
+                      - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+                      - { name: line, label: Description, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+          - name: approach
+            label: Approach
+            widget: object
+            fields:
+              - { name: label, label: Section label, widget: string, pattern: *no_em_dash }
+              - { name: lines, label: Manifesto lines, widget: list, hint: 'One entry per line.', pattern: *no_em_dash }
+          - name: contact
+            label: Contact
+            widget: object
+            fields:
+              - { name: eyebrow, label: Eyebrow, widget: string, pattern: *no_em_dash }
+              - { name: title, label: Headline, widget: string, pattern: *no_em_dash }
+              - { name: lead, label: Lead paragraph, widget: text, pattern: *no_em_dash }

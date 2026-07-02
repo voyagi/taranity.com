@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "label": "Taranity is a",
+    "titleLines": ["Digital", "Build", "Studio"],
+    "captions": [
+      "Websites, stores, apps, automation, and the systems underneath them.",
+      "For founders and teams told it is too much work. It usually isn't."
+    ],
+    "link": "Read how we build"
+  },
+  "services": {
+    "label": "Services",
+    "items": {
+      "websites": {
+        "title": "Websites",
+        "line": "A site that loads before they lose interest.",
+        "honor": "usable in about a second on a mid-range phone on a normal connection"
+      },
+      "commerce": {
+        "title": "Commerce",
+        "line": "A checkout that survives launch day.",
+        "honor": "under 200ms for the 95th customer at ten times normal traffic"
+      },
+      "apps": {
+        "title": "Apps",
+        "line": "Tools your team actually uses.",
+        "honor": "the same numbers as the old spreadsheet on day one, or we have not earned the switch"
+      },
+      "automation": {
+        "title": "Automation",
+        "line": "Work that runs itself while you sleep.",
+        "honor": "if a step fails, a human is told which one and why, not left to find out later"
+      },
+      "systems": {
+        "title": "Systems",
+        "line": "Two systems that finally talk. AI only where it earns its place.",
+        "honor": "one source of truth for each fact, and we can prove which"
+      }
+    }
+  },
+  "approach": {
+    "label": "Approach",
+    "lines": [
+      "We spec first, in writing, in plain terms.",
+      "You see the plan before the build.",
+      "The reasoning is the portfolio."
+    ]
+  },
+  "contact": {
+    "eyebrow": "Describe it",
+    "title": "Tell us the thing you need built.",
+    "lead": "Send the outcome you are after and where you are now. We reply within a day, in writing, whether or not you hire us."
+  }
+}

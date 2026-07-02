@@ -21,8 +21,10 @@
 // Override the host with VERIFY_BASE for previews.
 const base = (process.env.VERIFY_BASE || 'https://taranity.com').replace(/\/$/, '');
 
-// Every non-default (non-Vitrine) design. The switch must serve each one's variant in place.
-const DESIGNS = ['atlas', 'signal', 'storefront', 'practice', 'raw'];
+// Every non-default (non-Vitrine) READY design. The switch must serve each one's variant
+// in place. Kept in sync with src/config/designs.ts by tests/unit/design-registry-wiring
+// (this script cannot import the TS registry directly).
+const DESIGNS = ['atlas', 'signal', 'storefront', 'practice', 'raw', 'prism'];
 // Exactly as the in-app switcher links them: no trailing slash. Covers each design's home.
 const themeRoutes = ['/', ...DESIGNS.map((d) => `/${d}`), '/privacy'];
 // Legacy paths that must redirect to the home experience (public/_redirects).

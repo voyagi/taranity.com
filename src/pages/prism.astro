@@ -1,0 +1,26 @@
+---
+/**
+ * Prism (the living colour field), a design-showcase experience. The flagship
+ * (Vitrine) renders at "/"; the floating switcher links between them
+ * (src/config/designs.ts). Native scroll: no `smooth` prop, no Lenis.
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Prism from '../components/designs/prism/Prism.astro';
+---
+
+<SiteLayout
+  design="prism"
+  canonicalPath="/"
+  noindex
+  title="Taranity · Prism"
+  description="Taranity is a digital studio working with clients worldwide. Prism is the expressive face of the same studio: websites, stores, apps, automation, and intelligent systems, for brands that want to be felt."
+  themeLight="#14101f"
+  themeDark="#14101f"
+  preloadFonts={[
+    '/fonts/instrument-serif-latin-400.woff2',
+    '/fonts/space-grotesk-latin-var.woff2',
+    '/fonts/inter-latin-var.woff2',
+  ]}
+>
+  <Prism />
+</SiteLayout>
