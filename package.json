@@ -10,7 +10,7 @@
     "dev": "astro dev",
     "prestart": "node scripts/vendor-sveltia.mjs",
     "start": "astro dev",
-    "prebuild": "node scripts/vendor-sveltia.mjs",
+    "prebuild": "node scripts/vendor-sveltia.mjs && node scripts/check-brand-rules.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "serve:test": "node scripts/serve-headers.mjs",

@@ -9,7 +9,8 @@
 
 Build a **static Astro 6** site styled with **Tailwind v4**, animated with **GSAP +
 ScrollTrigger + SplitText** synced to **Lenis** smooth scroll. Deploy to **Cloudflare Pages** (serve `dist/`, no
-adapter). Cookieless **Plausible** analytics, **Web3Forms** for the contact form, a
+adapter). Cookieless analytics (**Plausible**; amended 2026-07 to **Cloudflare Web
+Analytics**, see the Analytics row), **Web3Forms** for the contact form, a
 **Cal.com/Calendly** booking link.
 
 The user named this stack explicitly; research confirmed it is the right one rather than just
@@ -25,7 +26,7 @@ accepting it.
 | Smooth scroll | **Lenis** | 2-3 KB, the de-facto standard (Darkroom Engineering), works with CSS `position: sticky` and GSAP pinning. Synced to GSAP's ticker so ScrollTrigger stays frame-accurate. |
 | 3D | **Three.js (WebGL), Atlas design only** | The brief listed Three.js as *optional* 3D. Most designs get their depth purely in CSS (radial glows + grain/scanline + engineered glass) to keep the JS budget lean and CWV green; the **Atlas** design ships a real Three.js WebGL scene, gated so it falls back cleanly where WebGL is unavailable. |
 | Hosting | **Cloudflare Pages** | Free unlimited bandwidth, global sub-50ms edge, first-class static Astro support. Static needs **no adapter** - Astro 6 prerenders straight to `dist/` (the v6 Cloudflare-adapter+static deploy bug is avoided by staying adapter-free). |
-| Analytics | **Plausible** | <1 KB, cookieless, no consent banner needed (GDPR-friendly for an EU audience). |
+| Analytics | **Cloudflare Web Analytics** (amended 2026-07; originally Plausible, whose cloud tier is paid-only) | ~1 KB, free, cookieless, no consent banner needed (GDPR-friendly for an EU audience). |
 | Contact | **Web3Forms** | No backend, no account; a single **public** access key as a hidden field, `fetch` POST to `api.web3forms.com/submit`. 250 free submissions/month. Keeps the site fully static. |
 | Booking | **Cal.com / Calendly link** | One-click booking without embedding heavy third-party JS; just a link/button. |
 
