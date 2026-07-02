@@ -64,7 +64,7 @@
   --pr-scrim: rgba(13, 10, 22, 0.78);
   --pr-scrim-deep: rgba(13, 10, 22, 0.9);
 
-  --pr-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --pr-serif: 'Instrument Serif', georgia, 'Times New Roman', serif;
   --pr-grotesk: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
   --pr-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
 

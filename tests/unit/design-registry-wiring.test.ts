@@ -20,6 +20,11 @@ function setMembers(source: string, name: string): string[] {
   return m ? Array.from(m[1].matchAll(/'([^']+)'/g), (x) => x[1]) : [];
 }
 
+function arrayMembers(source: string, name: string): string[] {
+  const m = source.match(new RegExp(`${name}\\s*=\\s*\\[([^\\]]*)\\]`));
+  return m ? Array.from(m[1].matchAll(/'([^']+)'/g), (x) => x[1]) : [];
+}
+
 describe('edge-function design allowlists stay in sync with the registry', () => {
   const readyIds = readyDesigns()
     .map((d) => d.id)
@@ -35,6 +40,14 @@ describe('edge-function design allowlists stay in sync with the registry', () =>
 
   it('functions/_middleware.ts VARIANT_DESIGNS = every non-default ready design', () => {
     expect(setMembers(read('functions/_middleware.ts'), 'VARIANT_DESIGNS').sort()).toEqual(
+      variantIds,
+    );
+  });
+
+  it('scripts/verify-deploy.mjs DESIGNS = every non-default ready design (deploy smoke)', () => {
+    // A design missing here still deploys, but the live smoke test never
+    // exercises its route or cookie rewrites, so a broken variant reports PASS.
+    expect(arrayMembers(read('scripts/verify-deploy.mjs'), 'DESIGNS').sort()).toEqual(
       variantIds,
     );
   });

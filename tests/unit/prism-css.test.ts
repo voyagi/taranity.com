@@ -215,16 +215,25 @@ describe('prism on-field text contrast guarantee', () => {
     expect(cssCode).toMatch(/:focus-visible[^}]*var\(--pr-accent-text\)/);
   });
 
-  it('keeps on-canvas hovers decoration-only (palette hues fail 4.5:1 as text there)', () => {
+  it('keeps link hovers decoration-only (the ink never changes colour on hover)', () => {
     // Cyan text over the capped field is ~3.7:1; as a DECORATION it only needs
-    // the 3:1 non-text bar. So the two on-canvas hover rules must not set a
-    // text colour at all: the signal is the underline/border, the ink stays.
-    const mastheadHover = cssCode.match(/\.pr-masthead-nav a:hover \{([^}]*)\}/)?.[1] ?? '';
-    const heroLinkHover = cssCode.match(/\.pr-hero-link:hover \{([^}]*)\}/)?.[1] ?? '';
-    expect(mastheadHover, 'masthead hover rule present').not.toBe('');
-    expect(heroLinkHover, 'hero-link hover rule present').not.toBe('');
-    for (const block of [mastheadHover, heroLinkHover]) {
-      expect(declarations(block).filter((d) => /^color\s*:/.test(d))).toEqual([]);
+    // the 3:1 non-text bar. Rather than per-surface math, Prism holds one rule
+    // everywhere (canvas AND scrims): a hover moves the underline/border, never
+    // the text colour. Pin every serif/label link hover, in prism.css and in
+    // the component <style> blocks alike.
+    const componentCode = stripComments(componentCss);
+    const hovers: Array<[string, string]> = [
+      ['masthead nav', cssCode.match(/\.pr-masthead-nav a:hover \{([^}]*)\}/)?.[1] ?? ''],
+      ['hero link', cssCode.match(/\.pr-hero-link:hover \{([^}]*)\}/)?.[1] ?? ''],
+      ['contact email', componentCode.match(/\.pr-contact-email:hover \{([^}]*)\}/)?.[1] ?? ''],
+      ['footer signoff', componentCode.match(/\.pr-signoff a:hover \{([^}]*)\}/)?.[1] ?? ''],
+    ];
+    for (const [label, block] of hovers) {
+      expect(block, `${label} hover rule present`).not.toBe('');
+      expect(
+        declarations(block).filter((d) => /^color\s*:/.test(d)),
+        `${label} hover must not set a text colour`,
+      ).toEqual([]);
     }
   });
 });

@@ -112,7 +112,9 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
     padding-bottom: 2px;
   }
   .pr-contact-email:hover {
-    color: var(--pr-cyan);
+    /* Decoration-only hover (site-wide Prism rule): the ink never changes, the
+       underline shifts colour instead. */
+    border-bottom-color: var(--pr-periwinkle);
   }
 
   .pr-form-wrap {
@@ -238,8 +240,11 @@ const hasTurnstile = Boolean(services.turnstileSitekey);
     text-underline-offset: 3px;
   }
 
+  /* contact-form.ts moves focus here after a successful submit: keep a visible
+     indicator so the programmatic focus target is perceivable. */
   .pr-form-success:focus {
-    outline: none;
+    outline: 2px solid var(--pr-accent-text);
+    outline-offset: 2px;
   }
   .pr-form-success h3 {
     font-family: var(--pr-serif);
