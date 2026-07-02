@@ -4,9 +4,13 @@
  * (same Vitrine language, stars, borders) carrying the article's title and
  * kicker. Rendered with the real fonts, then screenshotted to
  * public/journal/<slug>.png by scripts/generate-og.mjs, which each article's
- * `heroImage` frontmatter points at. Drafts included, so a drip-scheduled
- * article's image exists before it publishes. Noindex; robots.txt disallows
- * /og-preview and the sitemap filter excludes the whole subtree.
+ * `heroImage` frontmatter points at.
+ *
+ * This PAGE is noindex, robots-disallowed, and sitemap-excluded (the
+ * /og-preview subtree). Drafts are included so a drip-scheduled article's
+ * image exists before it publishes - which means a draft's TITLE ships early
+ * in its deployed card PNG under /journal/ (not covered by those exclusions)
+ * and in this public repo. Deliberate and acceptable: titles only, no body.
  */
 import { getCollection } from 'astro:content';
 import '../../../styles/fonts.css';
