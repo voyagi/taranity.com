@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { getDesign } from '../../src/config/designs';
+import { FIELD_MAX_LINEAR_LUMINANCE, FRAG } from '../../src/lib/prism-field';
 
 /**
  * Pins the cross-file invariants of the Prism design. Prism is dark-only and
@@ -167,5 +168,50 @@ describe('prism shader island stays an external chunk (strict CSP)', () => {
     expect(island).toMatch(/webglcontextlost/);
     // The bind guard that makes astro:page-load re-runs idempotent.
     expect(island).toMatch(/dataset\.prismBound/);
+  });
+});
+
+describe('prism on-field text contrast guarantee', () => {
+  /* Text sitting DIRECTLY on the canvas (masthead, hero, marquee) has no scrim,
+     and axe cannot sample a WebGL canvas, so this is the only automated check
+     of that contrast. It works because the shader's last colour op hard-caps
+     every pixel's linear luminance at FIELD_MAX_LINEAR_LUMINANCE (imported from
+     the island itself, one source of truth): worst-case contrast is then a
+     plain WCAG computation against that ceiling. */
+  const srgbChannel = (byte: number): number => {
+    const s = byte / 255;
+    return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  const luminance = (hex: string): number => {
+    const n = parseInt(hex.slice(1), 16);
+    return (
+      0.2126 * srgbChannel((n >> 16) & 255) +
+      0.7152 * srgbChannel((n >> 8) & 255) +
+      0.0722 * srgbChannel(n & 255)
+    );
+  };
+  const contrast = (a: number, b: number): number =>
+    (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  const token = (name: string): string => {
+    const m = css.match(new RegExp(`${name}:\\s*(#[0-9a-fA-F]{6})`));
+    expect(m, `${name} token present in prism.css`).toBeTruthy();
+    return m![1];
+  };
+
+  it('interpolates the exported ceiling into the shader source (cap actually applies)', () => {
+    expect(FRAG).toContain(FIELD_MAX_LINEAR_LUMINANCE.toFixed(4));
+  });
+
+  it('keeps the ink >= 4.5:1 and the hero accent >= 3:1 (large text) over the capped field', () => {
+    const worstField = FIELD_MAX_LINEAR_LUMINANCE;
+    expect(contrast(luminance(token('--pr-ink')), worstField)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(luminance(token('--pr-accent-text')), worstField)).toBeGreaterThanOrEqual(3);
+  });
+
+  it('keeps raw periwinkle off on-field text (it matches the shader pools at ~2:1)', () => {
+    // Periwinkle stays a scrim-side colour; the hero line and the focus outline
+    // (the two on-field uses that failed review) must use the pale accent.
+    expect(cssCode).toMatch(/\.pr-hero-line:nth-child\(2\)[^}]*var\(--pr-accent-text\)/);
+    expect(cssCode).toMatch(/:focus-visible[^}]*var\(--pr-accent-text\)/);
   });
 });

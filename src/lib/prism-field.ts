@@ -27,12 +27,19 @@ void main() {
 }
 `;
 
+/* The field's readability guarantee, shared with tests/unit/prism-css.test.ts:
+   the shader's LAST colour operation hard-caps every pixel's linear luminance
+   at this value, so worst-case WCAG contrast against the on-field text colours
+   is a computable constant, not a hope. 0.126 gives ~5.3:1 for the near-white
+   ink and >=3:1 (large text) for the pale hero accent. */
+export const FIELD_MAX_LINEAR_LUMINANCE = 0.126;
+
 /* Value-noise fbm, domain-warped twice (Quilez-style: f(p + k*f(p + k*f(p)))).
    The warp is what makes the colours FLOW into each other instead of drifting
-   as static blobs. Every highlight mix is weight-capped and a final luminance
-   soft-cap pulls the brightest pools back down, so near-white text stays
-   readable over any region of the field at any time. */
-const FRAG = `
+   as static blobs. Every highlight mix is weight-capped, a luminance soft-cap
+   shapes the brightest pools, and the hard ceiling above bounds what any pixel
+   can reach. Exported so the contrast test reads the same shader source. */
+export const FRAG = `
 precision highp float;
 uniform float uTime;
 uniform vec2 uRes;
@@ -104,6 +111,15 @@ void main() {
   float d = length(uv - 0.5) * 1.5;
   col *= 1.0 - 0.3 * smoothstep(0.45, 1.1, d);
 
+  /* HARD luminance ceiling, in LINEAR space, as the last colour op: scaling
+     the sRGB channels by k scales linear luminance by k^2.2, so the clamp is
+     exact. This is the guarantee the contrast unit test relies on. */
+  vec3 lin = pow(col, vec3(2.2));
+  float L = dot(lin, vec3(0.2126, 0.7152, 0.0722));
+  if (L > ${FIELD_MAX_LINEAR_LUMINANCE.toFixed(4)}) {
+    col *= pow(${FIELD_MAX_LINEAR_LUMINANCE.toFixed(4)} / L, 1.0 / 2.2);
+  }
+
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -171,7 +187,8 @@ function createField(root: HTMLElement): FieldHandle | null {
   const uTime = gl.getUniformLocation(program, 'uTime');
   const uRes = gl.getUniformLocation(program, 'uRes');
 
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let reducedMotion = motionQuery.matches;
 
   let raf = 0;
   let running = false;
@@ -179,14 +196,22 @@ function createField(root: HTMLElement): FieldHandle | null {
   let resizeTimer = 0;
   const started = performance.now();
 
-  const applySize = () => {
+  const applySize = (): boolean => {
     // DPR capped: the field is soft noise, so extra device pixels buy nothing
     // visible and cost fill rate on every frame.
     const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-    canvas.width = Math.round(window.innerWidth * dpr);
-    canvas.height = Math.round(window.innerHeight * dpr);
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.uniform2f(uRes, canvas.width, canvas.height);
+    // Size from the canvas rect (CSS pins the field to 100lvh): mobile URL-bar
+    // and soft-keyboard viewport changes fire 'resize' without moving the rect,
+    // and skipping them avoids reallocating the drawing buffer mid-typing.
+    const rect = canvas.getBoundingClientRect();
+    const width = Math.round(rect.width * dpr);
+    const height = Math.round(rect.height * dpr);
+    if (width === canvas.width && height === canvas.height) return false;
+    canvas.width = width;
+    canvas.height = height;
+    gl.viewport(0, 0, width, height);
+    gl.uniform2f(uRes, width, height);
+    return true;
   };
 
   const draw = (seconds: number) => {
@@ -215,13 +240,25 @@ function createField(root: HTMLElement): FieldHandle | null {
   const onResize = () => {
     clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
-      applySize();
-      if (reducedMotion) draw(STILL_TIME);
+      // applySize() is false when the rect did not change (mobile URL-bar and
+      // soft-keyboard resizes): skip the redundant still-frame redraw too.
+      if (applySize() && reducedMotion) draw(STILL_TIME);
     }, 150);
   };
   const onVisibility = () => {
     if (document.hidden) stop();
     else start();
+  };
+  // Live preference change (the OS toggle mid-visit): settle on the still
+  // frame, or start animating, without waiting for a reload.
+  const onMotionChange = () => {
+    reducedMotion = motionQuery.matches;
+    if (reducedMotion) {
+      stop();
+      draw(STILL_TIME);
+    } else {
+      start();
+    }
   };
   // A lost context cannot be drawn to: tear down and let the CSS gradient
   // fallback show through rather than leaving a stale or black canvas.
@@ -232,6 +269,7 @@ function createField(root: HTMLElement): FieldHandle | null {
 
   window.addEventListener('resize', onResize);
   document.addEventListener('visibilitychange', onVisibility);
+  motionQuery.addEventListener('change', onMotionChange);
   canvas.addEventListener('webglcontextlost', onContextLost);
 
   applySize();
@@ -250,6 +288,7 @@ function createField(root: HTMLElement): FieldHandle | null {
     clearTimeout(resizeTimer);
     window.removeEventListener('resize', onResize);
     document.removeEventListener('visibilitychange', onVisibility);
+    motionQuery.removeEventListener('change', onMotionChange);
     canvas.removeEventListener('webglcontextlost', onContextLost);
     // Release the GPU context eagerly: view-transition swaps would otherwise
     // stack live contexts until the browser starts evicting them.
@@ -274,10 +313,9 @@ function init(): void {
   active = createField(root);
 }
 
-// Bind on first load and after each client-side navigation (Astro view transitions).
-document.addEventListener('astro:page-load', init);
-
-// Nothing to export (the island self-binds), but the file must BE a module:
-// as a plain script its top-level declarations share the global scope with
-// sheet-filter.ts and `astro check` reports duplicate implementations.
-export {};
+// Bind on first load and after each client-side navigation (Astro view
+// transitions). Guarded so the module stays importable from the node test
+// environment (the contrast unit test imports the constants above).
+if (typeof document !== 'undefined') {
+  document.addEventListener('astro:page-load', init);
+}

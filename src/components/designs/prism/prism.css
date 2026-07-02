@@ -50,6 +50,11 @@
   --pr-line: rgba(244, 242, 251, 0.16);
   --pr-line-strong: rgba(244, 242, 251, 0.34);
   --pr-periwinkle: #7b7ff2;
+  /* On-FIELD text accent: periwinkle itself matches the shader's own periwinkle
+     pools (~2.2:1 when one flows behind the text), so anything readable sitting
+     directly on the canvas uses this paler tint instead: >=3:1 against the
+     field's hard luminance ceiling (see prism-field.ts + prism-css.test.ts). */
+  --pr-accent-text: #d4d0ff;
   --pr-magenta: #e86bd0;
   --pr-cyan: #66e0d6;
   --pr-green: #9fe870;
@@ -81,9 +86,10 @@
   color: inherit;
 }
 
-/* Visible keyboard focus on every interactive element, tuned to the palette. */
+/* Visible keyboard focus on every interactive element. The on-field accent tint
+   (not periwinkle) so the indicator never dissolves into a periwinkle pool. */
 .prism :focus-visible {
-  outline: 2px solid var(--pr-periwinkle);
+  outline: 2px solid var(--pr-accent-text);
   outline-offset: 3px;
 }
 
@@ -104,7 +110,14 @@
 
 .pr-field {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Largest-viewport height: a mobile URL-bar collapse or soft keyboard changes
+     the small viewport but not lvh, so the field's rect stays put and the island
+     can skip pointless drawing-buffer reallocations on those resize events. */
+  height: 100vh;
+  height: 100lvh;
   z-index: 0;
   pointer-events: none;
 }
@@ -202,7 +215,7 @@
 }
 .pr-hero-line:nth-child(2) {
   margin-left: clamp(3rem, 22vw, 18rem);
-  color: var(--pr-periwinkle);
+  color: var(--pr-accent-text);
 }
 .pr-hero-line:nth-child(3) {
   margin-left: clamp(1.2rem, 9vw, 7rem);
