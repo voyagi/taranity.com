@@ -51,9 +51,11 @@ const declarations = (block: string | undefined): string[] =>
     .sort();
 
 describe('prism registry wiring', () => {
-  it('is ready, dark-only, routed /prism', () => {
+  it('is hidden (ready:false) but kept in the registry, dark-only, routed /prism', () => {
+    // Prism is retained (shader island + tests reusable) but hidden pending its
+    // redesign; the standalone /prism page is removed, so ready must be false.
     const prism = getDesign('prism');
-    expect(prism?.ready).toBe(true);
+    expect(prism?.ready).toBe(false);
     expect(prism?.modes).toEqual(['dark']);
     expect(prism?.route).toBe('/prism');
   });
