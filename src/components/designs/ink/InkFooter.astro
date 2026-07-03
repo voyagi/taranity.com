@@ -1,0 +1,79 @@
+---
+/**
+ * Sign-off footer: the written-contact promise restated, the Journal and
+ * Privacy links, and the legal/GDPR line, ruled off the page above with a
+ * single ink line. Content mirrors SheetFooter; the clothes are Ink's.
+ */
+import { contactEmail } from '../../../config/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="ik-footer">
+  <p class="ik-signoff">
+    Describe it and we spec it back, in plain terms, for free.
+    <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+  </p>
+  <nav class="ik-footer-links" aria-label="More from Taranity">
+    <a href="/journal">Journal</a>
+    <a href="/privacy">Privacy</a>
+  </nav>
+  <p class="ik-legal">
+    © {year} Taranity. A studio in the Netherlands, working with clients worldwide. We
+    collect only what you send us and only to reply; you can ask us to delete it any time.
+  </p>
+</footer>
+
+<style>
+  .ik-footer {
+    /* Same measure as .ik-doc, restated here because the footer sits outside
+       it (full-width rule, content clear of the fixed blob on the right). */
+    padding-left: var(--ik-gutter);
+    padding-right: calc(var(--ik-gutter) + var(--ik-blob-clear));
+    max-width: 92rem;
+    margin-inline: auto;
+    margin-top: clamp(2rem, 6vh, 4rem);
+    padding-block: clamp(1.6rem, 5vh, 2.4rem) clamp(2rem, 6vh, 3rem);
+    border-top: 1.5px solid var(--ik-ink);
+  }
+  .ik-signoff {
+    max-width: 52ch;
+    margin: 0 0 1.2rem;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .ik-signoff a {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 4px;
+    white-space: nowrap;
+  }
+  .ik-signoff a:hover {
+    text-decoration-thickness: 3px;
+  }
+  .ik-footer-links {
+    display: flex;
+    gap: 1.4rem;
+    margin-bottom: 1.2rem;
+    font-family: var(--ik-grotesk);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .ik-footer-links a {
+    color: var(--ik-grey);
+    text-decoration: none;
+  }
+  .ik-footer-links a:hover {
+    color: var(--ik-ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .ik-legal {
+    max-width: 64ch;
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: var(--ik-grey);
+  }
+</style>

@@ -267,6 +267,75 @@ collections:
               - { name: title, label: Headline, widget: string, pattern: *no_em_dash }
               - { name: lead, label: Lead paragraph, widget: text, pattern: *no_em_dash }
 
+      - name: ink
+        label: Ink page
+        file: src/data/ink.json
+        description: >-
+          Copy for the Ink design. Text only: the drawings, layout, and the
+          rotating word list stay in code. No em dashes; do not lead with AI.
+        fields:
+          - name: hero
+            label: Hero
+            widget: object
+            fields:
+              - { name: tagLead, label: Top-right note (start), widget: string, pattern: *no_em_dash }
+              - { name: tagStrong, label: Top-right note (bold end), widget: string, pattern: *no_em_dash }
+              - { name: kicker, label: Kicker above the word, widget: string, pattern: *no_em_dash }
+          - name: services
+            label: Services
+            widget: object
+            fields:
+              - { name: kicker, label: Section kicker, widget: string, pattern: *no_em_dash }
+              - name: items
+                label: Services
+                widget: object
+                # Fixed set of five (one per hero word): order and headings live in
+                # code. Edit the words only.
+                fields:
+                  - name: websites
+                    label: Websites
+                    widget: object
+                    fields:
+                      - { name: paragraph, label: Paragraph, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+                  - name: stores
+                    label: Stores
+                    widget: object
+                    fields:
+                      - { name: paragraph, label: Paragraph, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+                  - name: apps
+                    label: Apps
+                    widget: object
+                    fields:
+                      - { name: paragraph, label: Paragraph, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+                  - name: automation
+                    label: Automation
+                    widget: object
+                    fields:
+                      - { name: paragraph, label: Paragraph, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+                  - name: systems
+                    label: Systems
+                    widget: object
+                    fields:
+                      - { name: paragraph, label: Paragraph, widget: text, pattern: *no_em_dash }
+                      - { name: honor, label: We honor, widget: text, pattern: *no_em_dash }
+          - name: approach
+            label: Approach
+            widget: object
+            fields:
+              - { name: kicker, label: Kicker, widget: string, pattern: *no_em_dash }
+              - { name: paragraph, label: Paragraph, widget: text, pattern: *no_em_dash }
+          - name: contact
+            label: Contact
+            widget: object
+            fields:
+              - { name: eyebrow, label: Eyebrow, widget: string, pattern: *no_em_dash }
+              - { name: title, label: Headline, widget: string, pattern: *no_em_dash }
+              - { name: lead, label: Lead paragraph, widget: text, pattern: *no_em_dash }
+
       - name: privacy
         label: Privacy page
         file: src/data/privacy.json
