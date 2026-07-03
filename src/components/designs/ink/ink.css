@@ -330,6 +330,12 @@ html.ik-menu-open {
   /* In-page anchors (#websites...) must land clear of the viewport edge. */
   scroll-margin-top: 1.5rem;
 }
+/* Jump/menu links move focus to their target (tabindex="-1"); suppress the ring
+   on these large landmark sections, matching the contact section's treatment. */
+.ik-section:focus,
+.ik-jump:focus {
+  outline: none;
+}
 .ik-vignette {
   width: 100%;
   max-width: 380px;

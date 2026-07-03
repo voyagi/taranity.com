@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { getDesign } from '../../src/config/designs';
 import { HERO_WORDS } from '../../src/lib/ink-hero';
+import { services as inkServices } from '../../src/config/ink';
 
 /**
  * Pins the cross-file invariants of the Ink design. Ink is a literal clone of
@@ -161,5 +162,27 @@ describe('ink hero + menu a11y contract', () => {
     expect(menuButton, 'menu button present').not.toBe('');
     expect(menuButton).toMatch(/aria-expanded="false"/);
     expect(shell).toMatch(/data-ik-menu[^>]*role="dialog"/);
+  });
+});
+
+describe('ink service order + jump-target focus (no positional drift)', () => {
+  it('config services match the five hero words in order (id and title)', () => {
+    // Ink.astro looks services up by id, so this pins the derived order to the
+    // hero words: a HERO_WORDS reorder that broke a section would fail here.
+    expect(inkServices.map((s) => s.id)).toEqual(HERO_WORDS.map((w) => w.toLowerCase()));
+    expect(inkServices.map((s) => s.title)).toEqual([...HERO_WORDS]);
+  });
+
+  it('every jump-target section is focusable so a jump lands focus (tabindex -1)', () => {
+    for (const word of HERO_WORDS) {
+      expect(shell, `#${word.toLowerCase()} focusable`).toMatch(
+        new RegExp(`<section[^>]*id="${word.toLowerCase()}"[^>]*tabindex="-1"`),
+      );
+    }
+    expect(shell, '#approach focusable').toMatch(/<section[^>]*id="approach"[^>]*tabindex="-1"/);
+  });
+
+  it('the menu makes background content inert (aria-modal dialog hygiene)', () => {
+    expect(readRel('src/lib/ink-hero.ts')).toMatch(/setAttribute\('inert'/);
   });
 });

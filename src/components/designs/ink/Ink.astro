@@ -29,8 +29,19 @@ import InkFooter from './InkFooter.astro';
 const srSentence = HERO_WORDS.map((w, i) => (i === 0 ? w : w.toLowerCase())).join(', ') + '.';
 const firstWord = HERO_WORDS[0];
 
-// The loader guarantees this exact code-owned order (derived from HERO_WORDS).
-const [websites, stores, apps, automation, systems] = services;
+// Look each section's copy up by its own id, not by position, so a future
+// reorder of HERO_WORDS can never bind a section to the wrong service's copy.
+const byId = new Map(services.map((s) => [s.id, s]));
+const need = (id: string) => {
+  const s = byId.get(id);
+  if (!s) throw new Error(`ink: services is missing "${id}" (HERO_WORDS drift?).`);
+  return s;
+};
+const websites = need('websites');
+const stores = need('stores');
+const apps = need('apps');
+const automation = need('automation');
+const systems = need('systems');
 ---
 
 <div class="ink" data-ink>
@@ -87,13 +98,13 @@ const [websites, stores, apps, automation, systems] = services;
   <div class="ik-doc">
     <!-- 2. Jump-ahead, hellomonday-services-style. Also the menu's "Services"
          anchor target. -->
-    <nav class="ik-jump" id="services" aria-label="Jump to a service">
+    <nav class="ik-jump" id="services" aria-label="Jump to a service" tabindex="-1">
       <span class="ik-jump-label">Jump ahead:</span>
       {services.map((service) => <a href={`#${service.id}`}>{service.title}</a>)}
     </nav>
 
     <!-- 3a. Websites: figure resting a hand on a big standing browser frame. -->
-    <section class="ik-section" id="websites">
+    <section class="ik-section" id="websites" tabindex="-1">
       <div class="ik-vignette">
         <svg viewBox="0 0 460 470" fill="none" aria-hidden="true">
           <rect x="64" y="186" width="196" height="204" fill="#fff" stroke="#111" stroke-width="3"></rect>
@@ -132,7 +143,7 @@ const [websites, stores, apps, automation, systems] = services;
     </section>
 
     <!-- 3b. Stores: figure waving beside a small shop with a scalloped awning. -->
-    <section class="ik-section" id="stores">
+    <section class="ik-section" id="stores" tabindex="-1">
       <div class="ik-vignette">
         <svg viewBox="0 0 460 470" fill="none" aria-hidden="true">
           <rect x="56" y="206" width="172" height="184" fill="#fff" stroke="#111" stroke-width="3"></rect>
@@ -173,7 +184,7 @@ const [websites, stores, apps, automation, systems] = services;
     </section>
 
     <!-- 3c. Apps: figure holding up a phone that just pinged. -->
-    <section class="ik-section" id="apps">
+    <section class="ik-section" id="apps" tabindex="-1">
       <div class="ik-vignette">
         <svg viewBox="0 0 460 470" fill="none" aria-hidden="true">
           <rect x="286" y="88" width="46" height="78" rx="8" fill="#fff" stroke="#111" stroke-width="3"></rect>
@@ -209,7 +220,7 @@ const [websites, stores, apps, automation, systems] = services;
     </section>
 
     <!-- 3d. Automation: figure turning a big valve gear on a standpipe. -->
-    <section class="ik-section" id="automation">
+    <section class="ik-section" id="automation" tabindex="-1">
       <div class="ik-vignette">
         <svg viewBox="0 0 460 470" fill="none" aria-hidden="true">
           <path d="M138 398 L138 246 M154 398 L154 246" stroke="#111" stroke-width="3"></path>
@@ -247,7 +258,7 @@ const [websites, stores, apps, automation, systems] = services;
     </section>
 
     <!-- 3e. Systems: two figures holding a drooping cable between them. -->
-    <section class="ik-section" id="systems">
+    <section class="ik-section" id="systems" tabindex="-1">
       <div class="ik-vignette">
         <svg viewBox="0 0 460 470" fill="none" aria-hidden="true">
           <g transform="translate(-45 20)">
@@ -294,7 +305,7 @@ const [websites, stores, apps, automation, systems] = services;
     </section>
 
     <!-- 4. Approach: same recipe; figure presenting a big dog-eared plan sheet. -->
-    <section class="ik-section" id="approach">
+    <section class="ik-section" id="approach" tabindex="-1">
       <div class="ik-vignette">
         <svg viewBox="0 0 460 470" fill="none" aria-hidden="true">
           <path d="M64 140 L212 140 L240 168 L240 372 L64 372 Z" fill="#fff" stroke="#111" stroke-width="3"></path>

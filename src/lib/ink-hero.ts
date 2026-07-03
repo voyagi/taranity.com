@@ -111,11 +111,24 @@ function bindMenu(root: HTMLElement): (() => void) | null {
     }
   };
 
+  // Everything behind the overlay is made inert while it is open: inert removes
+  // those subtrees from focus AND the accessibility tree, so screen-reader
+  // browse mode cannot wander behind the aria-modal dialog (the Tab trap alone
+  // does not stop browse-mode reading).
+  const setBackgroundInert = (on: boolean) => {
+    for (const el of Array.from(root.children)) {
+      if (el === overlay) continue;
+      if (on) el.setAttribute('inert', '');
+      else el.removeAttribute('inert');
+    }
+  };
+
   const open = () => {
     overlay.hidden = false;
     trigger.setAttribute('aria-expanded', 'true');
     // Scroll lock lives on <html> so the page behind the overlay cannot move.
     document.documentElement.classList.add('ik-menu-open');
+    setBackgroundInert(true);
     document.addEventListener('keydown', onKeydown);
     closeBtn.focus();
   };
@@ -125,6 +138,9 @@ function bindMenu(root: HTMLElement): (() => void) | null {
     trigger.setAttribute('aria-expanded', 'false');
     document.documentElement.classList.remove('ik-menu-open');
     document.removeEventListener('keydown', onKeydown);
+    // Clear inert BEFORE returning focus: the trigger is a background element,
+    // so it has to be focusable again first.
+    setBackgroundInert(false);
     if (returnFocus) trigger.focus();
   };
 
