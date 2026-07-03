@@ -182,6 +182,17 @@ describe('ink service order + jump-target focus (no positional drift)', () => {
     expect(shell, '#approach focusable').toMatch(/<section[^>]*id="approach"[^>]*tabindex="-1"/);
   });
 
+  it('the word-fade duration matches between the island and the CSS (no silent desync)', () => {
+    // FADE_MS in ink-hero.ts and the .ik-word transition in ink.css must agree, or
+    // the slab word pops instead of fading. Only a comment links them, so pin it.
+    const island = readRel('src/lib/ink-hero.ts');
+    const fadeMs = Number(island.match(/FADE_MS\s*=\s*(\d+)/)?.[1]);
+    const cssSeconds = Number(css.match(/\.ik-word\s*\{\s*transition:\s*opacity\s*([\d.]+)s/)?.[1]);
+    expect(fadeMs, 'FADE_MS present').toBeGreaterThan(0);
+    expect(cssSeconds, '.ik-word transition present').toBeGreaterThan(0);
+    expect(Math.round(cssSeconds * 1000)).toBe(fadeMs);
+  });
+
   it('the menu makes background content inert up the ancestor chain (aria-modal hygiene)', () => {
     // The skip-link and the global design switcher live OUTSIDE [data-ink], so
     // the inert sweep must walk the overlay's ancestors, not just its siblings.

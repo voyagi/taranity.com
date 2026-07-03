@@ -32,7 +32,11 @@
   font-style: normal;
   font-display: swap;
   font-weight: 400 900;
-  src: url('/fonts/besley-latin-var.woff2') format('woff2-variations');
+  /* Modern variable-font syntax first (browsers that understand tech() get it);
+     the legacy format() is the fallback for older engines. */
+  src:
+    url('/fonts/besley-latin-var.woff2') format('woff2') tech(variations),
+    url('/fonts/besley-latin-var.woff2') format('woff2-variations');
 }
 
 /* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
