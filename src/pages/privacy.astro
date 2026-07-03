@@ -2,13 +2,14 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import VitrinePage from '../components/designs/vitrine/VitrinePage.astro';
 import PrivacyContent from '../components/PrivacyContent.astro';
+import { privacyContent } from '../config/subpages';
 ---
 
 <SiteLayout
   design="vitrine"
   canonicalPath="/privacy"
-  title="Privacy"
-  description="What taranity.com collects, how it is handled, and your rights, in plain language."
+  title={privacyContent.metaTitle}
+  description={privacyContent.metaDescription}
   themeLight="#f4f0e8"
   themeDark="#110f0c"
   preloadFonts={['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2']}
