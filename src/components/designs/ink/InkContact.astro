@@ -1,0 +1,280 @@
+---
+/**
+ * Written contact only (hard rule 1: no booking, no calls), styled to Ink:
+ * white paper, a Besley slab ask, plain fields ruled with 1.5px ink borders,
+ * no boxes, no second colour. Runtime validation, Turnstile handling, and
+ * same-origin submission live in the shared bindContactForm() helper
+ * (identical to every other design); this component owns only the Ink markup
+ * and labels. The Turnstile widget, the data-* hooks, and the /api/contact
+ * flow are mirrored from SheetContact so it keeps working.
+ */
+import { services, contactEmail } from '../../../config/site';
+import { contactContent } from '../../../config/ink';
+
+const hasTurnstile = Boolean(services.turnstileSitekey);
+---
+
+<section class="ik-contact" id="contact" tabindex="-1" aria-label="Describe what to build">
+  <p class="ik-contact-eyebrow">{contactContent.eyebrow}</p>
+  <h2 class="ik-contact-title">{contactContent.title}</h2>
+  <p class="ik-contact-lead">{contactContent.lead}</p>
+  <a class="ik-contact-email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+
+  <div class="ik-form-wrap">
+    <form
+      class="ik-form"
+      data-ik-form
+      data-fallback-email={contactEmail}
+      action="/api/contact"
+      method="POST"
+      novalidate
+    >
+      <input type="hidden" name="subject" value="New enquiry via taranity.com (Ink)" />
+      <input type="hidden" name="from_name" value="taranity.com" />
+      <!-- Honeypot -->
+      <input type="checkbox" name="botcheck" class="ik-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      {
+        !hasTurnstile && (
+          <p class="ik-demo-note">Demo mode: submissions are simulated in this preview.</p>
+        )
+      }
+
+      <div class="ik-field-row">
+        <label class="ik-field-label" for="ik-name">Name</label>
+        <input id="ik-name" name="name" type="text" required maxlength="100" autocomplete="name" aria-describedby="ik-err-name" />
+        <span class="ik-field-err" id="ik-err-name" data-ik-err="name" role="alert"></span>
+      </div>
+
+      <div class="ik-field-row">
+        <label class="ik-field-label" for="ik-email">Email</label>
+        <input id="ik-email" name="email" type="email" required maxlength="150" autocomplete="email" aria-describedby="ik-err-email" />
+        <span class="ik-field-err" id="ik-err-email" data-ik-err="email" role="alert"></span>
+      </div>
+
+      <div class="ik-field-row">
+        <label class="ik-field-label" for="ik-message">What do you need built?</label>
+        <textarea id="ik-message" name="message" rows="5" required maxlength="3000" aria-describedby="ik-err-message"></textarea>
+        <span class="ik-field-err" id="ik-err-message" data-ik-err="message" role="alert"></span>
+      </div>
+
+      {hasTurnstile && (
+        <Fragment>
+          <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+          <div class="cf-turnstile" data-sitekey={services.turnstileSitekey} data-action="turnstile-spin-v1" data-theme="light" style="margin-bottom: 1.4rem"></div>
+        </Fragment>
+      )}
+
+      <button type="submit" class="ik-submit">
+        <span data-ik-submit-label>Send the brief</span>
+        <span class="ik-arrow" aria-hidden="true">&rarr;</span>
+      </button>
+
+      <p class="ik-form-status" data-ik-form-status role="status" aria-live="polite"></p>
+      <p class="ik-form-privacy">
+        Delivered via Web3Forms and used only to reply. No cookies, nothing sold.
+        <a href="/privacy" data-astro-reload>How your data is handled</a>.
+      </p>
+    </form>
+
+    <div class="ik-form-success" data-ik-form-success hidden tabindex="-1">
+      <h3>Got it.</h3>
+      <p>Thank you. We reply within a day, usually sooner, and always in writing.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ik-contact {
+    padding-block: clamp(3.5rem, 10vh, 6.5rem) clamp(2rem, 6vh, 3.5rem);
+    border-top: 1px solid var(--ik-line);
+    scroll-margin-top: 1.5rem;
+  }
+  .ik-contact:focus {
+    outline: none;
+  }
+  .ik-contact-eyebrow {
+    margin: 0 0 0.9rem;
+    font-size: 0.92rem;
+    color: var(--ik-grey);
+  }
+  .ik-contact-title {
+    margin: 0 0 1.2rem;
+    max-width: 16ch;
+    font-family: var(--ik-serif);
+    font-weight: var(--ik-slab-weight);
+    font-size: clamp(2.4rem, 5.4vw, 4.6rem);
+    line-height: 1.04;
+    letter-spacing: 0.005em;
+  }
+  .ik-contact-lead {
+    max-width: 52ch;
+    margin: 0 0 1.4rem;
+    font-size: 1.04rem;
+    line-height: 1.72;
+  }
+  .ik-contact-email {
+    display: inline-block;
+    margin-bottom: clamp(1.8rem, 5vh, 2.6rem);
+    font-size: 0.95rem;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 4px;
+  }
+  .ik-contact-email:hover {
+    text-decoration-thickness: 3px;
+  }
+
+  /* The form: plain ruled fields on the paper, generous air, NO boxes. */
+  .ik-form-wrap {
+    max-width: 44rem;
+  }
+  .ik-hp {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+  .ik-demo-note {
+    margin-bottom: 1.6rem;
+    padding: 0.65rem 0.85rem;
+    border: 1.5px solid var(--ik-ink);
+    font-size: 0.82rem;
+  }
+  .ik-field-row {
+    margin-bottom: 1.6rem;
+  }
+  .ik-field-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--ik-grotesk);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .ik-field-row input,
+  .ik-field-row textarea {
+    width: 100%;
+    padding: 0.75rem 0.85rem;
+    background: var(--ik-paper);
+    border: 1.5px solid var(--ik-ink);
+    border-radius: 0;
+    font-family: var(--ik-sans);
+    font-size: 1rem;
+    color: var(--ik-ink);
+  }
+  .ik-field-row textarea {
+    resize: vertical;
+    min-height: 130px;
+  }
+  .ik-field-row input:focus-visible,
+  .ik-field-row textarea:focus-visible {
+    outline: 2px solid var(--ik-ink);
+    outline-offset: 2px;
+  }
+  .ik-field-row.invalid input,
+  .ik-field-row.invalid textarea {
+    border-color: var(--ik-error);
+  }
+  .ik-field-err {
+    display: block;
+    min-height: 1rem;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--ik-error);
+  }
+
+  .ik-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.3rem;
+    padding: 0.85rem 1.6rem;
+    border: 1.5px solid var(--ik-ink);
+    background: var(--ik-ink);
+    color: var(--ik-paper);
+    font-family: var(--ik-grotesk);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .ik-submit[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .ik-submit:hover:not([disabled]) {
+    background: var(--ik-paper);
+    color: var(--ik-ink);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ik-submit {
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .ik-submit .ik-arrow {
+      transition: transform 0.2s ease;
+    }
+    .ik-submit:hover:not([disabled]) .ik-arrow {
+      transform: translateX(3px);
+    }
+  }
+  .ik-form-status {
+    min-height: 1rem;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: var(--ik-grey);
+  }
+  .ik-form-status.is-error {
+    color: var(--ik-error);
+  }
+  .ik-form-privacy {
+    margin-top: 1.1rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--ik-grey);
+  }
+  .ik-form-privacy a {
+    color: var(--ik-ink);
+    text-underline-offset: 3px;
+  }
+
+  /* contact-form.ts moves focus here after a successful submit: keep a visible
+     indicator so the programmatic focus target is perceivable. */
+  .ik-form-success:focus {
+    outline: 2px solid var(--ik-ink);
+    outline-offset: 3px;
+  }
+  .ik-form-success h3 {
+    margin: 0 0 0.6rem;
+    font-family: var(--ik-serif);
+    font-weight: var(--ik-slab-weight);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+  }
+  .ik-form-success p {
+    max-width: 42ch;
+    color: var(--ik-grey);
+    line-height: 1.7;
+  }
+  .ik-form-success[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  import { bindContactForm } from '../../../lib/contact-form';
+
+  document.addEventListener('astro:page-load', () =>
+    bindContactForm({
+      formSelector: '[data-ik-form]',
+      statusSelector: '[data-ik-form-status]',
+      submitButtonSelector: '.ik-submit',
+      submitLabelSelector: '[data-ik-submit-label]',
+      successSelector: '[data-ik-form-success]',
+      wrapperSelector: '.ik-form-wrap',
+      fieldRowSelector: '.ik-field-row',
+      errorAttr: 'data-ik-err',
+      sendingLabel: 'Sending…',
+    }),
+  );
+</script>

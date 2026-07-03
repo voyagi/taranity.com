@@ -32,6 +32,7 @@ export const designs: Design[] = [
   { id: 'storefront', name: 'Storefront', tagline: 'Commerce', audience: 'E-commerce and DTC brands', route: '/storefront', modes: ['light'], ready: true },
   { id: 'practice', name: 'Practice', tagline: 'Trusted local service', audience: 'Medical, legal, trades', route: '/practice', modes: ['light'], ready: true },
   { id: 'raw', name: 'Raw', tagline: 'Brutalist', audience: 'Art, music, culture, dev', route: '/raw', modes: ['dark', 'light'], ready: true },
+  { id: 'ink', name: 'Ink', tagline: 'Drawn by hand', audience: 'People who like people, not gradients', route: '/ink', modes: ['light'], ready: true },
   // Prism is HIDDEN pending its redesign (owner rejected the visual skin; the shader
   // island, tests, and wiring patterns stay for reuse). To re-enable: set ready:true,
   // re-add 'prism' to functions/switch.ts READY + functions/_middleware.ts

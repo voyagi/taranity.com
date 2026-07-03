@@ -1,0 +1,41 @@
+{
+  "hero": {
+    "tagLead": "Briefs answered",
+    "tagStrong": "within a day",
+    "kicker": "We build digital (and honest)..."
+  },
+  "services": {
+    "kicker": "We build",
+    "items": {
+      "websites": {
+        "paragraph": "Most slow sites are slow because everything waits for JavaScript, including the words. We build the other way round: the page arrives as complete, readable HTML, and the clever parts enhance it rather than block it. The number we watch is what a real phone does on a normal connection, not a lab score on a fast laptop.",
+        "honor": "usable in about a second on a mid-range phone on a normal connection"
+      },
+      "stores": {
+        "paragraph": "The thing that falls over on launch day is almost never the page. It is the checkout write path meeting traffic it never saw in testing. So we put the order between the customer and the database: an instant confirmation first, then the slow work drains behind it at the rate the system can actually take. Nobody sits watching a spinner and buys elsewhere.",
+        "honor": "under 200ms for the 95th customer at ten times a normal day"
+      },
+      "apps": {
+        "paragraph": "The spreadsheet the whole company runs on is not the enemy. It is a working spec someone kept alive for years, so we start by matching it exactly, formula for formula, before adding anything. Then we take away the parts that hurt: the copy-paste, the version called final-v3, the row someone deletes by accident on a Friday.",
+        "honor": "the same numbers as the spreadsheet on day one, or we have not earned the switch"
+      },
+      "automation": {
+        "paragraph": "Automation that only handles the happy path is worse than none, because it fails quietly and you hear about it from an annoyed customer. So we build the unhappy path first: every step can fail, and when it does the system says which step, for whom, and what it was trying to do, then holds the rest instead of ploughing on.",
+        "honor": "if a step fails, a human is told which one and why, not left to find out later"
+      },
+      "systems": {
+        "paragraph": "Two systems that disagree do not have an integration problem, they have an ownership problem: nobody decided which one is right about what. So before we connect anything, we decide per fact who owns it, and the other side follows. Then the link is built to survive the real world: it retries, it never applies the same change twice, and it keeps a log you can actually read.",
+        "honor": "one system is the source of truth for each fact, and we can prove which"
+      }
+    }
+  },
+  "approach": {
+    "kicker": "We spec",
+    "paragraph": "We spec first, in writing, in plain terms, and you see the plan before the build. No surprise scope, no mystery invoice, no jargon standing in for a decision. The reasoning on this page is the portfolio: every section names the failure it protects against, and that is the same way we will talk about the thing you need built."
+  },
+  "contact": {
+    "eyebrow": "Describe it",
+    "title": "Tell us the thing you need built.",
+    "lead": "Send the outcome you are after and where you are now. We read everything and reply within a day, in writing, with the plan in plain terms, whether or not you hire us."
+  }
+}

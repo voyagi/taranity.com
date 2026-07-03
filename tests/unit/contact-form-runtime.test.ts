@@ -5,6 +5,7 @@ const read = (path: string) => readFileSync(new URL(`../../${path}`, import.meta
 
 const contactComponents = [
   'src/components/designs/atlas/AtlasContact.astro',
+  'src/components/designs/ink/InkContact.astro',
   'src/components/designs/practice/PracticeContact.astro',
   'src/components/designs/prism/PrismContact.astro',
   'src/components/designs/raw/RawContact.astro',

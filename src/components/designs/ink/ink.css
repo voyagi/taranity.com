@@ -1,0 +1,436 @@
+/* ==========================================================================
+   Ink - the hand-drawn monochrome design. A literal structural clone of the
+   approved hero mockup (.ink-approved-mockup.html at the repo root, the LAW
+   for the hero): white paper, near-black ink, two naive ink-drawn characters
+   on a centre stage, a stacked TARANITY /STUDIO. wordmark top-left, a playful
+   note top-right, a grey kicker over a giant Besley slab word (rotating via
+   src/lib/ink-hero.ts), a small full stop dot, and the black curved edge blob
+   holding the menu on the right. Below: a jump-ahead line, five two-column
+   service sections (an ink vignette left, kicker + slab heading + paragraph +
+   honor line + link right), the approach, contact, and a sign-off footer.
+
+   The look is THINGS, not atmosphere: the drawings are the craft on show.
+   Strictly monochrome black-on-white; no second colour, no gradients, no
+   glass, no scrims, no marquee (the anti-generic contract, pinned by
+   tests/unit/ink-css.test.ts). Type: Besley (a Clarendon-genre slab, weight
+   ~430) for the display words, Space Grotesk for the wordmark and micro
+   labels, Inter for prose.
+
+   Ink is light-only (designs.ts modes: ['light']): a single token block, no
+   data-mode duplicates, no prefers-color-scheme fallback needed.
+
+   Motion is native scroll (no Lenis, no GSAP): the only animation on the
+   whole page is the slab word's brief opacity fade, and the tiny hover
+   nudges; every transition lives inside a prefers-reduced-motion:
+   no-preference block. Under reduce the rotation never starts at all.
+   ========================================================================== */
+
+/* Besley ships only with Ink (declared here, not in the shared fonts.css, so
+   the other designs never pay for a face they do not use). */
+@font-face {
+  font-family: 'Besley Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url('/fonts/besley-latin-var.woff2') format('woff2-variations');
+}
+
+/* INVARIANT: never declare transform, filter, backdrop-filter, perspective,
+   contain, isolation, or will-change on .ink - the edge blob, the burger
+   button, and the menu overlay are FIXED children, and any containing-block-
+   forming property here would silently re-pin them inside the flow (the blob
+   would scroll away with the page). Pinned by tests/unit/ink-css.test.ts. */
+.ink {
+  --ik-paper: #ffffff;
+  --ik-ink: #111111;
+  --ik-grey: #444444; /* the kickers and secondary lines, straight from the mockup */
+  --ik-muted: #6f6f6f;
+  --ik-line: rgba(17, 17, 17, 0.16);
+  --ik-error: #8a1f1f; /* darkened ink-red, only for form validation text */
+
+  --ik-serif: 'Besley Variable', georgia, 'Times New Roman', serif;
+  --ik-grotesk: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --ik-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* The slab weight: Besley at ~430, the mockup's exact setting. */
+  --ik-slab-weight: 430;
+
+  --ik-gutter: clamp(1.4rem, 6vw, 5rem);
+  /* Keep flowing text clear of the fixed black blob on the right edge (the
+     blob's dark area reaches ~60px in from the edge at its widest). */
+  --ik-blob-clear: 3.75rem;
+
+  background: var(--ik-paper);
+  color: var(--ik-ink);
+  font-family: var(--ik-sans);
+  overflow-x: clip;
+}
+
+.ink ::selection {
+  background: var(--ik-ink);
+  color: var(--ik-paper);
+}
+
+.ink a {
+  color: inherit;
+}
+
+/* Visible keyboard focus on every interactive element (site hard rule). */
+.ink :focus-visible {
+  outline: 2px solid var(--ik-ink);
+  outline-offset: 3px;
+}
+
+/* Visually hidden, still read by assistive tech (the stable h1 sentence). */
+.ik-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The menu overlay locks the page behind it (set by the island). */
+html.ik-menu-open {
+  overflow: hidden;
+}
+
+/* ---- hero: the approved mockup, reproduced in flow ---- */
+
+.ik-hero {
+  position: relative;
+  min-height: 100svh;
+  padding-bottom: clamp(3rem, 8vh, 5rem);
+}
+
+/* The stacked wordmark. Base class is position-agnostic so the subpage
+   masthead reuses it; the hero pins it to the mockup's exact corner. */
+.ik-logo {
+  display: inline-block;
+  font-family: var(--ik-grotesk);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+.ik-hero-logo {
+  position: absolute;
+  top: 2.2rem;
+  left: 2.6rem;
+}
+
+.ik-tag {
+  position: absolute;
+  top: 2.4rem;
+  right: 7rem;
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ik-ink);
+}
+.ik-tag b {
+  font-weight: 600;
+}
+
+/* The ink-character stage: the two approved figures, centred. 460px wide at
+   desktop exactly as approved; shrinks with the viewport below that. */
+.ik-stage {
+  width: min(460px, 76vw);
+  margin: 6.5rem auto 0;
+}
+.ik-stage svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Kicker + slab word + dot. In the mockup the intro sits at 40.2rem from the
+   top; stage top 6.5rem + stage height 29.375rem leaves this 4.3rem gap. */
+.ik-intro {
+  margin-top: 4.3rem;
+  text-align: center;
+}
+.ik-kicker {
+  margin: 0 0 0.55rem;
+  font-size: 0.92rem;
+  color: var(--ik-grey);
+}
+.ik-h1 {
+  margin: 0;
+  font-family: var(--ik-serif);
+  font-weight: var(--ik-slab-weight);
+  font-size: clamp(3rem, 10vw, 7.6rem);
+  line-height: 1;
+  letter-spacing: 0.005em;
+}
+.ik-word {
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* Duration must match FADE_MS in src/lib/ink-hero.ts (the island swaps the
+     text at the faded-out point). Under reduce the island never rotates, so
+     .is-swapping is never applied and this block is moot anyway. */
+  .ik-word {
+    transition: opacity 0.24s ease;
+  }
+}
+.ik-word.is-swapping {
+  opacity: 0;
+}
+.ik-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ik-ink);
+  margin: 1.1rem auto 0;
+}
+
+/* ---- the black curved edge blob + burger (their signature shape) ---- */
+
+.ik-blob {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 120px;
+  pointer-events: none;
+  z-index: 40;
+}
+.ik-menu-button {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 41;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+/* The button sits on the black blob, so the default ink outline would vanish:
+   its focus ring flips to paper-white. */
+.ik-menu-button:focus-visible {
+  outline-color: var(--ik-paper);
+}
+.ik-burger {
+  display: grid;
+  gap: 4px;
+}
+.ik-burger span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+}
+.ik-burger span:nth-child(2) {
+  width: 12px;
+}
+
+/* ---- the menu overlay: solid white, big Besley links ---- */
+
+.ik-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  /* Solid on purpose: content must never ghost through from behind. */
+  background: var(--ik-paper);
+  color: var(--ik-ink);
+  overflow-y: auto;
+  padding: 2.2rem 2.6rem;
+}
+.ik-menu[hidden] {
+  display: none;
+}
+.ik-menu-close {
+  position: absolute;
+  top: 2.2rem;
+  right: 2.6rem;
+  padding: 0.5rem 0.9rem;
+  border: 1.5px solid var(--ik-ink);
+  background: var(--ik-paper);
+  color: var(--ik-ink);
+  font-family: var(--ik-grotesk);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.ik-menu-close:hover {
+  background: var(--ik-ink);
+  color: var(--ik-paper);
+}
+.ik-menu-list {
+  list-style: none;
+  margin: clamp(3rem, 12vh, 6rem) 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.ik-menu-list a {
+  display: inline-block;
+  font-family: var(--ik-serif);
+  font-weight: var(--ik-slab-weight);
+  font-size: clamp(2.4rem, 8vw, 4.8rem);
+  line-height: 1.12;
+  text-decoration: none;
+}
+.ik-menu-list a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+
+/* ---- the document below the hero ---- */
+
+.ik-doc {
+  padding-left: var(--ik-gutter);
+  padding-right: calc(var(--ik-gutter) + var(--ik-blob-clear));
+  max-width: 92rem;
+  margin-inline: auto;
+}
+
+/* Jump-ahead: small grey lead-in + inline underlined anchors. */
+.ik-jump {
+  padding-block: clamp(1.5rem, 4vh, 2.5rem);
+  border-top: 1px solid var(--ik-line);
+  font-size: 0.95rem;
+  line-height: 2;
+}
+.ik-jump-label {
+  color: var(--ik-grey);
+  margin-right: 0.6rem;
+}
+.ik-jump a {
+  margin-right: 1.1rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+.ik-jump a:hover {
+  text-decoration-thickness: 3px;
+}
+
+/* Service / approach sections: vignette left, words right. */
+.ik-section {
+  display: grid;
+  grid-template-columns: minmax(230px, 380px) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 5.5rem);
+  align-items: center;
+  padding-block: clamp(3.5rem, 10vh, 6.5rem);
+  /* In-page anchors (#websites...) must land clear of the viewport edge. */
+  scroll-margin-top: 1.5rem;
+}
+.ik-vignette {
+  width: 100%;
+  max-width: 380px;
+}
+.ik-vignette svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.ik-sec-kicker {
+  margin: 0 0 0.8rem;
+  font-size: 0.92rem;
+  color: var(--ik-grey);
+}
+.ik-sec-title {
+  margin: 0 0 1.4rem;
+  font-family: var(--ik-serif);
+  font-weight: var(--ik-slab-weight);
+  font-size: clamp(3.2rem, 6.5vw, 6.5rem);
+  line-height: 1;
+  letter-spacing: 0.005em;
+}
+.ik-sec-copy {
+  max-width: 58ch;
+  margin: 0 0 1.5rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+.ik-honor {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1rem;
+  align-items: baseline;
+  max-width: 58ch;
+  margin: 0 0 1.6rem;
+}
+.ik-honor-label {
+  font-family: var(--ik-grotesk);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ik-honor-text {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--ik-grey);
+}
+.ik-sec-link {
+  display: inline-block;
+  font-size: 0.98rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+.ik-sec-link:hover {
+  text-decoration-thickness: 3px;
+}
+.ik-sec-link .ik-arrow {
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ik-sec-link .ik-arrow {
+    transition: transform 0.2s ease;
+  }
+  .ik-sec-link:hover .ik-arrow {
+    transform: translateX(3px);
+  }
+}
+
+@media (max-width: 760px) {
+  .ik-section {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+    align-items: start;
+  }
+  .ik-vignette {
+    max-width: 290px;
+  }
+}
+
+/* Small screens: the blob narrows with the viewport, the corners tighten. */
+@media (max-width: 640px) {
+  .ik-hero-logo {
+    left: 1.2rem;
+  }
+  .ik-tag {
+    right: 5rem;
+  }
+  .ik-blob {
+    width: 72px;
+  }
+  .ik-menu {
+    padding: 1.6rem 1.2rem;
+  }
+  .ik-menu-close {
+    top: 1.6rem;
+    right: 1.2rem;
+  }
+  .ink {
+    --ik-blob-clear: 2.4rem;
+  }
+}
