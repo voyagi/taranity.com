@@ -1,12 +1,14 @@
 ---
+// Copy comes from src/data/not-found.json (editable at /admin).
 import SiteLayout from '../layouts/SiteLayout.astro';
 import VitrinePage from '../components/designs/vitrine/VitrinePage.astro';
+import { notFoundContent } from '../config/subpages';
 ---
 
 <SiteLayout
   design="vitrine"
-  title="404"
-  description="This route was not found."
+  title={notFoundContent.metaTitle}
+  description={notFoundContent.metaDescription}
   themeLight="#f4f0e8"
   themeDark="#110f0c"
   preloadFonts={['/fonts/fraunces-latin-var.woff2', '/fonts/inter-latin-var.woff2']}
@@ -14,13 +16,10 @@ import VitrinePage from '../components/designs/vitrine/VitrinePage.astro';
 >
   <VitrinePage>
     <section class="v-page v-nf" tabindex="-1">
-      <p class="v-label">404</p>
-      <h1 class="v-page-title v-serif">This route was not found.</h1>
-      <p class="v-page-lead">
-        The page you are after does not exist or has moved. The studio, the
-        crafts, and the contact form are all one page away.
-      </p>
-      <a class="v-nf-back" href="/">Back to the studio</a>
+      <p class="v-label">{notFoundContent.label}</p>
+      <h1 class="v-page-title v-serif">{notFoundContent.heading}</h1>
+      <p class="v-page-lead">{notFoundContent.lead}</p>
+      <a class="v-nf-back" href="/">{notFoundContent.backLabel}</a>
     </section>
   </VitrinePage>
 </SiteLayout>

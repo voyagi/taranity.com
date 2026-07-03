@@ -5,12 +5,19 @@
  * (Vitrine via `.v-page`, the others via `.subpage-body`). Keeping the legal
  * text here gives it ONE source of truth across all six designs, so it can
  * never drift between them.
+ *
+ * The framing (kicker, title, section headings, the last-reviewed date) comes
+ * from src/data/privacy.json and is editable at /admin. The body prose stays
+ * HERE on purpose: it embeds live values (contact email, site URL) and states
+ * what the site technically does with data, so it must only change together
+ * with code, under review.
  */
 import { contactEmail, site } from '../config/site';
+import { privacyContent } from '../config/subpages';
 ---
 
-<p class="sp-kicker">Privacy</p>
-<h1>Plain language, no dark patterns.</h1>
+<p class="sp-kicker">{privacyContent.kicker}</p>
+<h1>{privacyContent.title}</h1>
 <p class="sp-lead">
   This site belongs to {site.name} ({site.url}). It uses <strong>no tracking or advertising
   cookies</strong> and shows no consent banner because it does not need one. Here is exactly
@@ -18,7 +25,7 @@ import { contactEmail, site } from '../config/site';
 </p>
 
 <section>
-  <h2>What we collect, and when</h2>
+  <h2>{privacyContent.headings.collect}</h2>
   <ul>
     <li>
       <strong>The contact form.</strong> Only if you submit it: your name, email, and message.
@@ -44,7 +51,7 @@ import { contactEmail, site } from '../config/site';
 </section>
 
 <section>
-  <h2>Cookies and local storage</h2>
+  <h2>{privacyContent.headings.cookies}</h2>
   <p>
     No tracking or advertising cookies, and nothing stored to profile you. The only things
     kept on your device are your <strong>preferences</strong>: your light or dark mode (saved
@@ -55,7 +62,7 @@ import { contactEmail, site } from '../config/site';
 </section>
 
 <section>
-  <h2>Your rights</h2>
+  <h2>{privacyContent.headings.rights}</h2>
   <p>
     Under the GDPR you can ask to access, correct, or delete the personal data we hold about
     you, or object to its processing. In practice the only data we ever hold is the message
@@ -65,11 +72,11 @@ import { contactEmail, site } from '../config/site';
 </section>
 
 <section>
-  <h2>Retention</h2>
+  <h2>{privacyContent.headings.retention}</h2>
   <p>
     Contact messages are kept only as long as needed to deal with your enquiry, then deleted.
     Analytics data is aggregated and never tied to an individual.
   </p>
 </section>
 
-<p class="sp-meta">Last reviewed: July 2026 · Questions? {contactEmail}</p>
+<p class="sp-meta">Last reviewed: {privacyContent.lastReviewed} · Questions? {contactEmail}</p>

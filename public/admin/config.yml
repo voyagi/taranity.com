@@ -266,3 +266,39 @@ collections:
               - { name: eyebrow, label: Eyebrow, widget: string, pattern: *no_em_dash }
               - { name: title, label: Headline, widget: string, pattern: *no_em_dash }
               - { name: lead, label: Lead paragraph, widget: text, pattern: *no_em_dash }
+
+      - name: privacy
+        label: Privacy page
+        file: src/data/privacy.json
+        description: >-
+          The privacy page's framing: title, section headings, and the
+          last-reviewed date. The legal body text is managed in code on
+          purpose, so it always matches what the site actually does with
+          data; ask for a code change to alter it.
+        fields:
+          - { name: metaTitle, label: Browser tab title, widget: string, pattern: *no_em_dash }
+          - { name: metaDescription, label: Meta description, widget: text, hint: 'Shown in search results.', maxlength: 170, pattern: *no_em_dash }
+          - { name: kicker, label: Kicker, widget: string, hint: 'Small line above the title.', pattern: *no_em_dash }
+          - { name: title, label: Title, widget: string, pattern: *no_em_dash }
+          - name: headings
+            label: Section headings
+            widget: object
+            # Fixed set of four: the sections and their legal text live in code.
+            fields:
+              - { name: collect, label: Collection section, widget: string, pattern: *no_em_dash }
+              - { name: cookies, label: Cookies section, widget: string, pattern: *no_em_dash }
+              - { name: rights, label: Rights section, widget: string, pattern: *no_em_dash }
+              - { name: retention, label: Retention section, widget: string, pattern: *no_em_dash }
+          - { name: lastReviewed, label: Last reviewed, widget: string, hint: 'e.g. July 2026. Update after any privacy-relevant change.', pattern: *no_em_dash }
+
+      - name: notFound
+        label: 404 page
+        file: src/data/not-found.json
+        description: The page visitors see at a dead link. Saved changes go live in about 2 minutes.
+        fields:
+          - { name: metaTitle, label: Browser tab title, widget: string, pattern: *no_em_dash }
+          - { name: metaDescription, label: Meta description, widget: text, pattern: *no_em_dash }
+          - { name: label, label: Small label, widget: string, hint: 'e.g. 404', pattern: *no_em_dash }
+          - { name: heading, label: Heading, widget: string, pattern: *no_em_dash }
+          - { name: lead, label: Lead paragraph, widget: text, pattern: *no_em_dash }
+          - { name: backLabel, label: Back-link text, widget: string, pattern: *no_em_dash }

@@ -17,6 +17,7 @@ import SheetSubpage from '../../components/designs/sheet/SheetSubpage.astro';
 import PrismSubpage from '../../components/designs/prism/PrismSubpage.astro';
 import { readyDesigns, getDesign } from '../../config/designs';
 import { subpageMeta } from '../../config/subpage-meta';
+import { privacyContent } from '../../config/subpages';
 
 // Map each non-Vitrine design to its subpage shell. `satisfies` ties this to the keys of
 // subpageMeta (theme-colour + LCP fonts), so adding a design to one without the other is a
@@ -49,8 +50,8 @@ if (!d || !meta || !Shell) throw new Error(`No privacy subpage shell/meta for de
 <SiteLayout
   design={design}
   canonicalPath="/privacy"
-  title="Privacy"
-  description="What taranity.com collects, how it is handled, and your rights, in plain language."
+  title={privacyContent.metaTitle}
+  description={privacyContent.metaDescription}
   themeLight={meta.themeLight}
   themeDark={meta.themeDark}
   preloadFonts={meta.fonts}
