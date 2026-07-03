@@ -114,12 +114,20 @@ function bindMenu(root: HTMLElement): (() => void) | null {
   // Everything behind the overlay is made inert while it is open: inert removes
   // those subtrees from focus AND the accessibility tree, so screen-reader
   // browse mode cannot wander behind the aria-modal dialog (the Tab trap alone
-  // does not stop browse-mode reading).
+  // does not stop browse-mode reading). We walk the overlay's ancestor chain up
+  // to <body>, marking every sibling at each level: the elements that must be
+  // covered (the layout skip-link and the global design switcher) live OUTSIDE
+  // [data-ink], as siblings of <main>, so covering only the overlay's immediate
+  // siblings would leave them reachable.
   const setBackgroundInert = (on: boolean) => {
-    for (const el of Array.from(root.children)) {
-      if (el === overlay) continue;
-      if (on) el.setAttribute('inert', '');
-      else el.removeAttribute('inert');
+    let node: HTMLElement | null = overlay;
+    while (node && node.parentElement && node !== document.body) {
+      for (const sib of Array.from(node.parentElement.children)) {
+        if (sib === node) continue;
+        if (on) sib.setAttribute('inert', '');
+        else sib.removeAttribute('inert');
+      }
+      node = node.parentElement;
     }
   };
 

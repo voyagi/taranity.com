@@ -240,7 +240,9 @@ html.ik-menu-open {
 .ik-menu {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  /* Above the global design switcher (z-index 1000, rendered outside [data-ink])
+     so the modal overlay actually covers it; the island also makes it inert. */
+  z-index: 1100;
   /* Solid on purpose: content must never ghost through from behind. */
   background: var(--ik-paper);
   color: var(--ik-ink);

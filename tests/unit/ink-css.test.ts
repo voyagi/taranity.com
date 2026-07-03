@@ -182,7 +182,15 @@ describe('ink service order + jump-target focus (no positional drift)', () => {
     expect(shell, '#approach focusable').toMatch(/<section[^>]*id="approach"[^>]*tabindex="-1"/);
   });
 
-  it('the menu makes background content inert (aria-modal dialog hygiene)', () => {
-    expect(readRel('src/lib/ink-hero.ts')).toMatch(/setAttribute\('inert'/);
+  it('the menu makes background content inert up the ancestor chain (aria-modal hygiene)', () => {
+    // The skip-link and the global design switcher live OUTSIDE [data-ink], so
+    // the inert sweep must walk the overlay's ancestors, not just its siblings.
+    const island = readRel('src/lib/ink-hero.ts');
+    expect(island).toMatch(/setAttribute\('inert'/);
+    expect(island).toMatch(/parentElement/);
+    // And the overlay must stack above the global switcher (z-index 1000).
+    const menuBlock = css.match(/\.ik-menu \{([^}]*)\}/)?.[1] ?? '';
+    const z = Number(menuBlock.match(/z-index:\s*(\d+)/)?.[1] ?? '0');
+    expect(z).toBeGreaterThan(1000);
   });
 });
