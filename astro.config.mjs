@@ -82,6 +82,9 @@ export default defineConfig({
             // Same CSP reasoning for Prism's shader island: a standalone module
             // with no shared vendor import would otherwise be inlined and blocked.
             if (id.includes('/lib/prism-field')) return 'prism-field';
+            // Same CSP reasoning for Ink's hero island (word rotation + blob menu):
+            // a standalone module would otherwise be inlined and CSP-blocked.
+            if (id.includes('/lib/ink-hero')) return 'ink-hero';
             return undefined;
           },
         },

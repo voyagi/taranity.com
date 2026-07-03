@@ -1,0 +1,27 @@
+---
+/**
+ * Ink (hand-drawn monochrome studio), a design-showcase experience. The flagship
+ * (Vitrine) renders at "/"; this variant renders at /ink and is served at the
+ * canonical "/" for the cookie-selected visitor by the edge middleware. Native
+ * scroll only (no `smooth`): Ink ships no Lenis / motion runtime.
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Ink from '../components/designs/ink/Ink.astro';
+---
+
+<SiteLayout
+  design="ink"
+  canonicalPath="/"
+  noindex
+  title="Taranity · Ink"
+  description="Taranity is a digital studio working with clients worldwide. Ink is the hand-drawn face of the same studio: websites, stores, apps, automation, and the systems underneath them, drawn by people, not gradients."
+  themeLight="#ffffff"
+  themeDark="#ffffff"
+  preloadFonts={[
+    '/fonts/besley-latin-var.woff2',
+    '/fonts/space-grotesk-latin-var.woff2',
+    '/fonts/inter-latin-var.woff2',
+  ]}
+>
+  <Ink />
+</SiteLayout>

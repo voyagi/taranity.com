@@ -1,0 +1,40 @@
+---
+/**
+ * Ink subpage shell (privacy, journal): the shared subpage content inside the
+ * Ink look - the stacked wordmark as a thin masthead, white paper, and the
+ * Ink sign-off footer. Ink's tokens are mapped onto the shared --sp-* bridge
+ * variables so the shared article renders in the Ink language. No blob or
+ * menu here: subpages stay plain reading pages.
+ *
+ * The masthead link points back to the canonical home ("/"), served in the
+ * visitor's chosen design by the edge middleware, so the address bar stays clean.
+ */
+import './ink.css';
+import '../../../styles/subpage.css';
+import InkFooter from './InkFooter.astro';
+---
+
+<div
+  class="ink sp-shell"
+  style="--sp-accent: var(--ik-ink); --sp-line: var(--ik-line); --sp-muted: var(--ik-grey); --sp-display: var(--ik-serif); --sp-pad: var(--ik-gutter);"
+>
+  <header class="ik-subpage-masthead">
+    <a class="ik-logo" href="/" aria-label="Taranity home">TARANITY<br />/STUDIO.</a>
+  </header>
+  <div class="sp-main">
+    <div class="subpage-body"><slot /></div>
+  </div>
+  <InkFooter />
+</div>
+
+<style>
+  /* The masthead sits in the shared subpage measure, ruled off below. */
+  .ik-subpage-masthead {
+    max-width: 760px;
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--ik-gutter);
+    padding-block: clamp(1.4rem, 4vh, 2.2rem) clamp(1rem, 3vh, 1.6rem);
+    border-bottom: 1px solid var(--ik-line);
+  }
+</style>
