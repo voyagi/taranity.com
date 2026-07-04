@@ -10,8 +10,10 @@
 Build a **static Astro 6** site styled with **Tailwind v4**, animated with **GSAP +
 ScrollTrigger + SplitText** synced to **Lenis** smooth scroll. Deploy to **Cloudflare Pages** (serve `dist/`, no
 adapter). Cookieless analytics (**Plausible**; amended 2026-07 to **Cloudflare Web
-Analytics**, see the Analytics row), **Web3Forms** for the contact form, a
-**Cal.com/Calendly** booking link.
+Analytics**, see the Analytics row), **Web3Forms** for the contact form (amended 2026-07:
+submitted through a Pages Function that holds the key server-side, see the Contact row), and
+no booking link (amended 2026-07: the Cal.com/Calendly link was dropped - written contact
+only, see the Booking row).
 
 The user named this stack explicitly; research confirmed it is the right one rather than just
 accepting it.
@@ -27,8 +29,8 @@ accepting it.
 | 3D | **Three.js (WebGL), Atlas design only** | The brief listed Three.js as *optional* 3D. Most designs get their depth purely in CSS (radial glows + grain/scanline + engineered glass) to keep the JS budget lean and CWV green; the **Atlas** design ships a real Three.js WebGL scene, gated so it falls back cleanly where WebGL is unavailable. |
 | Hosting | **Cloudflare Pages** | Free unlimited bandwidth, global sub-50ms edge, first-class static Astro support. Static needs **no adapter** - Astro 6 prerenders straight to `dist/` (the v6 Cloudflare-adapter+static deploy bug is avoided by staying adapter-free). |
 | Analytics | **Cloudflare Web Analytics** (amended 2026-07; originally Plausible, whose cloud tier is paid-only) | ~1 KB, free, cookieless, no consent banner needed (GDPR-friendly for an EU audience). |
-| Contact | **Web3Forms** | No backend, no account; a single **public** access key as a hidden field, `fetch` POST to `api.web3forms.com/submit`. 250 free submissions/month. Keeps the site fully static. |
-| Booking | **Cal.com / Calendly link** | One-click booking without embedding heavy third-party JS; just a link/button. |
+| Contact | **Web3Forms via a Pages Function** (amended 2026-07; originally a **public** access key in a hidden field, until a security review moved it server-side) | No account; the `/api/contact` Pages Function verifies the Turnstile token, then POSTs to `api.web3forms.com/submit` with a server-held `WEB3FORMS_ACCESS_KEY` secret. 250 free submissions/month. The site stays static apart from this one function. |
+| Booking | **Dropped** (amended 2026-07; originally a Cal.com/Calendly link) | Hard rule since the redesign: written contact only, no booking (`src/config/site.ts`). |
 
 ## Alternatives considered
 
@@ -40,14 +42,17 @@ accepting it.
   horizontal gallery needs GSAP ScrollTrigger.
 - **Cloudflare adapter (SSR)** - rejected: nothing needs server rendering; static is faster,
   cheaper, and dodges the known v6 adapter+static deploy bug.
-- **Formspree** - viable equal alternative to Web3Forms; Web3Forms chosen for the no-account
-  public-key flow. Swappable via one env var.
+- **Formspree** - viable equal alternative to Web3Forms; Web3Forms chosen for its no-account
+  flow (originally a public key, moved server-side 2026-07, see the Contact row). Swappable
+  via one Pages secret.
 - **Google Analytics** - rejected: cookies + consent banner + weight, against the brief.
 
 ## Consequences
 
-- Form, analytics, and booking are configured via `PUBLIC_*` env vars with safe demo fallbacks,
-  so the site runs and is reviewable with **zero secrets**.
+- Analytics and the Turnstile widget are configured via `PUBLIC_*` env vars with safe
+  fallbacks, so the site builds and is reviewable with **zero secrets in the repo**; real
+  contact sends additionally need two server-side Pages secrets (`TURNSTILE_SECRET_KEY`,
+  `WEB3FORMS_ACCESS_KEY`) read at runtime by the contact function (amended 2026-07).
 - Animation code must be defensively gated (reduced-motion, touch, View-Transition teardown) and
   must only animate `transform`/`opacity` to protect INP/CLS on mobile.
 - Deploy is a human step (account + domain + DNS).

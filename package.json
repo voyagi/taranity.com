@@ -21,7 +21,6 @@
     "coverage": "vitest run --coverage",
     "e2e": "node scripts/prep-e2e.mjs && dev-browser --headless --timeout 150 run scripts/e2e-switch.devbrowser.js",
     "e2e:switch": "node scripts/prep-e2e.mjs && dev-browser --headless --timeout 150 run scripts/e2e-switch.devbrowser.js",
-    "e2e:designs": "node scripts/prep-e2e.mjs && dev-browser --headless --timeout 180 run scripts/e2e.devbrowser.js",
     "deploy": "echo Deploys run automatically on push or merge to main via Cloudflare Pages. Verify the live site with npm run verify:deploy",
     "verify:deploy": "node scripts/verify-deploy.mjs",
     "astro": "astro"

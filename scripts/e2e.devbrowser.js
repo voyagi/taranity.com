@@ -2,7 +2,8 @@
 // Rust/QuickJS harness - this environment blocks raw Playwright by policy).
 //
 // Run the built site first:  npm run build && npm run serve:test   (serves :4321)
-// Then:                      npm run e2e
+// Then, with that server still running (no npm alias - see the WARNING below):
+//   node scripts/prep-e2e.mjs && dev-browser --headless --timeout 180 run scripts/e2e.devbrowser.js
 //
 // Covers: page status, single non-empty <h1>, <title>, console/page errors,
 // image loading, internal-link resolution, axe-core WCAG2A/AA per page,
@@ -21,7 +22,8 @@
 // `npm run e2e:switch`). The per-design rendering/motion/form/a11y checks here are still
 // valuable but need an update pass: clear the design cookie at start, change design-arrival
 // to a direct `page.goto('/<design>')`, and delete the obsolete switcher blocks. Tracked as
-// a follow-up in the in-place-design-switch PR.
+// a follow-up in the in-place-design-switch PR. Until that pass lands, the `e2e:designs` npm
+// alias is removed (2026-07) so the known-broken run is not one `npm run` away.
 
 // IPv4-explicit on purpose: serve-headers.mjs binds 127.0.0.1, while a stray
 // `astro preview` (no _headers applied) binds ::1 - and `localhost` resolves

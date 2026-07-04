@@ -8,6 +8,8 @@ export default tseslint.config(
     ignores: [
       'dist/',
       '.astro/',
+      '.wrangler/',
+      'coverage/',
       'node_modules/',
       'design/',
       'public/',

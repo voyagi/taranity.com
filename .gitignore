@@ -52,5 +52,9 @@ REDESIGN-PLAN.md
 REWORK-PLAN.md
 ROADMAP.md
 VERIFICATION.md
+HANDOFF-*.md
 .claude/
 .planning/
+.agents/
+.session-prompts/
+.design-previews/
