@@ -2,7 +2,7 @@
 // Rust/QuickJS harness - this environment blocks raw Playwright by policy).
 //
 // Run the built site first:  npm run build && npm run serve:test   (serves :4321)
-// Then (no npm alias - see the WARNING below):
+// Then, with that server still running (no npm alias - see the WARNING below):
 //   node scripts/prep-e2e.mjs && dev-browser --headless --timeout 180 run scripts/e2e.devbrowser.js
 //
 // Covers: page status, single non-empty <h1>, <title>, console/page errors,

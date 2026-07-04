@@ -42,8 +42,9 @@ accepting it.
   horizontal gallery needs GSAP ScrollTrigger.
 - **Cloudflare adapter (SSR)** - rejected: nothing needs server rendering; static is faster,
   cheaper, and dodges the known v6 adapter+static deploy bug.
-- **Formspree** - viable equal alternative to Web3Forms; Web3Forms chosen for the no-account
-  public-key flow. Swappable via one env var.
+- **Formspree** - viable equal alternative to Web3Forms; Web3Forms chosen for its no-account
+  flow (originally a public key, moved server-side 2026-07, see the Contact row). Swappable
+  via one Pages secret.
 - **Google Analytics** - rejected: cookies + consent banner + weight, against the brief.
 
 ## Consequences
