@@ -4,6 +4,7 @@ description: "Before you pay for a redesign, fix these. Seven ecommerce conversi
 lead: "A redesign is the most expensive instinct in ecommerce, and usually the wrong one. Most stores leak sales through a handful of boring, fixable spots."
 kicker: Commerce
 pubDate: 2026-06-29
+heroImage: /journal/ecommerce-conversion-fixes.png
 keywords:
   - ecommerce conversion rate optimization
   - increase ecommerce conversions

@@ -4,6 +4,7 @@ description: "A practical map for business process automation for small business
 lead: "Do not start with the tool, and do not start with the most painful task. Start with a list and a simple filter."
 kicker: Automation
 pubDate: 2026-06-29
+heroImage: /journal/what-to-automate-first.png
 keywords:
   - business process automation for small business
   - what to automate in your business

@@ -4,6 +4,7 @@ description: "How to implement AI in your business without the hype or the lawsu
 lead: "Treat AI as a capable, confident, sometimes-wrong intern. You would give it real work. You would not give it the company credit card unsupervised on day one."
 kicker: Intelligent systems
 pubDate: 2026-06-29
+heroImage: /journal/ai-implementation-guardrails.png
 keywords:
   - how to implement AI in your business
   - AI guardrails

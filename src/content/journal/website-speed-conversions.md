@@ -4,6 +4,7 @@ description: "Slow pages cost sales before anyone reads your copy. How website s
 lead: "Speed is the tax every visitor pays before they see your offer. Most teams never connect the soft quarter to the four-second load."
 kicker: Performance
 pubDate: 2026-06-29
+heroImage: /journal/website-speed-conversions.png
 keywords:
   - website speed and conversion rate
   - page load time conversions

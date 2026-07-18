@@ -4,6 +4,7 @@ description: "Choosing between a boutique studio, a large agency, and a freelanc
 lead: "None of the three is best. They are best at different things, and most of the regret comes from picking the wrong shape for the job, not from the people being bad at it."
 kicker: Working with a studio
 pubDate: 2026-06-29
+heroImage: /journal/studio-vs-agency-vs-freelancer.png
 keywords:
   - boutique studio vs agency vs freelancer
   - hire agency or freelancer

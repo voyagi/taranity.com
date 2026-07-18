@@ -1,0 +1,161 @@
+---
+/**
+ * Per-article Open Graph image source (1200×630): the brand og-preview card
+ * (same Vitrine language, stars, borders) carrying the article's title and
+ * kicker. Rendered with the real fonts, then screenshotted to
+ * public/journal/<slug>.png by scripts/generate-og.mjs, which each article's
+ * `heroImage` frontmatter points at.
+ *
+ * This PAGE is noindex, robots-disallowed, and sitemap-excluded (the
+ * /og-preview subtree). Drafts are included so a drip-scheduled article's
+ * image exists before it publishes - which means a draft's TITLE ships early
+ * in its deployed card PNG under /journal/ (not covered by those exclusions)
+ * and in this public repo. Deliberate and acceptable: titles only, no body.
+ *
+ * Rest param ([...slug]) on purpose: a nested article's id is its relative
+ * path ("sub/name"), which the recursive walkers in generate-og.mjs and the
+ * content lint both support - a single-segment [slug] route would 404 the
+ * generator on exactly those articles.
+ */
+import { getCollection } from 'astro:content';
+import '../../../styles/fonts.css';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('journal');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { title, kicker } = post.data;
+// Fit the headline to the card: short titles get display scale, long ones step
+// down so three lines never overflow the fixed 630px canvas.
+const titleSize = title.length <= 48 ? '88px' : '74px';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>og · {post.id}</title>
+  </head>
+  <body class="og-body">
+    <div class="og">
+      <span class="og-star s1"></span>
+      <span class="og-star s2"></span>
+      <span class="og-star s3"></span>
+      <span class="og-star s4"></span>
+      <span class="og-star s5"></span>
+      <span class="og-star s6"></span>
+      <span class="og-star s7"></span>
+
+      <header class="og-top">
+        <span class="og-mark">Taranity</span>
+        <span class="og-tag">Journal · {kicker}</span>
+      </header>
+
+      <div class="og-main">
+        <h1 class="og-h1" style={`font-size: ${titleSize}`}>{title}</h1>
+      </div>
+
+      <footer class="og-foot">
+        <span>Notes on the craft, from the studio</span>
+        <span class="og-url">taranity.com/journal</span>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style>
+  .og-body {
+    margin: 0;
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+  }
+  .og {
+    position: relative;
+    box-sizing: border-box;
+    width: 1200px;
+    height: 630px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 56px 72px 48px;
+    background:
+      radial-gradient(46% 58% at 78% 18%, rgba(198, 160, 105, 0.12), transparent 72%),
+      #110f0c;
+    color: #ece5d8;
+    border: 1px solid rgba(236, 229, 216, 0.18);
+    outline: 1px solid rgba(236, 229, 216, 0.07);
+    outline-offset: -12px;
+  }
+  .og-star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(236, 229, 216, 0.8);
+  }
+  .s1 { top: 84px; left: 540px; }
+  .s2 { top: 150px; left: 880px; opacity: 0.6; }
+  .s3 { top: 70px; left: 1080px; }
+  .s4 { top: 250px; left: 1130px; opacity: 0.5; }
+  .s5 { top: 420px; left: 980px; opacity: 0.7; }
+  .s6 { top: 330px; left: 700px; opacity: 0.45; }
+  .s7 { top: 520px; left: 460px; opacity: 0.5; }
+
+  .og-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .og-mark {
+    font-family: 'Inter Variable', sans-serif;
+    font-size: 21px;
+    font-weight: 640;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+  }
+  .og-tag {
+    font-family: 'Inter Variable', sans-serif;
+    font-size: 15px;
+    font-weight: 560;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #c9a36a;
+    white-space: nowrap;
+  }
+  .og-main {
+    display: flex;
+    align-items: center;
+    min-height: 0;
+  }
+  .og-h1 {
+    margin: 0;
+    font-family: 'Fraunces Variable', Georgia, serif;
+    font-optical-sizing: auto;
+    font-weight: 380;
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .og-foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    border-top: 1px solid rgba(236, 229, 216, 0.18);
+    padding-top: 22px;
+    font-family: 'Inter Variable', sans-serif;
+    font-size: 14.5px;
+    font-weight: 540;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: rgba(236, 229, 216, 0.78);
+  }
+  .og-url {
+    color: #c9a36a;
+  }
+</style>
