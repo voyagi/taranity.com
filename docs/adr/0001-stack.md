@@ -7,7 +7,9 @@
 
 ## Decision
 
-Build a **static Astro 6** site styled with **Tailwind v4**, animated with **GSAP +
+Build a **static Astro 6** site (amended 2026-08: now **Astro 7**, moved for the
+GHSA-4g3v-8h47-v7g6 View Transition XSS fix; every choice below is unchanged) styled
+with **Tailwind v4**, animated with **GSAP +
 ScrollTrigger + SplitText** synced to **Lenis** smooth scroll. Deploy to **Cloudflare Pages** (serve `dist/`, no
 adapter). Cookieless analytics (**Plausible**; amended 2026-07 to **Cloudflare Web
 Analytics**, see the Analytics row), **Web3Forms** for the contact form (amended 2026-07:
