@@ -26,6 +26,11 @@ const JOURNAL_LASTMOD = journalLastmod();
 export default defineConfig({
   site: 'https://taranity.com',
   output: 'static',
+  // Astro 7 changed the default from true to 'jsx', which strips whitespace
+  // between inline elements under JSX rules. Keep the v6 behavior: the emitted
+  // bytes of the one hashed inline script must stay stable for the CSP pin in
+  // public/_headers, and inline-element spacing must not shift across designs.
+  compressHTML: true,
   integrations: [
     sitemap({
       // Drop the OG preview and the ENTIRE per-design variant tree
