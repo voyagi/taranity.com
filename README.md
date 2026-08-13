@@ -5,7 +5,7 @@ the same content, rendered as **six genuinely different design languages** a vis
 between live, from an editorial flagship to a brutalist terminal. Every one stays static, fast,
 and accessible, with motion that respects reduced-motion and a strict Content-Security-Policy.
 
-> **Stack:** Astro 6 (static) · Tailwind v4 · GSAP + ScrollTrigger · Lenis · Three.js (the Atlas
+> **Stack:** Astro 7 (static) · Tailwind v4 · GSAP + ScrollTrigger · Lenis · Three.js (the Atlas
 > WebGL design) · Cloudflare Pages · Cloudflare Web Analytics · Web3Forms + Turnstile.
 > Rationale: [docs/adr/0001-stack.md](docs/adr/0001-stack.md).
 
