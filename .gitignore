@@ -54,6 +54,7 @@ ROADMAP.md
 VERIFICATION.md
 HANDOFF-*.md
 .claude/
+.Codex/
 .planning/
 .agents/
 .session-prompts/
