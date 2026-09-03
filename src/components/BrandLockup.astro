@@ -34,7 +34,15 @@ interface Props {
 
 const { height = '1.5rem', variant = 'lockup', ink, bg, accent, label = 'Taranity', class: className = '' } = Astro.props;
 
-const a11y = label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"';
+/**
+ * Escape a value for use inside a double-quoted HTML attribute. The label is
+ * interpolated into raw SVG markup rendered with set:html, so a quote in it
+ * would otherwise end the attribute early.
+ */
+const escapeAttribute = (value: string): string =>
+  value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+const a11y = label ? `role="img" aria-label="${escapeAttribute(label)}"` : 'aria-hidden="true" focusable="false"';
 const raw = variant === 'tile' ? tileRaw : lockupRaw;
 const svg = raw
   .replace(/INK_TOKEN/g, ink ?? 'var(--brand-ink)')

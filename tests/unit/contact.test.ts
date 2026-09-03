@@ -88,6 +88,26 @@ describe('contact /api/contact', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it('still answers 413 when the stream errors while an oversized body is being drained', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
+    // A streaming body that passes the cap in its first chunk, then fails.
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        controller.enqueue(new Uint8Array(20_000));
+        controller.error(new Error('client went away'));
+      },
+    });
+    const request = new Request('https://taranity.com/api/contact', {
+      method: 'POST',
+      body,
+      duplex: 'half',
+    } as RequestInit);
+    const res = await onRequestPost({ request, env: ENV });
+    expect(res.status).toBe(413);
+    expect(await res.json()).toMatchObject({ success: false, error: 'request-too-large' });
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it('silently accepts the honeypot without contacting any upstream', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
     const res = await onRequestPost({ request: makeReq({ ...validFields, botcheck: 'on' }), env: ENV });

@@ -121,11 +121,17 @@ async function readBoundedBody(request: Request): Promise<Uint8Array | 'too-larg
       if (done) break;
       total += value.byteLength;
       if (total > MAX_BODY_BYTES) {
-        let drained = 0;
-        while (drained < DRAIN_BYTES) {
-          const rest = await reader.read();
-          if (rest.done) break;
-          drained += rest.value.byteLength;
+        // The verdict is already 'too-large'; a stream error while draining
+        // the remainder must not turn it into a 500.
+        try {
+          let drained = 0;
+          while (drained < DRAIN_BYTES) {
+            const rest = await reader.read();
+            if (rest.done) break;
+            drained += rest.value.byteLength;
+          }
+        } catch {
+          // stop draining, the response below still stands
         }
         return 'too-large';
       }
