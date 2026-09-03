@@ -92,6 +92,22 @@ function rawTextField(form: FormData, name: string): string | null {
   return typeof value === 'string' ? value : null;
 }
 
+// How much of an oversized body we are willing to read and throw away so the
+// connection ends cleanly. Beyond this the client is abusive and the runtime
+// may close the connection instead.
+const DRAIN_BYTES = 256 * 1024;
+
+/**
+ * Read the request body into memory, capped at MAX_BODY_BYTES.
+ *
+ * Returns the bytes, or 'too-large' once the cap is passed. On the too-large
+ * path the remainder of the stream is read and discarded (up to DRAIN_BYTES) so
+ * the underlying connection finishes cleanly, then the reader is released. The
+ * stream is deliberately never cancelled: cancelling a multipart body mid-pull
+ * makes Node's fetch implementation enqueue its next chunk into an already
+ * closed stream, an unhandled ERR_INVALID_STATE rejection that fails the whole
+ * test run while every assertion passes.
+ */
 async function readBoundedBody(request: Request): Promise<Uint8Array | 'too-large'> {
   const body = request.body;
   if (!body) return new Uint8Array();
@@ -105,12 +121,12 @@ async function readBoundedBody(request: Request): Promise<Uint8Array | 'too-larg
       if (done) break;
       total += value.byteLength;
       if (total > MAX_BODY_BYTES) {
-        // Stop reading and let the runtime discard the rest. Do NOT cancel the
-        // stream here: cancelling a multipart body mid-pull makes Node's fetch
-        // implementation enqueue its next chunk into an already-closed stream,
-        // which surfaces as an unhandled rejection (ERR_INVALID_STATE) and fails
-        // the test run even though every assertion passes. Releasing the lock in
-        // the finally block is enough; nothing pulls from the body again.
+        let drained = 0;
+        while (drained < DRAIN_BYTES) {
+          const rest = await reader.read();
+          if (rest.done) break;
+          drained += rest.value.byteLength;
+        }
         return 'too-large';
       }
       chunks.push(value);

@@ -4,6 +4,11 @@
  * the hero and scrolls away with it (single-page experience; the floating
  * DesignSwitcher carries the persistent controls). On subpages (privacy,
  * 404) the anchors point back into the home experience.
+ *
+ * Below 400 px the full lockup and the three anchors do not fit one row
+ * (the design clips horizontal overflow, so the last anchor would be cut),
+ * so the link carries the compact tile alone there. Both variants are in the
+ * markup and CSS shows one, which keeps the switch free of script.
  */
 import BrandLockup from '../../BrandLockup.astro';
 
@@ -17,7 +22,8 @@ const prefix = subpage ? '/' : '';
 
 <header class="v-header">
   <a class="v-wordmark" href="/" aria-label="Taranity home">
-    <BrandLockup height="var(--v-lockup)" label="" />
+    <BrandLockup class="v-lockup-full" height="var(--v-lockup)" label="" />
+    <BrandLockup class="v-lockup-tile" variant="tile" height="var(--v-lockup)" label="" />
   </a>
   <nav class="v-nav" aria-label="Page sections">
     <a href={`${prefix}#crafts`}>Crafts</a>
@@ -44,6 +50,9 @@ const prefix = subpage ? '/' : '';
     align-items: center;
     text-decoration: none;
     color: inherit;
+  }
+  .v-wordmark :global(.v-lockup-tile) {
+    display: none;
   }
   .v-nav {
     display: flex;
@@ -75,6 +84,17 @@ const prefix = subpage ? '/' : '';
     .v-nav a {
       font-size: 0.64rem;
       letter-spacing: 0.16em;
+    }
+  }
+  @media (max-width: 400px) {
+    .v-header {
+      --v-lockup: 1.6rem;
+    }
+    .v-wordmark :global(.v-lockup-full) {
+      display: none;
+    }
+    .v-wordmark :global(.v-lockup-tile) {
+      display: inline-flex;
     }
   }
 </style>

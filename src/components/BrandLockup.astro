@@ -9,14 +9,20 @@
  * on the dark tile in light mode, bronze on the paper tile in dark mode).
  * Fixed surfaces such as the Open Graph cards pass explicit colours instead.
  *
- * The master SVG lives in src/assets/brand/ with three placeholder colours
+ * Two variants share the same colours: the full lockup, and the tile alone
+ * for spaces too narrow for the name (the phone header at 320 px).
+ *
+ * The masters live in src/assets/brand/ with three placeholder colours
  * (INK_TOKEN, BG_TOKEN, ACCENT_TOKEN) that this component maps.
  */
-import raw from '../assets/brand/lockup-inline.svg?raw';
+import lockupRaw from '../assets/brand/lockup-inline.svg?raw';
+import tileRaw from '../assets/brand/tile-inline.svg?raw';
 
 interface Props {
-  /** CSS height of the lockup; width follows the aspect ratio. */
+  /** CSS height of the mark; width follows the aspect ratio. */
   height?: string;
+  /** 'lockup' (tile and wordmark, default) or 'tile' (the compact mark alone). */
+  variant?: 'lockup' | 'tile';
   /** Explicit colours for surfaces without tokens (hex). Omit to follow the design. */
   ink?: string;
   bg?: string;
@@ -26,9 +32,10 @@ interface Props {
   class?: string;
 }
 
-const { height = '1.5rem', ink, bg, accent, label = 'Taranity', class: className = '' } = Astro.props;
+const { height = '1.5rem', variant = 'lockup', ink, bg, accent, label = 'Taranity', class: className = '' } = Astro.props;
 
 const a11y = label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"';
+const raw = variant === 'tile' ? tileRaw : lockupRaw;
 const svg = raw
   .replace(/INK_TOKEN/g, ink ?? 'var(--brand-ink)')
   .replace(/BG_TOKEN/g, bg ?? 'var(--brand-bg)')
