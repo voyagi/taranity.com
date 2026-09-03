@@ -92,7 +92,10 @@ describe('contact /api/contact', () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
     // A streaming body that passes the cap in its first chunk, then fails.
     const body = new ReadableStream<Uint8Array>({
-      /** Deliver one chunk past the cap, then fail the stream like a dropped client. */
+      /**
+       * Deliver one chunk past the cap, then fail the stream the way a dropped
+       * client would, so the drain path has to cope with a read() rejection.
+       */
       pull(controller) {
         controller.enqueue(new Uint8Array(20_000));
         controller.error(new Error('client went away'));
