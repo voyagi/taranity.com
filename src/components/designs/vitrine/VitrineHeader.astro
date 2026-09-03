@@ -1,10 +1,12 @@
 ---
 /**
- * Editorial masthead: wordmark left, section anchors right. Sits over the
- * hero and scrolls away with it (single-page experience; the floating
+ * Editorial masthead: the brand lockup left, section anchors right. Sits over
+ * the hero and scrolls away with it (single-page experience; the floating
  * DesignSwitcher carries the persistent controls). On subpages (privacy,
  * 404) the anchors point back into the home experience.
  */
+import BrandLockup from '../../BrandLockup.astro';
+
 interface Props {
   /** Subpages link to the home sections instead of in-page anchors. */
   subpage?: boolean;
@@ -14,7 +16,9 @@ const prefix = subpage ? '/' : '';
 ---
 
 <header class="v-header">
-  <a class="v-wordmark" href="/" aria-label="Taranity home">Taranity</a>
+  <a class="v-wordmark" href="/" aria-label="Taranity home">
+    <BrandLockup height="var(--v-lockup)" label="" />
+  </a>
   <nav class="v-nav" aria-label="Page sections">
     <a href={`${prefix}#crafts`}>Crafts</a>
     <a href={`${prefix}#studio`}>Studio</a>
@@ -33,13 +37,13 @@ const prefix = subpage ? '/' : '';
     justify-content: space-between;
     gap: 1rem;
     padding: clamp(1.2rem, 3.5vh, 2.2rem) var(--v-pad);
+    --v-lockup: 1.5rem;
   }
   .v-wordmark {
-    font-size: 0.82rem;
-    font-weight: 620;
-    letter-spacing: 0.34em;
-    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
     text-decoration: none;
+    color: inherit;
   }
   .v-nav {
     display: flex;
@@ -62,8 +66,8 @@ const prefix = subpage ? '/' : '';
     }
   }
   @media (max-width: 480px) {
-    .v-wordmark {
-      letter-spacing: 0.22em;
+    .v-header {
+      --v-lockup: 1.25rem;
     }
     .v-nav {
       gap: 0.9rem;

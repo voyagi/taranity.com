@@ -6,6 +6,7 @@
  * screenshot /og-preview at 1200×630 → public/og.png.
  */
 import '../styles/fonts.css';
+import BrandLockup from '../components/BrandLockup.astro';
 ---
 
 <!doctype html>
@@ -26,7 +27,7 @@ import '../styles/fonts.css';
       <span class="og-star s7"></span>
 
       <header class="og-top">
-        <span class="og-mark">Taranity</span>
+        <BrandLockup height="38px" ink="#ece5d8" bg="#110f0c" accent="#7d5f35" />
         <span class="og-tag">Digital studio · Working worldwide</span>
       </header>
 
@@ -83,15 +84,8 @@ import '../styles/fonts.css';
 
   .og-top {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
-  }
-  .og-mark {
-    font-family: 'Inter Variable', sans-serif;
-    font-size: 21px;
-    font-weight: 640;
-    letter-spacing: 0.34em;
-    text-transform: uppercase;
   }
   .og-tag {
     font-family: 'Inter Variable', sans-serif;

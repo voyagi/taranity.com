@@ -1,0 +1,64 @@
+---
+/**
+ * The brand lockup: the "ta." compact mark beside the lowercase wordmark, as
+ * one inline SVG. Every letter is a vector outline (drawn from Fraunces, the
+ * site's display face), so no font has to load before the mark is right.
+ *
+ * Colours come from the surrounding design's tokens by default (the Vitrine
+ * ink and paper swap in dark mode, and the full stop follows the tile: brass
+ * on the dark tile in light mode, bronze on the paper tile in dark mode).
+ * Fixed surfaces such as the Open Graph cards pass explicit colours instead.
+ *
+ * The master SVG lives in src/assets/brand/ with three placeholder colours
+ * (INK_TOKEN, BG_TOKEN, ACCENT_TOKEN) that this component maps.
+ */
+import raw from '../assets/brand/lockup-inline.svg?raw';
+
+interface Props {
+  /** CSS height of the lockup; width follows the aspect ratio. */
+  height?: string;
+  /** Explicit colours for surfaces without tokens (hex). Omit to follow the design. */
+  ink?: string;
+  bg?: string;
+  accent?: string;
+  /** Accessible name. Pass an empty string when a parent link already names it. */
+  label?: string;
+  class?: string;
+}
+
+const { height = '1.5rem', ink, bg, accent, label = 'Taranity', class: className = '' } = Astro.props;
+
+const a11y = label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"';
+const svg = raw
+  .replace(/INK_TOKEN/g, ink ?? 'var(--brand-ink)')
+  .replace(/BG_TOKEN/g, bg ?? 'var(--brand-bg)')
+  .replace(/ACCENT_TOKEN/g, accent ?? 'var(--brand-period)')
+  .replace('<svg ', `<svg ${a11y} `);
+---
+
+<span class={`brand-lockup ${className}`.trim()} style={`--brand-h:${height}`} set:html={svg} />
+
+<style>
+  .brand-lockup {
+    display: inline-flex;
+    line-height: 0;
+    --brand-ink: var(--v-ink, #1a1712);
+    --brand-bg: var(--v-bg, #f4f0e8);
+    /* The full stop sits on the tile, which is the inverse of the page: brass on
+       the dark tile (light mode), bronze on the paper tile (dark mode). */
+    --brand-period: #c9a36a;
+  }
+  .brand-lockup :global(svg) {
+    display: block;
+    height: var(--brand-h);
+    width: auto;
+  }
+  :global(:root[data-mode='dark']) .brand-lockup {
+    --brand-period: #7d5f35;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-mode])) .brand-lockup {
+      --brand-period: #7d5f35;
+    }
+  }
+</style>
