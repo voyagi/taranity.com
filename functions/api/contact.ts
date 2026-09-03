@@ -105,7 +105,12 @@ async function readBoundedBody(request: Request): Promise<Uint8Array | 'too-larg
       if (done) break;
       total += value.byteLength;
       if (total > MAX_BODY_BYTES) {
-        await reader.cancel().catch(() => undefined);
+        // Stop reading and let the runtime discard the rest. Do NOT cancel the
+        // stream here: cancelling a multipart body mid-pull makes Node's fetch
+        // implementation enqueue its next chunk into an already-closed stream,
+        // which surfaces as an unhandled rejection (ERR_INVALID_STATE) and fails
+        // the test run even though every assertion passes. Releasing the lock in
+        // the finally block is enough; nothing pulls from the body again.
         return 'too-large';
       }
       chunks.push(value);
