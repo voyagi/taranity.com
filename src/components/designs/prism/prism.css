@@ -157,10 +157,18 @@
   padding: clamp(1.2rem, 3.5vh, 2rem) var(--pr-gutter);
 }
 .pr-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   font-family: var(--pr-serif);
   font-size: clamp(1.4rem, 2.8vw, 1.8rem);
   letter-spacing: 0.01em;
   text-decoration: none;
+  /* The mark in Prism dress: the light ink as the tile against the dark
+     colour field, with the periwinkle as the full stop. */
+  --brand-ink: var(--pr-ink);
+  --brand-bg: var(--pr-base);
+  --brand-period: var(--pr-periwinkle);
 }
 .pr-masthead-nav {
   display: flex;

@@ -1,11 +1,13 @@
 ---
 /**
  * Brutalist masthead: a hard-edged status strip (mono system-readout fields,
- * static - not a marquee), then a sticky nav (wordmark with a blinking cursor
- * block left, slash-prefixed section anchors centre, a bracketed written-contact
+ * static - not a marquee), then a sticky nav (the brand mark and wordmark with
+ * a blinking cursor block left, slash-prefixed section anchors centre, a bracketed written-contact
  * CTA right). The CTA always reads as "send a message", never "book a call"
  * (hard rule 1). The floating DesignSwitcher carries the cross-design controls.
  */
+import BrandLockup from '../../BrandLockup.astro';
+
 interface Props {
   /** On subpages, the section anchors point back to the Raw home sections. */
   subpage?: boolean;
@@ -50,7 +52,8 @@ const statusRight = ['Worldwide', 'Written contact only'];
 <header class="r-header">
   <div class="r-header-inner">
     <a class="r-wordmark" href="/" aria-label="Taranity home">
-      Taranity<span class="r-cursor" aria-hidden="true"></span>
+      <BrandLockup variant="tile" height="1.15rem" label="" />
+      <span class="r-wordmark-text">Taranity<span class="r-cursor" aria-hidden="true"></span></span>
     </a>
     <nav class="r-nav" aria-label="Page sections">
       {
@@ -128,12 +131,19 @@ const statusRight = ['Worldwide', 'Written contact only'];
   .r-wordmark {
     display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
     font-family: var(--r-display);
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: -0.01em;
     text-transform: uppercase;
     text-decoration: none;
+    /* The mark in Raw dress. Both tokens flip with the mode, so the tile is
+       always the opposite of the page. The cyan and magenta channels do not
+       hold contrast on both, so the full stop stays monochrome. */
+    --brand-ink: var(--r-ink);
+    --brand-bg: var(--r-bg);
+    --brand-period: var(--r-bg);
     color: var(--r-ink);
   }
   .r-nav {

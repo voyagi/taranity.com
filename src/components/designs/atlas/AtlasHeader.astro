@@ -1,9 +1,11 @@
 ---
 /**
- * Mission-control masthead: wordmark left, indexed mono anchors right. Sits
- * over the hero and scrolls away with it (single-page experience; the
- * floating DesignSwitcher carries the persistent controls).
+ * Mission-control masthead: the brand mark and wordmark left, indexed mono
+ * anchors right. Sits over the hero and scrolls away with it (single-page
+ * experience; the floating DesignSwitcher carries the persistent controls).
  */
+import BrandLockup from '../../BrandLockup.astro';
+
 interface Props {
   /** On subpages, the section anchors point back to the Atlas home sections. */
   subpage?: boolean;
@@ -21,7 +23,10 @@ const links = [
 ---
 
 <header class="a-header">
-  <a class="a-wordmark" href="/" aria-label="Taranity home">Taranity</a>
+  <a class="a-wordmark" href="/" aria-label="Taranity home">
+    <BrandLockup variant="tile" height="1.1rem" label="" />
+    <span>Taranity</span>
+  </a>
   <nav class="a-nav" aria-label="Page sections">
     {
       links.map((l) => (
@@ -47,12 +52,21 @@ const links = [
     padding: clamp(1.2rem, 3.5vh, 2rem) var(--a-pad);
   }
   .a-wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
     font-family: var(--a-display);
     font-size: 0.86rem;
     font-weight: 600;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     text-decoration: none;
+    /* The mark in Atlas dress. The page is near-black, so the tile takes the
+       light ink and the letters the dark ground. The console accent is too
+       pale to read on that tile, so the full stop stays monochrome. */
+    --brand-ink: var(--a-ink);
+    --brand-bg: var(--a-bg);
+    --brand-period: var(--a-bg);
   }
   .a-nav {
     display: flex;

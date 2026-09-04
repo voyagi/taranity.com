@@ -4,9 +4,10 @@
  * one inline SVG. Every letter is a vector outline (drawn from Fraunces, the
  * site's display face), so no font has to load before the mark is right.
  *
- * Colours come from the surrounding design's tokens by default (the Vitrine
- * ink and paper swap in dark mode, and the full stop follows the tile: brass
- * on the dark tile in light mode, bronze on the paper tile in dark mode).
+ * Colours are inherited, never owned here: a design sets --brand-ink (the
+ * solid tile), --brand-bg (the letters knocked out of it) and --brand-period
+ * (the full stop) on the element that wraps the mark, so every design dresses
+ * the same geometry in its own palette. The Vitrine values are the fallback.
  * Fixed surfaces such as the Open Graph cards pass explicit colours instead.
  *
  * Two variants share the same colours: the full lockup, and the tile alone
@@ -45,9 +46,9 @@ const escapeAttribute = (value: string): string =>
 const a11y = label ? `role="img" aria-label="${escapeAttribute(label)}"` : 'aria-hidden="true" focusable="false"';
 const raw = variant === 'tile' ? tileRaw : lockupRaw;
 const svg = raw
-  .replace(/INK_TOKEN/g, ink ?? 'var(--brand-ink)')
-  .replace(/BG_TOKEN/g, bg ?? 'var(--brand-bg)')
-  .replace(/ACCENT_TOKEN/g, accent ?? 'var(--brand-period)')
+  .replace(/INK_TOKEN/g, ink ?? 'var(--brand-ink, #1a1712)')
+  .replace(/BG_TOKEN/g, bg ?? 'var(--brand-bg, #f4f0e8)')
+  .replace(/ACCENT_TOKEN/g, accent ?? 'var(--brand-period, #c9a36a)')
   .replace('<svg ', `<svg ${a11y} `);
 ---
 
@@ -57,23 +58,10 @@ const svg = raw
   .brand-lockup {
     display: inline-flex;
     line-height: 0;
-    --brand-ink: var(--v-ink, #1a1712);
-    --brand-bg: var(--v-bg, #f4f0e8);
-    /* The full stop sits on the tile, which is the inverse of the page: brass on
-       the dark tile (light mode), bronze on the paper tile (dark mode). */
-    --brand-period: #c9a36a;
   }
   .brand-lockup :global(svg) {
     display: block;
     height: var(--brand-h);
     width: auto;
-  }
-  :global(:root[data-mode='dark']) .brand-lockup {
-    --brand-period: #7d5f35;
-  }
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-mode])) .brand-lockup {
-      --brand-period: #7d5f35;
-    }
   }
 </style>

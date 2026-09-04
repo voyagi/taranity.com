@@ -50,6 +50,19 @@ const prefix = subpage ? '/' : '';
     align-items: center;
     text-decoration: none;
     color: inherit;
+    /* The mark's dress in this design. The tile is the page inverted, so the
+       full stop follows it: brass on the dark tile, bronze on the paper one. */
+    --brand-ink: var(--v-ink);
+    --brand-bg: var(--v-bg);
+    --brand-period: #c9a36a;
+  }
+  :global(:root[data-mode='dark']) .v-wordmark {
+    --brand-period: #7d5f35;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-mode])) .v-wordmark {
+      --brand-period: #7d5f35;
+    }
   }
   .v-wordmark :global(.v-lockup-tile) {
     display: none;

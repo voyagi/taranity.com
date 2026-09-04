@@ -6,6 +6,8 @@
  * always reads as "start an order". The floating DesignSwitcher carries the
  * cross-design controls.
  */
+import BrandLockup from '../../BrandLockup.astro';
+
 interface Props {
   /** On subpages, the section anchors point back to the Storefront home sections. */
   subpage?: boolean;
@@ -50,7 +52,7 @@ const promo = [
 <header class="f-header">
   <div class="f-header-inner">
     <a class="f-wordmark" href="/" aria-label="Taranity home">
-      <span class="f-wordmark-dot" aria-hidden="true"></span>
+      <BrandLockup variant="tile" height="1.3rem" label="" />
       Taranity
     </a>
     <nav class="f-nav" aria-label="Page sections">
@@ -154,14 +156,12 @@ const promo = [
     font-weight: 700;
     letter-spacing: -0.03em;
     text-decoration: none;
+    /* The mark in Storefront dress: cocoa tile, warm paper letters, the
+       tomato accent as the full stop. */
+    --brand-ink: var(--f-ink);
+    --brand-bg: var(--f-bg);
+    --brand-period: var(--f-accent);
     color: var(--f-ink);
-  }
-  .f-wordmark-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, var(--f-c1), var(--f-c4));
-    box-shadow: 0 0 0 4px var(--f-accent-soft);
   }
   .f-nav {
     display: flex;
