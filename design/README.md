@@ -22,7 +22,9 @@ site and share the same content.
 
 ## Social
 
-- [og.png](og.png) - the share card (1200x630), shipped at `public/og.png`.
+- [og.png](og.png) - the share card (1200x630). This is a copy of the shipped
+  `public/og.png`, byte for byte, so the two can never drift apart. Regenerate the shipped one
+  from `/og-preview` and copy it here.
 
 ## Self-critique (what was checked against the "not-a-template" bar)
 
