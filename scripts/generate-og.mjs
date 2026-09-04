@@ -81,9 +81,16 @@ let exitCode = 1;
 try {
   await waitForServer(`http://127.0.0.1:${PORT}/`);
 
-  // dev-browser is a .cmd shim on Windows, hence shell: true.
-  const run = spawnSync('dev-browser', ['--headless', '--timeout', '120', 'run', scriptPath], {
-    shell: process.platform === 'win32',
+  // dev-browser is a .cmd shim on Windows, and Node refuses to spawn one without a
+  // shell, so shell: true stays. The whole command goes in as ONE string rather than
+  // a command plus an args array: that form is deprecated with a shell (DEP0190, the
+  // args are concatenated unescaped) and printed a warning on every run.
+  //
+  // Note for whoever runs this by hand: stdio is inherited, so send the output to a
+  // terminal or a pipe. Redirecting it to a file on Windows hands the file handle down
+  // to the browser process and the run appears to hang long after the images are written.
+  const run = spawnSync(`dev-browser --headless --timeout 120 run "${scriptPath}"`, {
+    shell: true,
     stdio: 'inherit',
     timeout: 180_000,
   });

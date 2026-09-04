@@ -1,40 +1,39 @@
 # design/ - hi-fi artifacts
 
-These are **real rendered screenshots** of the built site (not Figma comps) - the strongest
-possible proof of the design language, captured from the live dev server with the actual fonts
-and styles via `dev-browser` (Playwright). Regenerate any time with
-[`../scripts/capture.devbrowser.js`](../scripts/capture.devbrowser.js).
+Real rendered screenshots of the built site, not mockups, captured from a served build with the
+actual fonts and styles via [`../scripts/capture.devbrowser.js`](../scripts/capture.devbrowser.js).
+Regenerate them with `npm run build`, serve `dist` (`npm run serve:test`), then run that script and
+copy the PNGs out of `~/.dev-browser/tmp`.
 
-> Captured with `prefers-reduced-motion: reduce` so every scroll-reveal section is fully visible
-> in the full-page shots. The live desktop experience adds the kinetic SplitText hero, the pinned
-> horizontal gallery, the magnetic cursor, and the holographic hover edges.
+> Captured with `prefers-reduced-motion: reduce`, and the script walks the page down and back
+> before each shot so the scroll-revealed sections are actually in frame. The live experience adds
+> the slow cinematic scroll, the reveal transitions, and the design switcher.
 
 ## Pages
 
-| Page | Desktop | Mobile |
-|------|---------|--------|
-| Home | [home-desktop.png](home-desktop.png) | [home-mobile.png](home-mobile.png) |
-| Work (gallery) | [work-desktop.png](work-desktop.png) | [work-mobile.png](work-mobile.png) |
-| Case study | [case-study-desktop.png](case-study-desktop.png) | [case-study-mobile.png](case-study-mobile.png) |
-| About | [about-desktop.png](about-desktop.png) | [about-mobile.png](about-mobile.png) |
-| Contact | [contact-desktop.png](contact-desktop.png) | [contact-mobile.png](contact-mobile.png) |
-| 404 | [notfound-desktop.png](notfound-desktop.png) | [notfound-mobile.png](notfound-mobile.png) |
+Shot in the canonical **Vitrine** design. The other design languages are switchable on the live
+site and share the same content.
+
+| Page | Desktop | Tablet | Mobile |
+|------|---------|--------|--------|
+| Home | [home-desktop.png](home-desktop.png) | [home-tablet.png](home-tablet.png) | [home-mobile.png](home-mobile.png) |
+| Privacy | [privacy-desktop.png](privacy-desktop.png) | [privacy-tablet.png](privacy-tablet.png) | [privacy-mobile.png](privacy-mobile.png) |
+| 404 | [notfound-desktop.png](notfound-desktop.png) | [notfound-tablet.png](notfound-tablet.png) | [notfound-mobile.png](notfound-mobile.png) |
 
 ## Social
 
-- [og.png](og.png) - Open Graph image (1200×630), shipped at `public/og.png`.
+- [og.png](og.png) - the share card (1200x630), shipped at `public/og.png`.
 
 ## Self-critique (what was checked against the "not-a-template" bar)
 
-- **Identity is legible in a screenshot** - HUD corner brackets, the `~/ taranity ●` shell
-  wordmark, telemetry mono labels, and the live Currently console make every page unmistakably
-  *this* site, not a generic dark SaaS page.
-- **Accent is rationed** - the violet→cyan gradient appears only on accent words, metric numbers,
-  and edges; backgrounds are near-black with light, never colour washes (avoids the "purple SaaS
-  gradient" cliché).
-- **Hierarchy & rhythm** - Space Grotesk display vs. Inter body vs. JetBrains Mono "system voice";
-  fluid type scale; one centred CTA per section.
-- **Real content** - every project is Problem→Solution→Result with a measurable number; copy is
-  specific and human, no lorem.
-- **Responsive** - mobile stacks cleanly with no horizontal overflow; the horizontal gallery
-  becomes a vertical card stack on small screens / reduced motion.
+- **Identity is legible in a screenshot** - the `ta.` mark and the lowercase wordmark sit in every
+  masthead, the oversized Fraunces headline carries the page, and the warm paper ground is a colour
+  no competing studio in the surveyed field uses. Nothing here reads as a stock template.
+- **Colour is rationed** - warm paper and ink carry the whole page, with bronze and brass as the
+  single accent. No gradients, no colour washes.
+- **Hierarchy and rhythm** - Fraunces display against Inter body, a fluid type scale, hairline
+  rules, and one clear next step per section.
+- **Real content** - every craft and case is specific, with a measurable number where one is known,
+  and no lorem anywhere.
+- **Responsive** - the tablet and mobile shots stack cleanly with no horizontal overflow, and the
+  masthead swaps to the compact mark on the narrowest screens.
