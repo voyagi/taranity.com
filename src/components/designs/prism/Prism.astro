@@ -13,6 +13,7 @@
 import './prism.css';
 import { contactEmail } from '../../../config/site';
 import { heroContent, servicesLabel, services, approachContent } from '../../../config/prism';
+import BrandLockup from '../../BrandLockup.astro';
 import PrismContact from './PrismContact.astro';
 import PrismFooter from './PrismFooter.astro';
 
@@ -42,7 +43,10 @@ const bursts = Array.from({ length: 16 }, (_, i) => {
 
   <div class="pr-content">
     <header class="pr-masthead">
-      <a class="pr-wordmark" href="/" aria-label="Taranity home">Taranity</a>
+      <a class="pr-wordmark" href="/" aria-label="Taranity home">
+        <BrandLockup variant="tile" height="1.5rem" label="" />
+        <span>Taranity</span>
+      </a>
       <nav class="pr-masthead-nav" aria-label="Sections">
         <a href="#services">Services</a>
         <a href="#approach">Approach</a>

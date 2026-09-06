@@ -15,6 +15,7 @@
 import './sheet.css';
 import { entries, INTENTS } from './entries';
 import { contactEmail } from '../../../config/site';
+import BrandLockup from '../../BrandLockup.astro';
 import SheetContact from './SheetContact.astro';
 import SheetFooter from './SheetFooter.astro';
 
@@ -34,7 +35,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <div class="sh-doc">
     <!-- 1. Masthead: wordmark, what-we-are, persistent written-contact line. -->
     <header class="sh-masthead">
-      <a class="sh-wordmark" href="/" aria-label="Taranity home">Taranity</a>
+      <a class="sh-wordmark" href="/" aria-label="Taranity home">
+        <BrandLockup variant="tile" height="1.25rem" label="" />
+        <span>Taranity</span>
+      </a>
       <p class="sh-masthead-what">A digital studio. We spec and build what you describe.</p>
       <a class="sh-masthead-contact" href={`mailto:${contactEmail}`}>{contactEmail}</a>
     </header>

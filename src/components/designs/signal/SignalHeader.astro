@@ -1,10 +1,12 @@
 ---
 /**
- * Product masthead: wordmark left, section anchors centre, a persistent
- * primary CTA right (conversion: the next step is always one tap away). Sticky
- * so the call to action follows the visitor down the page. The floating
- * DesignSwitcher carries the cross-design controls.
+ * Product masthead: the brand mark and wordmark left, section anchors centre,
+ * a persistent primary CTA right (conversion: the next step is always one tap
+ * away). Sticky so the call to action follows the visitor down the page. The
+ * floating DesignSwitcher carries the cross-design controls.
  */
+import BrandLockup from '../../BrandLockup.astro';
+
 interface Props {
   /** On subpages, the section anchors point back to the Signal home sections. */
   subpage?: boolean;
@@ -24,7 +26,7 @@ const links = [
 <header class="s-header">
   <div class="s-header-inner">
     <a class="s-wordmark" href="/" aria-label="Taranity home">
-      <span class="s-wordmark-dot" aria-hidden="true"></span>
+      <BrandLockup variant="tile" height="1.25rem" label="" />
       Taranity
     </a>
     <nav class="s-nav" aria-label="Page sections">
@@ -63,13 +65,22 @@ const links = [
     letter-spacing: -0.02em;
     text-decoration: none;
     color: var(--s-ink);
+    /* The mark in Signal dress: the product ink as the tile, the page as the
+       letters, instrument green as the full stop. The tile is the page
+       inverted, so the green inverts too: the light mode's deep green would
+       vanish on the light tile dark mode gives it, and the mint the other way
+       round (measured at 1.71:1 before this swap). */
+    --brand-ink: var(--s-ink);
+    --brand-bg: var(--s-bg);
+    --brand-period: #34d399;
   }
-  .s-wordmark-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, var(--s-accent), var(--s-accent-2));
-    box-shadow: 0 0 0 4px var(--s-accent-soft);
+  :global(:root[data-mode='dark']) .s-wordmark {
+    --brand-period: #047857;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-mode])) .s-wordmark {
+      --brand-period: #047857;
+    }
   }
   .s-nav {
     display: flex;

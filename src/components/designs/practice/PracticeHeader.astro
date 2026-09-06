@@ -2,11 +2,13 @@
 /**
  * Trust-led masthead: a slim, calm reassurance strip (static, not a scrolling
  * marquee - an established practice reads steady, not busy), then a sticky nav
- * (wordmark with an engraved seal mark left, section anchors centre, a clear
+ * (the brand mark and wordmark left, section anchors centre, a clear
  * written-contact CTA right). The CTA carries a small letter mark so the next
  * step always reads as "send a message", never "book a call" (hard rule 1).
  * The floating DesignSwitcher carries the cross-design controls.
  */
+import BrandLockup from '../../BrandLockup.astro';
+
 interface Props {
   /** On subpages, the section anchors point back to the Practice home sections. */
   subpage?: boolean;
@@ -40,17 +42,7 @@ const trust = ['Worldwide studio', 'Written replies within a day', 'We stay afte
 <header class="p-header">
   <div class="p-header-inner">
     <a class="p-wordmark" href="/" aria-label="Taranity home">
-      <svg class="p-seal" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-        <circle cx="16" cy="16" r="14" fill="none" stroke="var(--p-gold)" stroke-width="1.4"></circle>
-        <circle cx="16" cy="16" r="10.5" fill="none" stroke="var(--p-accent)" stroke-width="1.4"></circle>
-        <path
-          d="M11.5 16.4l3 3 6-6.4"
-          fill="none"
-          stroke="var(--p-accent)"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"></path>
-      </svg>
+      <BrandLockup variant="tile" height="1.55rem" label="" />
       Taranity
     </a>
     <nav class="p-nav" aria-label="Page sections">
@@ -133,13 +125,13 @@ const trust = ['Worldwide studio', 'Written replies within a day', 'We stay afte
     font-size: 1.22rem;
     font-weight: 600;
     letter-spacing: -0.01em;
+    /* The mark in Practice dress: evergreen tile, warm paper letters, and the
+       engraved brass of the old seal kept as the full stop. */
+    --brand-ink: var(--p-ink);
+    --brand-bg: var(--p-bg);
+    --brand-period: var(--p-gold);
     text-decoration: none;
     color: var(--p-ink);
-  }
-  .p-seal {
-    width: 26px;
-    height: 26px;
-    flex-shrink: 0;
   }
   .p-nav {
     display: flex;

@@ -131,15 +131,25 @@
   padding-block: clamp(1.4rem, 4vh, 2.2rem) clamp(1rem, 3vh, 1.6rem);
 }
 .sh-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   font-family: var(--sh-display);
   font-size: clamp(1.1rem, 2.4vw, 1.35rem);
   font-weight: 640;
   letter-spacing: -0.02em;
   text-decoration: none;
+  /* The mark in Sheet dress: ink tile, spec paper letters, the proof-mark red
+     as the full stop. */
+  --brand-ink: var(--sh-ink);
+  --brand-bg: var(--sh-paper);
+  --brand-period: var(--sh-accent);
 }
 .sh-wordmark::before {
-  /* the proof-mark: a small filled square, the index device in miniature */
-  content: '';
+  /* Was the proof-mark square standing in for a brand mark. The real mark now
+     sits in that position, so this device is retired here (it still indexes
+     the entries elsewhere in the design). */
+  content: none;
   display: inline-block;
   width: 0.5em;
   height: 0.5em;
